@@ -50,7 +50,8 @@ shinyServer(function(input, output) {
                            date = max(dates_to_show))
         dat <- dat[dat$date <= Sys.Date(), ]
         
-        plot(dat$date, dat$value, type = "l", ylim = c(0, max(dat$value)), col = "black")
+        plot(dat$date, dat$value, type = "l", ylim = c(0, max(dat$value)), col = "black",
+             xlab = "date", ylab = "weekly new cases")
         legend("topleft", legend = c("current data version",
                                      paste("data version", input$select_max_data_version),
                                      "other data versions"),
