@@ -266,7 +266,8 @@ AGE_DICT = dict()
 for age_group in AGE_GROUPS[1:]:
     AGE_DICT.update(ages_by_group(age_group))
 
-DISEASES = ['Seasonal_Influenza', 'RSV_Infection', 'Pneumococcal_Disease']
+# DISEASES = ['Seasonal_Influenza', 'RSV_Infection', 'Pneumococcal_Disease']
+DISEASES = ['RSV_Infection']
 
 for disease in DISEASES:
     compute_reporting_triangle(disease)
