@@ -126,7 +126,9 @@ def get_relevant_dates(df_files):
     dates = [Week.fromdate(d, system='iso') for d in dates]
 
     # remove current week as the data might not be available/final yet
-    dates.remove(Week.thisweek(system='iso'))
+    current_week = Week.thisweek(system='iso')
+    if current_week in dates:
+        dates.remove(current_week)
 
     return date_dict, dates
 
