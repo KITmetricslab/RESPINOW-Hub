@@ -16,7 +16,7 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install requirenments
+    - name: Install requirements
       run: |
         pip3 install -r .github/workflows/requirements.txt
              
