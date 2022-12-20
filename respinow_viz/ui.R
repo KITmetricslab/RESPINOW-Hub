@@ -169,7 +169,7 @@ shinyUI(fluidPage(
             ),
             conditionalPanel("input.select_language == 'EN'",
                              p(strong("This website is currently in a pilot phase and serves purely for scientific exchange. The analyses are not yet updated regularly.")),
-                             p("This platform unites nowcasts of selected epidemiological indicators on respiratory diseases in Germany, with the goal of providing reliable assessments of recent trends. It is part of the project", a('RespiNow', href="https://respinow.de/"), "."),
+                             p("This platform unites nowcasts of selected epidemiological indicators on respiratory diseases in Germany, with the goal of providing reliable assessments of recent trends. We aim to provide results from multiple independently run models, but at the current stage only one is already operational. This project is part of the consortium", a('RespiNow', href="https://respinow.de/"), "."),
                              p("All currently displayed data come from the", a("RKI SurvStat", href = "https://survstat.rki.de/"), "routine surveillance system. Other data sources shall be added shortly."),
                              p("If there are irregularities in the reporting process due to, for example, high burdens on the health care system or holidays, the nowcasts may be less reliable.")
             ),
