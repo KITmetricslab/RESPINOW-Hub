@@ -5,6 +5,7 @@ setwd("/home/johannes/Documents/RESPINOW/RESPINOW-Hub/code")
 files <- list.files("../data-processed_retrospective",
                     recursive = TRUE, full.names = FALSE, include.dirs = FALSE)
 files <- sapply(strsplit(files, split = "/"), FUN = function(x) x[2])
+files <- files[grepl("20", files) & grepl(".csv", files)]
 
 date_from_filename <- function(file) as.Date(substr(file, 1, 10))
 
