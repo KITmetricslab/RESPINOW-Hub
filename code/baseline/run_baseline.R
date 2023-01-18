@@ -15,8 +15,8 @@ labels_diseases <- c("seasonal_influenza" = "Seasonal influenza",
 diseases <- names(labels_diseases)
 
 # dates for which to produce nowcasts:
-forecast_dates <- seq(from = as.Date("2022-12-18"),
-                      to = as.Date("2022-12-18"),
+forecast_dates <- seq(from = as.Date("2023-01-15"),
+                      to = as.Date("2023-01-15"),
                       by = 7)
 
 # forecast_dates <- as.Date("2022-12-04")
