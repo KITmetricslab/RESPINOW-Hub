@@ -16,7 +16,7 @@ local <- TRUE
 # load packages:
 library(shiny)
 library(plotly)
-library(zoo)
+# library(zoo)
 library(httr)
 library(DT)
 
@@ -78,7 +78,8 @@ bundeslaender <- c("Alle (Deutschland)" = "DE",
                    "Thüringen" = "DE-TH")
 
 # names of diseases:
-diseases <- c("rsv_infection", "seasonal_influenza", "pneumococcal_disease")
+diseases <- c("rsv_infection_survstat", "seasonal_influenza_survstat", "pneumococcal_disease_survstat",
+              "rsv_nrz", "influenza_nrz")
 
 # names of models:
 models <- sort(dat_models$model)
@@ -113,8 +114,8 @@ reporting_triangles <- list()
 # to read out the most recent date in the truth data:
 current_date <- as.Date("1970-01-01")
 for (disease in diseases) {
-  reporting_triangles[[disease]] <- read.csv(paste0(path_truth, disease,
-                                          "_reporting_triangle_survstat_preprocessed.csv"),
+  reporting_triangles[[disease]] <- read.csv(paste0(path_truth, "truth_", disease,
+                                          "_preprocessed.csv"),
                                    colClasses = c(date = "Date"))
   reporting_triangles[[disease]] <- reporting_triangles[[disease]][order(reporting_triangles[[disease]]$date), ]
   current_date <- max(c(current_date, reporting_triangles[[disease]]$date), na.rm = TRUE)
@@ -203,6 +204,8 @@ shinyServer(function(input, output, session) {
                                           "target_end_date" = "Date"))
           # replace missing medians by means:
           temp$q0.5[is.na(temp$q0.5)] <- temp$mean[is.na(temp$q0.5)]
+          # pull data source into column pathogen:
+          temp$pathogen <- paste(temp$pathogen, temp$data_source, sep = "_")
         }else{
           temp <- NULL
         }
@@ -220,7 +223,7 @@ shinyServer(function(input, output, session) {
     pop_factor <-
       if(input$select_scale == "per 100.000"){
         # handle RSV manually: only Saxony available
-        if(input$select_pathogen == "rsv_infection"){
+        if(input$select_pathogen == "rsv_infection_survstat"){
           100000/subset(pop, location == "DE-SN" & age_group == input$select_age)$population
         }else{
           100000/subset(pop, location == input$select_state & age_group == input$select_age)$population
@@ -395,7 +398,7 @@ shinyServer(function(input, output, session) {
       # initialize plot:
       p <- plot_ly(mode = "lines", hovertemplate = '%{y}', source = "tsplot") %>% # last argument ensures labels are completely visible
         layout(yaxis = list(title = 'Inzidenz (pro 100.000)'), # axis + legend settings
-               xaxis = list(title = "Meldedatum", range = c(min_Date_ms, max_Date_ms), rangeslider = list(type = "date")),
+               xaxis = list(title = "Meldedatum", range = c(min_Date_ms, max_Date_ms)), # , rangeslider = list(type = "date")
                hovermode = "x unified",
                hoverdistance = 5) %>%
         add_polygons(x = c(min(previous_data[[input$select_pathogen]]$date), as.Date(input$select_date), # grey shade to separate past and future
@@ -668,7 +671,8 @@ shinyServer(function(input, output, session) {
     if(input$select_plot_type == "overview"){
       # the nowcast data to be displayed:
       nowcast_to_show_all <- subset(forecast_data[[as.character(input$select_date)]],
-                                    model == input$select_model & pathogen == input$select_pathogen)
+                                    model == input$select_model & 
+                                    pathogen == input$select_pathogen)
       if(input$select_stratification == "state"){
         nowcast_to_show_all <- subset(nowcast_to_show_all, age_group == "00+")
       }
@@ -710,7 +714,7 @@ shinyServer(function(input, output, session) {
           pop_factor <-
             if(input$select_scale == "per 100.000"){
               # handle RSV manually: only Saxony available
-              if(input$select_pathogen == "rsv_infection"){
+              if(input$select_pathogen == "rsv_infection_survstat"){
                 100000/subset(pop, location == "DE-SN" & age_group == ag)$population
               }else{
                 100000/subset(pop, location == loc & age_group == ag)$population
@@ -1002,11 +1006,17 @@ shinyServer(function(input, output, session) {
       label <- ifelse(input$select_language == "DE", 
                       "Krankheit / Indikator", 
                       "Disease / indicator")
-      choices <- c("Saisonale Influenza" = "seasonal_influenza",
-                   "RSV" = "rsv_infection",
-                   "Pneumokokken" = "pneumococcal_disease")
+      choices <- c("Saisonale Influenza (SurvStat)" = "seasonal_influenza_survstat",
+                   "RSV (SurvStat)" = "rsv_infection_survstat",
+                   "Pneumokokken (SurvStat)" = "pneumococcal_disease_survstat")# ,
+                   # "Saisonale Influenza (NRZ)" = "influenza_nrz",
+                   # "RSV (NRZ)" = "rsv_nrz")
       if(input$select_language == "EN"){
-        names(choices) <- c("Seasonal influenza", "RSV", "Pneumococcal disease")
+        names(choices) <- c("Seasonal influenza (SurvStat)",
+                            "RSV (SurvStat)",
+                            "Pneumococcal disease (SurvStat)") #,
+                            # "Seasonal influenza (NRZ)" = "influenza_nrz",
+                            # "RSV (NRZ)" = "rsv_nrz")
       }
       selected <- input$select_pathogen
       updateSelectInput(session, "select_pathogen",

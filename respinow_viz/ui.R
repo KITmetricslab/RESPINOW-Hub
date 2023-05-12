@@ -78,9 +78,12 @@ shinyUI(fluidPage(
             div(style="display: inline-block;vertical-align:top;", actionButton("skip_forward", ">")),
             selectizeInput("select_pathogen",
                            label = "Krankheit / Indikator",
-                           choices = c("Saisonale Influenza" = "seasonal_influenza",
-                                       "RSV" = "rsv_infection",
-                                       "Pneumokokken" = "pneumococcal_disease"), width = "200px"),
+                           choices = c("Saisonale Influenza (SurvStat)" = "seasonal_influenza_survstat",
+                                       "RSV (SurvStat)" = "rsv_infection_survstat",
+                                       "Pneumokokken (SurvStat)" = "pneumococcal_disease_survstat"),
+                                       # "Saisonale Influenza (NRZ)" = "influenza_nrz",
+                                       # "RSV (NRZ)" = "rsv_nrz"),
+                           width = "300px"),
             conditionalPanel("input.select_language == 'DE'",
                              p("Nowcasts werden täglich gegen 13:00 aktualisiert, können aber verspätet sein falls Daten des RKI verzögert veröffentlicht werden. Falls ein Nowcast für das gewählte Datum nicht vorliegt wird der aktuellste Nowcast der letzten 7 Tage gezeigt.",
                                style = "font-size:11px;")),
@@ -162,7 +165,7 @@ shinyUI(fluidPage(
         mainPanel(
             add_busy_spinner(spin = "fading-circle"),
             conditionalPanel("input.select_language == 'DE'",
-                             p(strong("Diese Seite ist derzeit in einer Pilotphase und dient nur zum wissenschaftlichen Austausch. Die Analysen werden noch nicht regelmäßig aktualisiert.")),
+                             p(strong("Diese Seite ist derzeit in einer Pilotphase und dient nur zum wissenschaftlichen Austausch. Die Analysen werden noch nicht regelmäßig aktualisiert. Derzeit sind die Nowcasts außerdem durch Meldeartefakte zu Weihnachten beeinträchtigt.")),
                              p("Diese Plattform vereint Nowcasts für ausgewählte epidemiologische Indikatoren zu respiratorischen Erregern in Deutschland. Sie ist Teil des Projektes", a('RespiNow', href="https://respinow.de/"), ". Künftig sollen verschiedene Verfahren zusammengeführt werden, derzeit ist jedoch erst ein Modell operationell."),
                              p("Alle derzeit dargestellten Daten stammen aus dem", a("RKI SurvStat", href = "https://survstat.rki.de/"), "Routineüberwachunssystem. Andere Datenquellen sollen demnächst hinzugefügt werden."),
                              p("Bei Unregelmäßigkeiten im Meldeprozess durch z.B. starke Belastung des Gesundheitssystems oder Feiertage kann die Verlässlichkeit der Nowcasts beeinträchtigt werden.")
@@ -187,7 +190,7 @@ shinyUI(fluidPage(
             conditionalPanel(paste("input.select_language == 'EN' &", disclaimer_necessary),
                              strong("Nowcasts are usually updated at around 1pm, but it seems that there has not yet been an update for today. An update may only become available tomorrow (this is an automated notification)."),
             ),
-            conditionalPanel("input.select_pathogen == 'rsv_infection'",
+            conditionalPanel("input.select_pathogen == 'rsv_infection_survstat'",
                              p(strong("Achtung: SurvStat-Daten für RSV sind nur für das Bundesland Sachsen verfügbar. / SurvStat data for RSV are only available for the state of Saxony."))),
             
             conditionalPanel("input.select_plot_type == 'interactive'",
