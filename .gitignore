@@ -1,3 +1,12 @@
+code/old/
+figures/old
+data/truth/old
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+.idea
+
 # History files
 .Rhistory
 .Rapp.history

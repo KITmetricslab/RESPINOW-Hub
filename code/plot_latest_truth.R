@@ -25,10 +25,16 @@ plot_truth <- function(disease = "Seasonal_Influenza", kind = "age"){
 }
 
 plot_truth(disease = "Seasonal_Influenza", kind = "age")
+ggsave("figures/seasonal_influenza_age.pdf", width = 200, height = 150, unit = "mm", device = "pdf")
+
 plot_truth(disease = "Seasonal_Influenza", kind = "states")
 
 plot_truth(disease = "RSV_Infection", kind = "age")
+ggsave("figures/rsv_infection_age.pdf", width = 200, height = 150, unit = "mm", device = "pdf")
+
 plot_truth(disease = "RSV_Infection", kind = "states")
 
 plot_truth(disease = "Pneumococcal_Disease", kind = "age")
+ggsave("figures/pneumococcal_disease_age.pdf", width = 200, height = 150, unit = "mm", device = "pdf")
+
 plot_truth(disease = "Pneumococcal_Disease", kind = "states")
