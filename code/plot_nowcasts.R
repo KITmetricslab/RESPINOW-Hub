@@ -1,4 +1,4 @@
-source("code/load_data.R")
+source("code/load_truth.R")
 Sys.setlocale("LC_ALL", "C")
 
 plot_nowcasts <- function(pathogen, model, horizon, retrospective,

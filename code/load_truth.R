@@ -35,7 +35,7 @@ load_survstat <- function(pathogen, as_of = Sys.Date()) {
 # df <- load_survstat("seasonal_influenza", "2023-01-15")
 
 
-load_truth <- function(pathogen){
+load_truth <- function(pathogen) {
   filepath <- paste0("data/Survstat/", pathogen, "_reporting_triangle_survstat_preprocessed.csv")
   df_truth <- load_file_as_of("KITmetricslab", "RESPINOW-Data", filepath, as_of = Sys.Date())
 
@@ -46,7 +46,7 @@ load_truth <- function(pathogen){
 }
 
 
-load_frozen_truth <- function(pathogen, delay = 0){
+load_frozen_truth <- function(pathogen, delay = 0) {
   filepath <- paste0("data/Survstat/", pathogen, "_reporting_triangle_survstat_preprocessed.csv")
   df_truth <- load_file_as_of("KITmetricslab", "RESPINOW-Data", filepath, as_of = Sys.Date())
 
