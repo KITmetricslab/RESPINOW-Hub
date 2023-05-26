@@ -42,7 +42,7 @@ load_truth <- function(pathogen){
   df_truth %>%
     rowwise() %>%
     mutate(truth = sum(across(value_0w:value_4w))) %>%
-    select(-(value_0w:`value_>10w`))
+    select(-c(value_0w:`value_>10w`, week, year))
 }
 
 
@@ -53,5 +53,5 @@ load_frozen_truth <- function(pathogen, delay = 0){
   df_truth %>%
     rowwise() %>%
     mutate(frozen_truth = sum(across(value_0w:paste0("value_", delay, "w")))) %>%
-    select(-(value_0w:`value_>10w`))
+    select(-c(value_0w:`value_>10w`, week, year))
 }
