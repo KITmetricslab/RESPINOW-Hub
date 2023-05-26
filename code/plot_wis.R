@@ -2,16 +2,6 @@ source("code/data_utils.R")
 source("code/load_truth.R")
 source("code/scoring_functions.R")
 
-TITLES <- setNames(
-  c("National level", "States", "Age groups"),
-  c("national", "states", "age")
-)
-
-PATHOGENS <- setNames(
-  c("Seasonal influenza", "RSV infection", "Pneumococcal disease"),
-  c("seasonal_influenza", "rsv_infection", "pneumococcal_disease")
-)
-
 plot_wis <- function(df, level = "national"){
   df_temp <- filter_data(df, level = {{ level }})
   df_temp <- compute_wis(df_temp)

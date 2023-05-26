@@ -1,3 +1,14 @@
+TITLES <- setNames(
+  c("National level", "States", "Age groups"),
+  c("national", "states", "age")
+)
+
+PATHOGENS <- setNames(
+  c("Seasonal influenza", "RSV infection", "Pneumococcal disease"),
+  c("seasonal_influenza", "rsv_infection", "pneumococcal_disease")
+)
+
+
 load_submissions <- function(pathogen, retrospective, add_truth) {
   path <- str_glue("submissions/{ifelse(retrospective, 'retrospective/', '')}{pathogen}/")
   models <- list.files(path)
