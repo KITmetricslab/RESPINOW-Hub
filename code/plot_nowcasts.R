@@ -76,4 +76,4 @@ plot_nowcasts <- function(pathogen, model, horizon, retrospective,
   return(p)
 }
 
-plot_nowcasts("seasonal_influenza", "KIT-KEW", 2, retrospective = TRUE, export = TRUE)
+plot_nowcasts("seasonal_influenza", "KIT-KEW", 0, retrospective = TRUE, export = FALSE)

@@ -2,9 +2,9 @@ source("code/data_utils.R")
 source("code/load_truth.R")
 source("code/scoring_functions.R")
 
-plot_wis <- function(df, level = "national"){
+plot_wis <- function(df, level = "national", by_horizion = FALSE){
   df_temp <- filter_data(df, level = {{ level }})
-  df_temp <- compute_wis(df_temp)
+  df_temp <- compute_wis(df_temp, by_horizion)
 
   scores <- df_temp %>%
     pivot_longer(cols = c(underprediction, spread, overprediction), names_to = "penalty")
@@ -44,3 +44,23 @@ df <- load_submissions("seasonal_influenza", retrospective = TRUE, add_truth = T
 plot_wis(df, "national")
 plot_wis(df, "states")
 plot_wis(df, "age")
+
+
+
+df_temp <- filter_data(df, level = "national")
+df_temp <- compute_wis(df_temp, by_horizon = TRUE)
+
+ggplot(df_temp, aes(x = horizon, y = score, color = model)) +
+  geom_line() + # size = 1
+  labs(
+    x = "Horizon (weeks)",
+    y = "Mean WIS",
+    color = "Model"
+  ) +
+  scale_x_continuous(
+    breaks = 0:5 * -5,
+    minor_breaks = -28:0
+  ) +
+  expand_limits(y = 0) +
+  theme_bw() +
+  theme(legend.position = "none")

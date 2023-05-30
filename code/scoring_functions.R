@@ -29,7 +29,7 @@ compute_scores <- function(df) {
 
 
 # Compute WIS decomposition
-compute_wis <- function(df) {
+compute_wis <- function(df, by_horizon = FALSE) {
   df_median <- df %>%
     filter(quantile == 0.5) %>%
     rename(med = value) %>%
@@ -54,15 +54,29 @@ compute_wis <- function(df) {
       ae = score(med, truth, type, quantile)
     )
 
-  df <- df %>%
-    group_by(model) %>%
-    summarize(
-      spread = mean(spread),
-      overprediction = mean(overprediction),
-      underprediction = mean(underprediction),
-      score = mean(score),
-      ae = mean(ae)
-    )
+  if (by_horizon) {
+    df <- df %>%
+      mutate(horizon = as.numeric(str_extract(target, "-?\\d+"))) %>%
+      group_by(model, horizon) %>%
+      summarize(
+        spread = mean(spread),
+        overprediction = mean(overprediction),
+        underprediction = mean(underprediction),
+        score = mean(score),
+        ae = mean(ae)
+      )
+  } else {
+    df <- df %>%
+      group_by(model) %>%
+      summarize(
+        spread = mean(spread),
+        overprediction = mean(overprediction),
+        underprediction = mean(underprediction),
+        score = mean(score),
+        ae = mean(ae)
+      )
+  }
+
 
   return(df)
 }
