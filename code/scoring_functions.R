@@ -63,7 +63,8 @@ compute_wis <- function(df, by_horizon = FALSE) {
         overprediction = mean(overprediction),
         underprediction = mean(underprediction),
         score = mean(score),
-        ae = mean(ae)
+        ae = mean(ae),
+        .groups = "drop"
       )
   } else {
     df <- df %>%
@@ -73,7 +74,8 @@ compute_wis <- function(df, by_horizon = FALSE) {
         overprediction = mean(overprediction),
         underprediction = mean(underprediction),
         score = mean(score),
-        ae = mean(ae)
+        ae = mean(ae),
+        .groups = "drop"
       )
   }
 

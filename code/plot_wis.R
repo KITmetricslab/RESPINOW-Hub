@@ -2,42 +2,63 @@ source("code/data_utils.R")
 source("code/load_truth.R")
 source("code/scoring_functions.R")
 
-plot_wis <- function(df, level = "national", by_horizion = FALSE){
+plot_wis <- function(df, level = "national", by_horizion = FALSE) {
   df_temp <- filter_data(df, level = {{ level }})
   df_temp <- compute_wis(df_temp, by_horizion)
 
-  scores <- df_temp %>%
-    pivot_longer(cols = c(underprediction, spread, overprediction), names_to = "penalty")
+  if (by_horizion) {
+    ggplot(df_temp, aes(x = horizon, y = score, color = model)) +
+      geom_line() + # size = 1
+      labs(
+        title = paste(PATHOGENS[unique(df$pathogen)], tolower(TITLES[level]), sep = ": "),
+        x = "Horizon (weeks)",
+        y = "Mean WIS",
+        color = "Model"
+      ) +
+      scale_x_continuous(breaks = 0:4 * -1) +
+      expand_limits(y = 0) +
+      theme_bw() +
+      theme(
+        legend.position = "right",
+        plot.title = element_text(hjust = 0.5)
+      )
+  } else {
+    scores <- df_temp %>%
+      pivot_longer(cols = c(underprediction, spread, overprediction), names_to = "penalty")
 
-  ggplot(scores, aes(x = model)) +
-    geom_point(data = df_temp, aes(x = model, y = ae, fill = model), shape = 23, size = 1) +
-    geom_bar(aes(y = value), fill = "white", stat = "sum", show.legend = FALSE) + # so you can't see through bars
-    geom_bar(aes(y = value, fill = model, alpha = penalty, color = model), size = 0.1, stat = "identity") +
-    geom_label(
-      data = df_temp,
-      aes(y = 0.5 * score, label = sprintf("%0.1f", round(score, digits = 1))),
-      fill = "white", alpha = 1, hjust = 0.5,
-      label.r = unit(0.25, "lines"),
-      size = 8 / .pt,
-      label.padding = unit(0.15, "lines")
-    ) +
-    scale_alpha_manual(
-      values = c(0.5, 0.2, 1), labels = c("Overprediction", "Spread", "Underprediction"),
-      guide = guide_legend(reverse = TRUE, title.position = "top", title.hjust = 0.5)
-    ) +
-    guides(color = "none", fill = "none") +
-    labs(
-      title = paste(PATHOGENS[unique(df$pathogen)], tolower(TITLES[level]), sep = ": "),
-      x = NULL,
-      y = "Mean WIS / AE",
-      color = "Model",
-      alpha = "Decomposition of WIS"
-    ) +
-    coord_flip() +
-    theme_bw() +
-    theme(legend.position = "bottom",
-          plot.title = element_text(hjust = 0.5))
+    ggplot(scores, aes(x = model)) +
+      geom_point(data = df_temp, aes(x = model, y = ae, fill = model), shape = 23, size = 1) +
+      geom_bar(aes(y = value), fill = "white", stat = "sum", show.legend = FALSE) + # so you can't see through bars
+      geom_bar(aes(y = value, fill = model, alpha = penalty, color = model), size = 0.1, stat = "identity") +
+      geom_label(
+        data = df_temp,
+        aes(y = 0.5 * score, label = sprintf("%0.1f", round(score, digits = 1))),
+        fill = "white", alpha = 1, hjust = 0.5,
+        label.r = unit(0.25, "lines"),
+        size = 8 / .pt,
+        label.padding = unit(0.15, "lines")
+      ) +
+      scale_alpha_manual(
+        values = c(0.5, 0.2, 1), labels = c("Overprediction", "Spread", "Underprediction"),
+        guide = guide_legend(reverse = TRUE, title.position = "top", title.hjust = 0.5)
+      ) +
+      guides(color = "none", fill = "none") +
+      labs(
+        title = paste(PATHOGENS[unique(df$pathogen)], tolower(TITLES[level]), sep = ": "),
+        x = NULL,
+        y = "Mean WIS / AE",
+        color = "Model",
+        alpha = "Decomposition of WIS"
+      ) +
+      coord_flip() +
+      theme_bw() +
+      theme(
+        legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5)
+      )
+  }
 }
+
 
 df <- load_submissions("seasonal_influenza", retrospective = TRUE, add_truth = TRUE)
 
@@ -45,22 +66,6 @@ plot_wis(df, "national")
 plot_wis(df, "states")
 plot_wis(df, "age")
 
-
-
-df_temp <- filter_data(df, level = "national")
-df_temp <- compute_wis(df_temp, by_horizon = TRUE)
-
-ggplot(df_temp, aes(x = horizon, y = score, color = model)) +
-  geom_line() + # size = 1
-  labs(
-    x = "Horizon (weeks)",
-    y = "Mean WIS",
-    color = "Model"
-  ) +
-  scale_x_continuous(
-    breaks = 0:5 * -5,
-    minor_breaks = -28:0
-  ) +
-  expand_limits(y = 0) +
-  theme_bw() +
-  theme(legend.position = "none")
+plot_wis(df, "national", by_horizion = TRUE)
+plot_wis(df, "states", by_horizion = TRUE)
+plot_wis(df, "age", by_horizion = TRUE)
