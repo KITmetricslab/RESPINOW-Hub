@@ -1,6 +1,6 @@
 # generate plot data by date and pathogen
 
-files <- list.files("data-processed_retrospective",
+files <- list.files("submissions/retrospective/seasonal_influenza/",
                     recursive = TRUE, full.names = FALSE, include.dirs = FALSE)
 files <- sapply(strsplit(files, split = "/"), FUN = function(x) x[2])
 files <- files[grepl("20", files) & grepl(".csv", files)]
@@ -15,14 +15,14 @@ write.csv(df_forecast_dates, file = "respinow_viz/plot_data/available_dates.csv"
 path_data <- "../RESPINOW/RESPINOW-Data"
 
 
-models <- list.dirs("data-processed_retrospective", recursive = FALSE, full.names = FALSE)
+models <- list.dirs("submissions/retrospective/seasonal_influenza/", recursive = FALSE, full.names = FALSE)
 
 
 for(i in seq_along(forecast_dates)){
   d <- forecast_dates[i]
   all_forecasts <- NULL
   for(mod in models){
-    fl <- paste0("data-processed_retrospective/", mod, "/", d, "-", mod, ".csv")
+    fl <- paste0("submissions/retrospective/seasonal_influenza/", mod, "/", d, "-", mod, ".csv")
     if(file.exists(fl)){
       forecasts_temp <- read.csv(fl)
       forecasts_temp$X <- NULL # remove stray leading column with row names if present
