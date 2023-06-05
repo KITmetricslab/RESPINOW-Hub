@@ -1,3 +1,6 @@
-model
+models
 KIT-simple_nowcast
 KIT-KEW
+KIT-epinowcast
+MeanEnsemble
+MedianEnsemble

@@ -1,9 +1,9 @@
 # generate plot data by date and pathogen
 
-files <- list.files("submissions/retrospective/seasonal_influenza/",
-                    recursive = TRUE, full.names = FALSE, include.dirs = FALSE)
-files <- sapply(strsplit(files, split = "/"), FUN = function(x) x[2])
-files <- files[grepl("20", files) & grepl(".csv", files)]
+files <- list.files("submissions/retrospective/", pattern = "*.csv", recursive = TRUE)
+
+models <- unique(sapply(strsplit(files, split = "/"), FUN = function(x) x[2]))
+files <- sapply(strsplit(files, split = "/"), FUN = function(x) x[3])
 
 date_from_filename <- function(file) as.Date(substr(file, 1, 10))
 
@@ -11,47 +11,51 @@ forecast_dates <- date_from_filename(files)
 df_forecast_dates <- data.frame(date = forecast_dates)
 write.csv(df_forecast_dates, file = "respinow_viz/plot_data/available_dates.csv")
 
+write.csv(data.frame(models), file = "respinow_viz/plot_data/list_teams.csv",
+          row.names = FALSE, quote = FALSE)
+
+
 # path where the data repository can be found:
 path_data <- "../RESPINOW/RESPINOW-Data"
 
-
-models <- list.dirs("submissions/retrospective/seasonal_influenza/", recursive = FALSE, full.names = FALSE)
-
+diseases <- c("seasonal_influenza", "rsv_infection", "pneumococcal_disease")
 
 for(i in seq_along(forecast_dates)){
   d <- forecast_dates[i]
   all_forecasts <- NULL
   for(mod in models){
-    fl <- paste0("submissions/retrospective/seasonal_influenza/", mod, "/", d, "-", mod, ".csv")
-    if(file.exists(fl)){
-      forecasts_temp <- read.csv(fl)
-      forecasts_temp$X <- NULL # remove stray leading column with row names if present
-      forecasts_temp <- subset(forecasts_temp, type == "mean" | quantile %in% c(0.025, 0.25, 0.5, 0.75, 0.975))
-      # handle means:
-      forecasts_temp$quantile[forecasts_temp$type == "mean"] <- NA
-      # remove type column
-      forecasts_temp$type <- NULL
-      # bring to wide format
-      forecasts_temp <- reshape(forecasts_temp, direction = "wide", timevar = "quantile",
-                                idvar = c("location", "age_group", "forecast_date", "target", "pathogen", "target_end_date"))
-      # handle colnames (mean separately)
-      colnames(forecasts_temp) <- gsub("value.NA", "mean", colnames(forecasts_temp))
-      colnames(forecasts_temp) <- gsub("value.", "q", colnames(forecasts_temp))
-      # add column for model:
-      forecasts_temp$model <- mod
-      # additional columns:
-      forecasts_temp$target_type <- sapply(strsplit(forecasts_temp$target, split = "ahead "), FUN = function(x) x[2])
-      forecasts_temp$retrospective <- FALSE
-      # re-order:
-      forecasts_temp <- forecasts_temp[, c("model", "target_type", "forecast_date", "target_end_date",
-                                           "location", "age_group", "pathogen",
-                                           "mean", "q0.025", "q0.25", "q0.5", "q0.75", "q0.975",
-                                           "retrospective")]
-      # append:
-      if(is.null(all_forecasts)){
-        all_forecasts <- forecasts_temp
-      }else{
-        all_forecasts <- rbind(all_forecasts, forecasts_temp)
+    for(dis in diseases){
+      fl <- paste0("submissions/retrospective/", dis, "/", mod, "/", d, "-", mod, ".csv")
+      if(file.exists(fl)){
+        forecasts_temp <- read.csv(fl)
+        forecasts_temp$X <- NULL # remove stray leading column with row names if present
+        forecasts_temp <- subset(forecasts_temp, type == "mean" | quantile %in% c(0.025, 0.25, 0.5, 0.75, 0.975))
+        # handle means:
+        forecasts_temp$quantile[forecasts_temp$type == "mean"] <- NA
+        # remove type column
+        forecasts_temp$type <- NULL
+        # bring to wide format
+        forecasts_temp <- reshape(forecasts_temp, direction = "wide", timevar = "quantile",
+                                  idvar = c("location", "age_group", "forecast_date", "target", "pathogen", "target_end_date"))
+        # handle colnames (mean separately)
+        colnames(forecasts_temp) <- gsub("value.NA", "mean", colnames(forecasts_temp))
+        colnames(forecasts_temp) <- gsub("value.", "q", colnames(forecasts_temp))
+        # add column for model:
+        forecasts_temp$model <- mod
+        # additional columns:
+        forecasts_temp$target_type <- sapply(strsplit(forecasts_temp$target, split = "ahead "), FUN = function(x) x[2])
+        forecasts_temp$retrospective <- FALSE
+        # re-order:
+        forecasts_temp <- forecasts_temp[, c("model", "target_type", "forecast_date", "target_end_date",
+                                             "location", "age_group", "pathogen",
+                                             "mean", "q0.025", "q0.25", "q0.5", "q0.75", "q0.975",
+                                             "retrospective")]
+        # append:
+        if(is.null(all_forecasts)){
+          all_forecasts <- forecasts_temp
+        }else{
+          all_forecasts <- rbind(all_forecasts, forecasts_temp)
+        }
       }
     }
   }
