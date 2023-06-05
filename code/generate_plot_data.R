@@ -9,10 +9,12 @@ date_from_filename <- function(file) as.Date(substr(file, 1, 10))
 
 forecast_dates <- date_from_filename(files)
 df_forecast_dates <- data.frame(date = forecast_dates)
-write.csv(df_forecast_dates, file = "respinow_viz/plot_data/available_dates.csv")
+write.csv(df_forecast_dates, file = "respinow_viz/plot_data/available_dates.csv",
+          row.names = FALSE, quote = FALSE)
 
 write.csv(data.frame(models), file = "respinow_viz/plot_data/list_teams.csv",
           row.names = FALSE, quote = FALSE)
+
 
 
 # path where the data repository can be found:
@@ -59,14 +61,17 @@ for(i in seq_along(forecast_dates)){
       }
     }
   }
-  write.csv(all_forecasts, file = paste0("respinow_viz/plot_data/", d, "_forecast_data.csv"))
+  all_forecasts$pathogen <- paste0(all_forecasts$pathogen, "_survstat")
+  write.csv(all_forecasts, file = paste0("respinow_viz/plot_data/", d, "_forecast_data.csv"),
+            row.names = FALSE, quote = FALSE)
 }
 
 # generate csv on available plot data
 available_plot_data <- list.files("respinow_viz/plot_data")
 available_plot_data <- available_plot_data[grepl("forecast_data", available_plot_data)]
 df_available_plot_data <- data.frame(file = available_plot_data)
-write.csv(df_available_plot_data, file = "respinow_viz/plot_data/list_plot_data.csv")
+write.csv(df_available_plot_data, file = "respinow_viz/plot_data/list_plot_data.csv",
+          row.names = FALSE, quote = FALSE)
 
 # copy reorting triangles
 diseases_survstat <- c("rsv_infection", "seasonal_influenza", "pneumococcal_disease")
