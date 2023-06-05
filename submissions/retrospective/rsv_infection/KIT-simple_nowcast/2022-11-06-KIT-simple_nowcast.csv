@@ -1,12 +1,12 @@
 location,age_group,forecast_date,target_end_date,target,type,quantile,value,pathogen
 DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,mean,NA,49,rsv_infection
-DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.025,44,rsv_infection
+DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.025,43,rsv_infection
 DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.1,45,rsv_infection
-DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.25,47,rsv_infection
-DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.5,49,rsv_infection
-DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.75,51,rsv_infection
-DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.9,54,rsv_infection
-DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.975,57,rsv_infection
+DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.25,46,rsv_infection
+DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.5,48,rsv_infection
+DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.75,52,rsv_infection
+DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.9,55,rsv_infection
+DE,00-04,2022-11-06,2022-11-06,0 week ahead inc case,quantile,0.975,60,rsv_infection
 DE,00-04,2022-11-06,2022-10-30,-1 week ahead inc case,mean,NA,39,rsv_infection
 DE,00-04,2022-11-06,2022-10-30,-1 week ahead inc case,quantile,0.025,39,rsv_infection
 DE,00-04,2022-11-06,2022-10-30,-1 week ahead inc case,quantile,0.1,39,rsv_infection

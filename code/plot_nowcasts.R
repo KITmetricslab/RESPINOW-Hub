@@ -3,7 +3,7 @@ Sys.setlocale("LC_ALL", "C")
 
 plot_nowcasts <- function(pathogen, model, horizon, retrospective,
                           location = "DE", age_group = "00+", export = FALSE) {
-  target <- str_glue("{ifelse(horizon == '-0', '0', -horizon)} week ahead inc hosp")
+  target <- str_glue("{ifelse(horizon == '-0', '0', -horizon)} week ahead inc case")
   path <- str_glue("submissions/{ifelse(retrospective, 'retrospective/', '')}{pathogen}/{model}/")
 
   # load final and frozen truth
@@ -76,4 +76,4 @@ plot_nowcasts <- function(pathogen, model, horizon, retrospective,
   return(p)
 }
 
-plot_nowcasts("seasonal_influenza", "KIT-KEW", 0, retrospective = TRUE, export = FALSE)
+plot_nowcasts("seasonal_influenza", "KIT-simple_nowcast", 0, retrospective = TRUE, export = TRUE)
