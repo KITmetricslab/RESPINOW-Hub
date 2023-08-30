@@ -35,7 +35,7 @@ jobs:
         git remote add origin https://${AUTH}@github.com/KITmetricslab/RESPINOW-Hub.git > /dev/null 2>&1
         git pull origin main
         git add --all
-        git commit -m "Update reporting triangles"
+        git commit --allow-empty -m "Update reporting triangles"
         
     - name: Push changes
       run: |
