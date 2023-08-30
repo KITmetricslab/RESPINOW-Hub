@@ -1,30 +1,29 @@
-name: "compute-reporting-triangles"
+name: "get-reporting-triangles"
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 4 * * 1"
+  # schedule:
+  #   - cron: "0 4 * * 1"
   
 
 jobs:
-  build:
+  get-reporting-triangles:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@main
 
     - name: Setup Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
     - name: Install requirements
       run: |
-        pip3 install -r .github/workflows/requirements.txt
+        pip install pandas
              
     - name: Create reporting triangle
       run:  |
         cd ./code
-        python3 ./reporting_triangle.py
-        python3 ./preprocess_reporting_triangle.py
+        python ./get_reporting_triangles.py
         
     - name: Commit files
       env:
@@ -36,7 +35,7 @@ jobs:
         git remote add origin https://${AUTH}@github.com/KITmetricslab/RESPINOW-Hub.git > /dev/null 2>&1
         git pull origin main
         git add --all
-        git commit --allow-empty -m "Update reporting triangles"
+        git commit -m "Update reporting triangles"
         
     - name: Push changes
       run: |
