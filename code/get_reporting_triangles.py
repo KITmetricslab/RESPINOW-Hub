@@ -32,14 +32,14 @@ path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/
 
 file_dict = {
     'influenza_reporting_triangle.csv' : 'reporting_triangle-nrz-influenza.csv',
-    'rsv_reporting_triangle.csv' : 'reporting_triangle-nrz-rsv.csv'
+    'influenza_reporting_triangle_preprocessed.csv' : 'reporting_triangle-nrz-influenza-preprocessed.csv',
+    'rsv_reporting_triangle.csv' : 'reporting_triangle-nrz-rsv.csv',
+    'rsv_reporting_triangle_preprocessed.csv' : 'reporting_triangle-nrz-rsv-preprocessed.csv'
 }
 
 for i in file_dict.keys():
     print(i)
-    if 'pneumococcal' in i:
-        target_path = '../data/nrz/pneumococcal/'
-    elif 'rsv' in i:
+    if 'rsv' in i:
         target_path = '../data/nrz/rsv/'
     elif 'influenza' in i:
         target_path = '../data/nrz/influenza/'
@@ -50,8 +50,16 @@ for i in file_dict.keys():
 
 # ICOSARI
 
-path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/SARI/SARI_reporting_triangle.csv'
-target_path = '../data/icosari/sari/reporting_triangle-icosari-sari.csv'
+path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/SARI/'
 
-df = pd.read_csv(path)
-df.to_csv(target_path, index = False)
+file_dict = {
+    'SARI_reporting_triangle.csv' : 'reporting_triangle-icosari-sari.csv',
+    'SARI_reporting_triangle_preprocessed.csv' : 'reporting_triangle-icosari-sari-preprocessed.csv'
+}
+
+for i in file_dict.keys():
+    print(i)
+    target_path = '../data/icosari/sari/'
+    
+    df = pd.read_csv(path + i)
+    df.to_csv(target_path + file_dict[i], index = False)
