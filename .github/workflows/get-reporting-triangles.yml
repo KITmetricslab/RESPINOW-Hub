@@ -20,7 +20,7 @@ jobs:
       run: |
         pip install pandas
              
-    - name: Create reporting triangle
+    - name: Get reporting triangle
       run:  |
         cd ./code
         python ./get_reporting_triangles.py
