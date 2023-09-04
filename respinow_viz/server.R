@@ -31,15 +31,15 @@ source("functions.R")
 if(local){
   # check which forecast files are available:
   # simple when done locally:
-  forecast_files <- list.files("plot_data")
+  forecast_files <- list.files("plot_data/submissions")
   # get model names:
-  dat_models <- read.csv("plot_data/list_teams.csv")
+  dat_models <- read.csv("plot_data/other/list_models.csv")
   # get population sizes:
-  pop <- read.csv("plot_data/population_sizes.csv")
-  # vector of Mondays available in truth data:
-  available_dates <- sort(as.Date(read.csv("plot_data/available_dates.csv")$date))
+  pop <- read.csv("plot_data/other/population_sizes.csv")
+  # available versions of truth_data:
+  available_data_versions <- sort(read.csv("plot_data/other/list_data_versions.csv", colClasses = c("date" = "Date"))$date)
   # available plot_data with nowcasts:
-  available_nowcast_dates <- date_from_filename(sort(read.csv("plot_data/list_plot_data.csv")$file))
+  available_nowcast_dates <- date_from_filename(sort(read.csv("plot_data/other/list_plot_data.csv")$file))
 }else{
   # check which forecast files are available:
   # via GitHub Api when not local
@@ -47,41 +47,26 @@ if(local){
   stop_for_status(req)
   filelist <- unlist(lapply(content(req)$tree, "[", "path"), use.names = F)
   forecast_files <- grep("forecast_data.csv", filelist, value = TRUE, fixed = TRUE)
-  forecast_files <- basename(grep("nowcast_viz_de/plot_data/20", forecast_files, value = TRUE, fixed = TRUE))
+  forecast_files <- basename(grep("nowcast_viz_de/plot_data/submissions/20", forecast_files, value = TRUE, fixed = TRUE))
   # get model names:
-  dat_models <- read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/list_teams.csv")
+  dat_models <- read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/other/list_models.csv")
   # get population sizes:
-  pop <- read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/population_sizes.csv")
+  pop <- read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/other/population_sizes.csv")
   pop$X <- NULL
   # vector of Mondays available in truth data:
-  available_dates <- sort(as.Date(read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/available_dates.csv")$date))
+  available_data_versions <- sort(as.Date(read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/other/list_dates.csv")$date))
   # available plot_data with nowcasts:
-  available_nowcast_dates <- date_from_filename(sort(read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/list_plot_data.csv")$file))
+  available_nowcast_dates <- date_from_filename(sort(read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/other/list_plot_data.csv")$file))
 }
 
 # map between codes for federal states and their human-readable names
-bundeslaender <- c("Alle (Deutschland)" = "DE",
-                   "Baden-Württemberg" = "DE-BW",
-                   "Bayern" = "DE-BY",
-                   "Berlin" = "DE-BE",
-                   "Brandenburg" = "DE-BB",
-                   "Bremen" = "DE-HB",
-                   "Hamburg" = "DE-HH",
-                   "Hessen" = "DE-HE",
-                   "Mecklenburg-Vorpommern" = "DE-MV",
-                   "Niedersachsen" = "DE-NI",
-                   "Nordrhein-Westfalen" = "DE-NW",
-                   "Rheinland-Pfalz" = "DE-RP",
-                   "Saarland" = "DE-SL",
-                   "Sachsen" = "DE-SN",
-                   "Sachsen-Anhalt" = "DE-ST",
-                   "Schleswig-Holstein" = "DE-SH",
-                   "Thüringen" = "DE-TH")
+list_locations <- read.csv("plot_data/other/list_locations_survstat.csv")
+locations <- list_locations$location
+names(locations) <- list_locations$location_long
 
 # names of diseases:
-diseases <- c("rsv_infection_survstat", "seasonal_influenza_survstat", "pneumococcal_disease_survstat"#,
-              #"rsv_nrz", "influenza_nrz"
-              )
+diseases <- c("survstat-rsv", "survstat-influenza", "survstat-pneumococcal",
+              "nrz-rsv", "nrz-influenza", "icosari-sari")
 
 # names of models:
 models <- sort(dat_models$model)
@@ -109,15 +94,15 @@ cols_transp <- gsub(")", ", 0.5)", cols_transp, fixed = TRUE)
 
 # get truth data in format which allows for re-construction of old data versions
 path_truth <- ifelse(local,
-                     "plot_data/",
+                     "plot_data/truth/",
                      "https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/data-truth/COVID-19/COVID-19_hospitalizations.csv")
 
 reporting_triangles <- list()
 # to read out the most recent date in the truth data:
 current_date <- as.Date("1970-01-01")
 for (disease in diseases) {
-  reporting_triangles[[disease]] <- read.csv(paste0(path_truth, "truth_", disease,
-                                          "_preprocessed.csv"),
+  reporting_triangles[[disease]] <- read.csv(paste0(path_truth, "reporting_triangle-", disease,
+                                          "-preprocessed.csv"),
                                    colClasses = c(date = "Date"))
   reporting_triangles[[disease]] <- reporting_triangles[[disease]][order(reporting_triangles[[disease]]$date), ]
   current_date <- max(c(current_date, reporting_triangles[[disease]]$date), na.rm = TRUE)
@@ -126,7 +111,7 @@ for (disease in diseases) {
 # get simple time series for dates before time-stamped versions are available
 previous_data <- list()
 for (disease in diseases) {
-  previous_data[[disease]] <- read.csv(paste0(path_truth, "latest_truth_", disease, ".csv"),
+  previous_data[[disease]] <- read.csv(paste0(path_truth, "latest_data-", disease, ".csv"),
                                              colClasses = c(date = "Date"))
   previous_data[[disease]] <- subset(previous_data[[disease]], date <= min(reporting_triangles[[disease]]$date))
   # make sure rows are ordered by date:
@@ -161,7 +146,8 @@ shinyServer(function(input, output, session) {
     isolate({
       if(!is.null(input$select_date) & length(input$select_date) > 0 & input$skip_backward > 0){
         new_date <- as.Date(input$select_date) - 7
-        if(new_date %in% available_dates){
+        if(new_date %in% available_data_versions){
+          
           updateSelectInput(session = session, inputId = "select_date",
                             selected = new_date)
         }
@@ -175,7 +161,7 @@ shinyServer(function(input, output, session) {
     isolate({
       if(!is.null(input$select_date) & length(input$select_date) > 0 & input$skip_forward > 0){
         new_date <- as.Date(input$select_date) + 7
-        if(new_date %in% available_dates){
+        if(new_date %in% available_data_versions){
           updateSelectInput(session = session, inputId = "select_date",
                             selected = new_date)
         }
@@ -193,12 +179,12 @@ shinyServer(function(input, output, session) {
       dats <- as.character(as.Date(input$select_date)) #  + (-2:2)
       for (dat in dats) {
         # read in file if available, set NULL otherwise
-        file_name <- paste0(dat, "_forecast_data.csv")
+        file_name <- paste0(dat, ".csv")
         if(file_name %in% forecast_files){
           if(local){
-            path_forecast_files <- "plot_data/"
+            path_forecast_files <- "plot_data/submissions/"
           }else{
-            path_forecast_files <- "https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/"
+            path_forecast_files <- "https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/submissions"
           }
           temp <- read.csv(paste0(path_forecast_files, file_name),
                            colClasses = c("retrospective" = "logical",
@@ -206,8 +192,6 @@ shinyServer(function(input, output, session) {
                                           "target_end_date" = "Date"))
           # replace missing medians by means:
           temp$q0.5[is.na(temp$q0.5)] <- temp$mean[is.na(temp$q0.5)]
-          # pull data source into column pathogen:
-          temp$pathogen <- paste(temp$pathogen, temp$data_source, sep = "_")
         }else{
           temp <- NULL
         }
@@ -253,11 +237,18 @@ shinyServer(function(input, output, session) {
                                  age_group == input$select_age)
     previous_data_temp <- previous_data_temp[, c("date", "value")]
 
+    # determine max_lag:
+    max_lag <- NULL
+    if(input$select_max_lag == "4"){
+      max_lag <- 4
+    }
+    
     # truth data as of selected date:
     old_truth <- truth_as_of(dat_truth = reporting_triangles[[input$select_pathogen]],
                              age_group = input$select_age,
                              location = input$select_state,
-                             date = input$select_date)
+                             date = input$select_date,
+                             max_lag = max_lag)
     # add previous data:
     old_truth <- rbind(previous_data_temp, old_truth)
 
@@ -268,7 +259,8 @@ shinyServer(function(input, output, session) {
     current_truth <- truth_as_of(dat_truth = reporting_triangles[[input$select_pathogen]],
                                  age_group = input$select_age,
                                  location = input$select_state,
-                                 date = current_date)
+                                 date = current_date,
+                                 max_lag)
     # add previous data:
     current_truth <- rbind(previous_data_temp, current_truth)
 
@@ -312,7 +304,6 @@ shinyServer(function(input, output, session) {
                            model == mod &
                            location == input$select_state &
                            pathogen == input$select_pathogen)
-
           # remove retrospective if requested:
           if(!input$show_retrospective_nowcasts){
             subs <- subset(subs, !retrospective)
@@ -392,7 +383,7 @@ shinyServer(function(input, output, session) {
     isolate({
 
       # compute default zoom (for some reason on millisecond scale):
-      min_Date <- Sys.Date() - 45
+      min_Date <- Sys.Date() - 70
       min_Date_ms <- as.numeric(difftime(min_Date, "1970-01-01")) * (24*60*60*1000)
       max_Date <- Sys.Date() + 5
       max_Date_ms <- as.numeric(difftime(max_Date, "1970-01-01")) * (24*60*60*1000)
@@ -420,7 +411,7 @@ shinyServer(function(input, output, session) {
         # layout(xaxis = list(rangeslider = list(type = "date", thickness = 0.08))) %>%
         add_lines(x = plot_data$old_truth$x, # trace for truth data as of selected date
                   y = plot_data$old_truth$y,
-                  name = paste("Datenstand", current_date),
+                  name = paste("Datenstand", input$select_date),
                   hovertemplate = "<b>%{y}</b>",
                   line = list(color = 'rgb(0.5, 0.5, 0.5)')) %>%
         add_lines(x = plot_data$current_truth$x, # trace for most current truth data
@@ -590,7 +581,7 @@ shinyServer(function(input, output, session) {
       plotlyProxyInvoke(myPlotProxy, "restyle",
                         list(name = ifelse(input$select_language == "DE",
                                            paste("Datenstand", current_date),
-                                           paste("data as of", current_date))),
+                                           paste("data as of", input$select_date))),
                         list(plot_data$mapping[["current_truth"]]))
     })
 
@@ -641,7 +632,7 @@ shinyServer(function(input, output, session) {
                     "Datenstand am Tag des Nowcasts",
                     "Nowcast (Unsicherheitsintervall)",
                     "Korrekturfaktor",
-                    "% Veränderung zur Vorwoche"
+                    "% Ver??nderung zur Vorwoche"
           )
         }else{
           coln <- c(ifelse(input$select_stratification == "state", "Bundesland", "Age group"),
@@ -659,7 +650,7 @@ shinyServer(function(input, output, session) {
                     options = list(dom = 'tB', pageLength = 17, buttons = c('csv')))
         })
       }else{ # if no data available: show place holder
-        output$table <- DT::renderDT(data.frame("Error" = "Keine Nowcasts verfügbar für das gewählte Meldedatum."))
+        output$table <- DT::renderDT(data.frame("Error" = "Keine Nowcasts verf??gbar f??r das gew??hlte Meldedatum."))
       }
 
     }else{
@@ -724,16 +715,24 @@ shinyServer(function(input, output, session) {
             }else{
               1
             }
+          
+          # determine max_lag:
+          max_lag <- NULL
+          if(input$select_max_lag == "4"){
+            max_lag <- 4
+          }
 
           # current truth data:
           current_truth <- truth_as_of(reporting_triangles[[input$select_pathogen]], age_group = ag,
                                        location = loc,
-                                       date = current_date)
+                                       date = current_date,
+                                       max_lag = max_lag)
           current_truth$value <- pop_factor*current_truth$value
           # truth data at time of nowcast:
           old_truth <- truth_as_of(reporting_triangles[[input$select_pathogen]], age_group = ag,
                                    location = loc,
-                                   date = input$select_date)
+                                   date = input$select_date,
+                                   max_lag = max_lag)
           old_truth$value <- pop_factor*old_truth$value
 
           # the nowcasts to display:
@@ -766,7 +765,7 @@ shinyServer(function(input, output, session) {
                type = "l", log = ifelse(input$select_log == "log scale", "y", ""))
           # plot title
           main <- ifelse(input$select_stratification == "state",
-                         names(bundeslaender)[bundeslaender == loc],
+                         names(locations)[locations == loc],
                          ag)
           title(main)
 
@@ -906,7 +905,7 @@ shinyServer(function(input, output, session) {
       )
 
       # Type of point nowcast
-      label <- ifelse(input$select_language == "DE", "Punktschätzer", "Point estimate")
+      label <- ifelse(input$select_language == "DE", "Punktsch??tzer", "Point estimate")
       choices <- if(input$select_language == "DE"){
         c("Median" = "median", "Erwartungswert" = "mean")
       }else{
@@ -955,7 +954,7 @@ shinyServer(function(input, output, session) {
       # log scale
       label <- NULL
       choices <- if(input$select_language == "DE"){
-        c("natürliche Skala" = "natural scale",
+        c("nat??rliche Skala" = "natural scale",
           "log-Skala"  ="log scale")
       }else{
         c("natural scale" = "natural scale",
@@ -1008,17 +1007,19 @@ shinyServer(function(input, output, session) {
       label <- ifelse(input$select_language == "DE",
                       "Krankheit / Indikator",
                       "Disease / indicator")
-      choices <- c("Saisonale Influenza (SurvStat)" = "seasonal_influenza_survstat",
-                   "RSV (SurvStat)" = "rsv_infection_survstat",
-                   "Pneumokokken (SurvStat)" = "pneumococcal_disease_survstat")# ,
-                   # "Saisonale Influenza (NRZ)" = "influenza_nrz",
-                   # "RSV (NRZ)" = "rsv_nrz")
+      choices <- c("Saisonale Influenza (SurvStat)" = "survstat-influenza",
+                   "RSV (SurvStat)" = "survstat-rsv",
+                   "Pneumokokken (SurvStat)" = "survstat-pneumococcal",
+                   "Saisonale Influenza (NRZ)" = "nrz-influenza",
+                   "RSV (NRZ)" = "nrz-rsv",
+                   "SARI (ICOSARI)" = "icosari-sari")
       if(input$select_language == "EN"){
         names(choices) <- c("Seasonal influenza (SurvStat)",
                             "RSV (SurvStat)",
-                            "Pneumococcal disease (SurvStat)") #,
-                            # "Seasonal influenza (NRZ)" = "influenza_nrz",
-                            # "RSV (NRZ)" = "rsv_nrz")
+                            "Pneumococcal disease (SurvStat)",
+                            "Seasonal influenza (NRZ)" = "nrz-influenza",
+                            "RSV (NRZ)" = "nrz-rsv",
+                            "SARI (ICOSARI)" = "icosari-sari")
       }
       selected <- input$select_pathogen
       updateSelectInput(session, "select_pathogen",
@@ -1029,7 +1030,7 @@ shinyServer(function(input, output, session) {
 
       # Show retrospective nowcasts
       label <- ifelse(input$select_language == "DE",
-                      "Nachträglich erstellte Nowcasts zeigen",
+                      "Nachtr??glich erstellte Nowcasts zeigen",
                       "Show retrospective nowcasts")
       selected <- input$show_retrospective_nowcasts
       updateCheckboxInput(session, "show_retrospective_nowcasts",
@@ -1039,7 +1040,7 @@ shinyServer(function(input, output, session) {
 
       # Use same ylim in overview
       label <- ifelse(input$select_language == "DE",
-                      "Einheitliche y-Achsenabschnitte in Übersicht",
+                      "Einheitliche y-Achsenabschnitte in ??bersicht",
                       "Uniform y-axis ranges in overview")
       selected <- input$use_same_ylim
       updateCheckboxInput(session, "use_same_ylim",
@@ -1049,7 +1050,7 @@ shinyServer(function(input, output, session) {
 
       # Show summary table
       label <- ifelse(input$select_language == "DE",
-                      "Zeige Übersichtstabelle",
+                      "Zeige ??bersichtstabelle",
                       "Show summary table")
       selected <- input$show_table
       updateCheckboxInput(session, "show_table",
@@ -1072,8 +1073,8 @@ shinyServer(function(input, output, session) {
                       "Grafische Darstellung:",
                       "Graphical display")
       choices <- if(input$select_language == "DE"){
-        c("Interaktiv für mehrere Modelle" = "interactive",
-          "Überblick für ein Modell" = "overview")
+        c("Interaktiv f??r mehrere Modelle" = "interactive",
+          "??berblick f??r ein Modell" = "overview")
       }else{
         c("Interactive for several models" = "interactive",
           "Overview for one model" = "overview")

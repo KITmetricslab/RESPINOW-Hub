@@ -13,37 +13,25 @@ source("functions.R")
 local <- TRUE
 if(local){
     # get vector of model names:
-    dat_models <- read.csv("plot_data/list_teams.csv")
+    dat_models <- read.csv("plot_data/other/list_models.csv")
     # available versions of truth_data:
-    available_dates <- sort(read.csv("plot_data/available_dates.csv", colClasses = c("date" = "Date"))$date)
+    available_data_versions <- sort(read.csv("plot_data/other/list_data_versions.csv", colClasses = c("date" = "Date"))$date)
     # available plot_data with nowcasts:
-    available_nowcast_dates <- date_from_filename(sort(read.csv("plot_data/list_plot_data.csv")$file))
+    available_nowcast_dates <- date_from_filename(sort(read.csv("plot_data/other/list_plot_data.csv")$file))
     
 }else{
     # available versions of truth_data:
-    available_dates <- sort(read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/available_dates.csv", colClasses = c("date" = "Date"))$date)
+    # available_dates <- sort(read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/other/list_dates.csv", colClasses = c("date" = "Date"))$date)
     # available plot_data with nowcasts:
-    available_nowcast_dates <- date_from_filename(sort(read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/list_plot_data.csv")$file))
+    available_nowcast_dates <- date_from_filename(sort(read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/other/list_plot_data.csv")$file))
     # get vector of model names:
-    dat_models <- read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/list_teams.csv")
+    dat_models <- read.csv("https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/main/nowcast_viz_de/plot_data/other/list_models.csv")
 }
-bundeslaender <- c("Alle (Deutschland)" = "DE",
-                   "Baden-Württemberg" = "DE-BW", 	
-                   "Bayern" = "DE-BY", 	
-                   "Berlin" = "DE-BE", 	
-                   "Brandenburg" = "DE-BB", 	
-                   "Bremen" = "DE-HB", 	
-                   "Hamburg" = "DE-HH", 	
-                   "Hessen" = "DE-HE", 	
-                   "Mecklenburg-Vorpommern" = "DE-MV", 	
-                   "Niedersachsen" = "DE-NI", 	
-                   "Nordrhein-Westfalen" = "DE-NW", 	
-                   "Rheinland-Pfalz" = "DE-RP", 	
-                   "Saarland" = "DE-SL", 	
-                   "Sachsen" = "DE-SN",
-                   "Sachsen-Anhalt" = "DE-ST",
-                   "Schleswig-Holstein" = "DE-SH", 	
-                   "Thüringen" = "DE-TH")
+
+# map between codes for federal states and their human-readable names
+list_locations <- read.csv("plot_data/other/list_locations_survstat.csv")
+locations <- list_locations$location
+names(locations) <- list_locations$location_long
 
 style_explanation <- "font-size:13px;"
 
@@ -74,18 +62,20 @@ shinyUI(fluidPage(
             div(style="display: inline-block;vertical-align:top;", actionButton("skip_backward", "<")),
             div(style="display: inline-block;vertical-align:top;width:200px", 
                 dateInput("select_date", label = NULL, value = max(available_nowcast_dates),
-                          min = min(available_dates), max = max(available_dates))),
+                          min = min(available_data_versions), max = max(available_data_versions),
+                          daysofweekdisabled = 1:6)), # only Sundays can be selected
             div(style="display: inline-block;vertical-align:top;", actionButton("skip_forward", ">")),
             selectizeInput("select_pathogen",
                            label = "Krankheit / Indikator",
-                           choices = c("Saisonale Influenza (SurvStat)" = "seasonal_influenza_survstat",
-                                       "RSV (SurvStat)" = "rsv_infection_survstat",
-                                       "Pneumokokken (SurvStat)" = "pneumococcal_disease_survstat"),
-                                       # "Saisonale Influenza (NRZ)" = "influenza_nrz",
-                                       # "RSV (NRZ)" = "rsv_nrz"),
+                           choices = c("Saisonale Influenza (SurvStat)" = "survstat-influenza",
+                                       "RSV (SurvStat)" = "survstat-rsv",
+                                       "Pneumokokken (SurvStat)" = "survstat-pneumococcal",
+                                       "Saisonale Influenza (NRZ)" = "nrz-influenza",
+                                       "RSV (NRZ)" = "nrz-rsv",
+                                       "SARI (ICOSARI)" = "icosari-sari"),
                            width = "300px"),
             conditionalPanel("input.select_language == 'DE'",
-                             p("Nowcasts werden täglich gegen 13:00 aktualisiert, können aber verspätet sein falls Daten des RKI verzögert veröffentlicht werden. Falls ein Nowcast für das gewählte Datum nicht vorliegt wird der aktuellste Nowcast der letzten 7 Tage gezeigt.",
+                             p("Nowcasts werden t??glich gegen 13:00 aktualisiert, k??nnen aber versp??tet sein falls Daten des RKI verz??gert ver??ffentlicht werden. Falls ein Nowcast f??r das gew??hlte Datum nicht vorliegt wird der aktuellste Nowcast der letzten 7 Tage gezeigt.",
                                style = "font-size:11px;")),
             conditionalPanel("input.select_language == 'EN'",
                              p("Nowcasts are updated on daily at around 1pm, but may be delayed if input data from RKI are published later than usually. If a nowcast is not available for the chosen date, the most current nowcast from the last 7 days is shown.",
@@ -107,16 +97,16 @@ shinyUI(fluidPage(
             conditionalPanel("input.select_stratification == 'state'",
                              selectizeInput("select_state",
                                             label = "Bundesland",
-                                            choices = bundeslaender, width = "200px")),
+                                            choices = locations, width = "200px")),
             conditionalPanel("input.select_language == 'DE'",
-                             p("Beachten Sie beim Vergleich der Altersgruppen bzw. der Bundesländer die unterschiedlichen Skalen in der Grafik.",
+                             p("Beachten Sie beim Vergleich der Altersgruppen bzw. der Bundesl??nder die unterschiedlichen Skalen in der Grafik.",
                                style = "font-size:11px;")),
             conditionalPanel("input.select_language == 'EN'",
-                             p("When comparing age groups or Bundesländer please note that the scales in the figure differ.",
+                             p("When comparing age groups or Bundesl??nder please note that the scales in the figure differ.",
                                style = "font-size:11px;")),
             radioButtons("select_plot_type", label = "Grafische Darstellung:", 
-                         choices = c("Interaktiv für mehrere Modelle" = "interactive",
-                                     "Überblick für ein Modell" = "overview"), inline = TRUE),
+                         choices = c("Interaktiv f??r mehrere Modelle" = "interactive",
+                                     "??berblick f??r ein Modell" = "overview"), inline = TRUE),
             
             checkboxInput("show_truth_frozen", label = "Zeitreihe eingefrorener Werte", 
                           value = FALSE),
@@ -126,15 +116,18 @@ shinyUI(fluidPage(
                                  value = FALSE)),
             
             conditionalPanel("input.show_additional_controls",
+                             radioButtons("select_max_lag", label = "Maximaler Meldeverzug",
+                                          choices = c("4" = "4", "beliebig" = "any"),
+                                          selected = "4", inline = TRUE),
                              radioButtons("select_scale", label = "Anzeige", 
                                           choices = c("pro 100.000" = "per 100.000",
                                                       "absolute Zahlen" = "absolute counts"),
                                           selected = "per 100.000", inline = TRUE),
                              radioButtons("select_log", label = NULL, 
-                                          choices = c("natürliche Skala" = "natural scale",
+                                          choices = c("nat??rliche Skala" = "natural scale",
                                                       "log-Skala"  ="log scale"), 
                                           selected = "natural scale", inline = TRUE),
-                             radioButtons("select_point_estimate", label = "Punktschätzer:", 
+                             radioButtons("select_point_estimate", label = "Punktsch??tzer:", 
                                           choices = c("Median" = "median", "Erwartungswert" = "mean"),
                                           selected = "median", inline = TRUE),
                              radioButtons("select_interval", label = "Unsicherheitsintervall", 
@@ -143,15 +136,15 @@ shinyUI(fluidPage(
                              conditionalPanel("input.select_language == 'DE'", strong("Weitere Anzeigeoptionen")),
                              conditionalPanel("input.select_language == 'EN'", strong("Further display options")),
                              
-                             checkboxInput("show_table", label = "Zeige Übersichtstabelle (noch nicht verfügbar)", 
+                             checkboxInput("show_table", label = "Zeige ??bersichtstabelle (noch nicht verf??gbar)", 
                                            value = FALSE),
-                             checkboxInput("show_truth_by_reporting", label = "Zeitreihe nach Erscheinen in RKI-Daten (noch nicht verfügbar)", 
+                             checkboxInput("show_truth_by_reporting", label = "Zeitreihe nach Erscheinen in RKI-Daten (noch nicht verf??gbar)", 
                                            value = FALSE),
-                             checkboxInput("show_retrospective_nowcasts", label = "Nachträglich erstellte Nowcasts zeigen", 
+                             checkboxInput("show_retrospective_nowcasts", label = "Nachtr??glich erstellte Nowcasts zeigen", 
                                            value = FALSE)
             ),
             conditionalPanel("input.select_language == 'DE'",
-                             helper(strong("Erklärung der Kontrollelemente"),
+                             helper(strong("Erkl??rung der Kontrollelemente"),
                                     content = "erklaerung",
                                     type = "markdown",
                                     size = "m")),
@@ -165,10 +158,10 @@ shinyUI(fluidPage(
         mainPanel(
             add_busy_spinner(spin = "fading-circle"),
             conditionalPanel("input.select_language == 'DE'",
-                             p(strong("Diese Seite ist derzeit in einer Pilotphase und dient nur zum wissenschaftlichen Austausch. Die Analysen werden noch nicht regelmäßig aktualisiert. Derzeit sind die Nowcasts außerdem durch Meldeartefakte zu Weihnachten beeinträchtigt.")),
-                             p("Diese Plattform vereint Nowcasts für ausgewählte epidemiologische Indikatoren zu respiratorischen Erregern in Deutschland. Sie ist Teil des Projektes", a('RespiNow', href="https://respinow.de/"), ". Künftig sollen verschiedene Verfahren zusammengeführt werden, derzeit ist jedoch erst ein Modell operationell."),
-                             p("Alle derzeit dargestellten Daten stammen aus dem", a("RKI SurvStat", href = "https://survstat.rki.de/"), "Routineüberwachunssystem. Andere Datenquellen sollen demnächst hinzugefügt werden."),
-                             p("Bei Unregelmäßigkeiten im Meldeprozess durch z.B. starke Belastung des Gesundheitssystems oder Feiertage kann die Verlässlichkeit der Nowcasts beeinträchtigt werden.")
+                             p(strong("Diese Seite ist derzeit in einer Pilotphase und dient nur zum wissenschaftlichen Austausch. Die Analysen werden noch nicht regelm????ig aktualisiert. Derzeit sind die Nowcasts au??erdem durch Meldeartefakte zu Weihnachten beeintr??chtigt.")),
+                             p("Diese Plattform vereint Nowcasts f??r ausgew??hlte epidemiologische Indikatoren zu respiratorischen Erregern in Deutschland. Sie ist Teil des Projektes", a('RespiNow', href="https://respinow.de/"), ". K??nftig sollen verschiedene Verfahren zusammengef??hrt werden, derzeit ist jedoch erst ein Modell operationell."),
+                             p("Alle derzeit dargestellten Daten stammen aus dem", a("RKI SurvStat", href = "https://survstat.rki.de/"), "Routine??berwachunssystem. Andere Datenquellen sollen demn??chst hinzugef??gt werden."),
+                             p("Bei Unregelm????igkeiten im Meldeprozess durch z.B. starke Belastung des Gesundheitssystems oder Feiertage kann die Verl??sslichkeit der Nowcasts beeintr??chtigt werden.")
             ),
             conditionalPanel("input.select_language == 'EN'",
                              p(strong("This website is currently in a pilot phase and serves purely for scientific exchange. The analyses are not yet updated regularly.")),
@@ -178,20 +171,20 @@ shinyUI(fluidPage(
             ),
             
             #             conditionalPanel("input.select_language == 'DE'",
-            #                              p("Über den Jahreswechsel kann es zu Verzögerungen bei der Erstellung der Nowcasts kommen. Außerdem ist zu erwarten, dass sich die Verzüge, mit denen Hospitalisierungen gemeldet werden während dieser Zeit anders verhalten als im Rest des Jahres. Dies kann die Verlässlichkeit der Nowcasts vermindern und diese sollten mit besonderer Vorsicht interpretiert werden."),
+            #                              p("??ber den Jahreswechsel kann es zu Verz??gerungen bei der Erstellung der Nowcasts kommen. Au??erdem ist zu erwarten, dass sich die Verz??ge, mit denen Hospitalisierungen gemeldet werden w??hrend dieser Zeit anders verhalten als im Rest des Jahres. Dies kann die Verl??sslichkeit der Nowcasts vermindern und diese sollten mit besonderer Vorsicht interpretiert werden."),
             #             ),
             #             conditionalPanel("input.select_language == 'EN'",
             #                              p("During the holiday period delays may occur in the creation of nowcasts. Moreover, the delays with which hospitalizations get reported are expected to behave differently than during the rest of the year. This can reduce the reliability of nowcasts, which should be interpreted with particular care."),
             #             ),
             
             conditionalPanel(paste("input.select_language == 'DE' &", disclaimer_necessary),
-                             strong("Nowcasts werden gewöhnlich gegen 13:00 aktualisiert, jedoch scheint für den heutigen Tag noch kein Update vorzuliegen. Eine Aktualisiserung wird u.U. erst morgen wieder verfügbar (dies ist ein automatischer Hinweis)."),
+                             strong("Nowcasts werden gew??hnlich gegen 13:00 aktualisiert, jedoch scheint f??r den heutigen Tag noch kein Update vorzuliegen. Eine Aktualisiserung wird u.U. erst morgen wieder verf??gbar (dies ist ein automatischer Hinweis)."),
             ),
             conditionalPanel(paste("input.select_language == 'EN' &", disclaimer_necessary),
                              strong("Nowcasts are usually updated at around 1pm, but it seems that there has not yet been an update for today. An update may only become available tomorrow (this is an automated notification)."),
             ),
-            conditionalPanel("input.select_pathogen == 'rsv_infection_survstat'",
-                             p(strong("Achtung: SurvStat-Daten für RSV sind nur für das Bundesland Sachsen verfügbar. / SurvStat data for RSV are only available for the state of Saxony."))),
+            conditionalPanel("input.select_pathogen == 'survstat-rsv'",
+                             p(strong("Achtung: SurvStat-Daten f??r RSV sind nur f??r das Bundesland Sachsen verf??gbar. / SurvStat data for RSV are only available for the state of Saxony."))),
             
             conditionalPanel("input.select_plot_type == 'interactive'",
                              plotlyOutput("tsplot", height = "440px")),
@@ -200,16 +193,16 @@ shinyUI(fluidPage(
                                  selectInput("select_model", "Modell:",
                                              choices = sort(dat_models$model),
                                              selected = "NowcastHub-MeanEnsemble")),
-                             checkboxInput("use_same_ylim", label = "Einheitliche y-Achsenabschnitte in Übersicht", 
+                             checkboxInput("use_same_ylim", label = "Einheitliche y-Achsenabschnitte in ??bersicht", 
                                            value = TRUE)),
             conditionalPanel("input.select_plot_type == 'overview'",
                              plotOutput("overview_plot", height = "1300px")),
             conditionalPanel("input.show_table",
                              div(style="display: inline-block;vertical-align:top;width:200px",
-                                 dateInput("select_target_end_date", label = "Meldedatum", value = max(available_dates),
-                                           min = min(available_dates), max = max(available_dates))),
+                                 dateInput("select_target_end_date", label = "Meldedatum", value = max(available_nowcast_dates),
+                                           min = min(available_nowcast_dates), max = max(available_nowcast_dates))),
                              conditionalPanel("input.select_language == 'DE'",
-                                              p("Untenstehende Tabelle fasst die Nowcasts eines gewählten Modells für ein bestimmtes Meldedatum (Zieldatum des Nowcasts) und verschiedene Bundesländer oder Altersgruppen zusammen. Der verwendete Datenstand ist der selbe wie für die grafischen Darstellung."),
+                                              p("Untenstehende Tabelle fasst die Nowcasts eines gew??hlten Modells f??r ein bestimmtes Meldedatum (Zieldatum des Nowcasts) und verschiedene Bundesl??nder oder Altersgruppen zusammen. Der verwendete Datenstand ist der selbe wie f??r die grafischen Darstellung."),
                              ),
                              conditionalPanel("input.select_language == 'EN'",
                                               p("This table summarizes the nowcasts made by the selected model for a given Meldedatum (target date of the nowcast) and all German states or age groups. The data version is the same as in the graphical display."),
@@ -221,11 +214,11 @@ shinyUI(fluidPage(
             
             # p(),
             # conditionalPanel("input.select_language == 'DE'",
-            #                  p('Das Wichtigste in Kürze (siehe', a('"Hintergrund"', href="https://covid19nowcasthub.de/hintergrund.html"), " für Details)"),
-            #                  p('- Die 7-Tages-Hospitalisierungsinzidenz ist einer der Leitindikatoren für die COVID-19 Pandemie in Deutschland (siehe "Hintergrund" für die Definition).', style = style_explanation),
-            #                  p("- Aufgrund von Verzögerungen sind die für die letzten Tage veröffentlichten rohen Inzidenzwerte stets zu niedrig. Nowcasts helfen, diese Werte zu korrigieren. Sie stellen eine Vorhersage dafür dar, um wie viel die Hospitalisierungsinzidenz noch nach oben korrigiert werden wird.", style = style_explanation),
+            #                  p('Das Wichtigste in K??rze (siehe', a('"Hintergrund"', href="https://covid19nowcasthub.de/hintergrund.html"), " f??r Details)"),
+            #                  p('- Die 7-Tages-Hospitalisierungsinzidenz ist einer der Leitindikatoren f??r die COVID-19 Pandemie in Deutschland (siehe "Hintergrund" f??r die Definition).', style = style_explanation),
+            #                  p("- Aufgrund von Verz??gerungen sind die f??r die letzten Tage ver??ffentlichten rohen Inzidenzwerte stets zu niedrig. Nowcasts helfen, diese Werte zu korrigieren. Sie stellen eine Vorhersage daf??r dar, um wie viel die Hospitalisierungsinzidenz noch nach oben korrigiert werden wird.", style = style_explanation),
             #                  p('- Es gibt unterschiedliche Nowcasting-Verfahren. Diese vergleichen wir hier systematisch und kombinieren sie in einem sogenannten Ensemble-Nowcast.', style = style_explanation),
-            #                  p('- Unregelmäßigkeiten oder Überlastungen im Meldeprozess können die Zuverlässigkeit der Nowcasts beeinträchtigen.', style = style_explanation),
+            #                  p('- Unregelm????igkeiten oder ??berlastungen im Meldeprozess k??nnen die Zuverl??ssigkeit der Nowcasts beeintr??chtigen.', style = style_explanation),
             #                  br(),
             #                  br()
             # ),
@@ -240,12 +233,12 @@ shinyUI(fluidPage(
             # ),
             p(),
             conditionalPanel("input.select_language == 'DE'",
-                             p("Die interaktive Visualisierung funktioniert am besten unter Google Chrome und ist nicht für Mobilgeräte optimiert.", style = style_explanation),
-                             p("Kontakt: ", a("Lehrstuhl für Statistische Methoden und Ökonometrie", href = "https://statistik.econ.kit.edu/index.php"), 
-                               ", Karlsruher Institut für Technologie. Email: johannes.bracher@kit.edu", style = style_explanation)
+                             p("Die interaktive Visualisierung funktioniert am besten unter Google Chrome und ist nicht f??r Mobilger??te optimiert.", style = style_explanation),
+                             p("Kontakt: ", a("Lehrstuhl f??r Statistische Methoden und ??konometrie", href = "https://statistik.econ.kit.edu/index.php"), 
+                               ", Karlsruher Institut f??r Technologie. Email: johannes.bracher@kit.edu", style = style_explanation)
                              # p("Diese Plattform wird von Mitgliedern des ",
-                             #   a("Lehrstuhls für Ökonometrie und Statistik", href = "https://statistik.econ.kit.edu/index.php"),
-                             #   "am Karlsruher Institut für Technologie betrieben. Kontakt: forecasthub@econ.kit.edu")
+                             #   a("Lehrstuhls f??r ??konometrie und Statistik", href = "https://statistik.econ.kit.edu/index.php"),
+                             #   "am Karlsruher Institut f??r Technologie betrieben. Kontakt: forecasthub@econ.kit.edu")
             ),
             conditionalPanel("input.select_language == 'EN'",
                              p("The interactive visualization works best under Google Chrome and is not optimized for mobile devices.", style = style_explanation),
@@ -257,7 +250,7 @@ shinyUI(fluidPage(
             ),
             # conditionalPanel("input.select_language == 'DE'",
             #                  p(a("covid19nowcasthub.de", href = "https://covid19nowcasthub.de"), " - ",
-            #                    a("Lehrstuhl für Ökonometrie und Statistik, Karlsruher Institut für Technologie", href = "https://statistik.econ.kit.edu/index.php"), " - ",
+            #                    a("Lehrstuhl f??r ??konometrie und Statistik, Karlsruher Institut f??r Technologie", href = "https://statistik.econ.kit.edu/index.php"), " - ",
             #                    a("Kontakt", href = "https://covid19nowcasthub.de/contact.html"))
             # ),
             # conditionalPanel("input.select_language == 'EN'",

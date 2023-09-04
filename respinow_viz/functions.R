@@ -4,7 +4,7 @@ date_from_filename <- function(files){
 }
 
 # function to compute truth data as of a certain time:
-truth_as_of <- function(dat_truth, age_group = "00+", location = "DE", date){
+truth_as_of <- function(dat_truth, age_group = "00+", location = "DE", date, max_lag = NULL){
   if(is.null(date)){
     date <- max(dat_truth$date)
   }
@@ -13,13 +13,18 @@ truth_as_of <- function(dat_truth, age_group = "00+", location = "DE", date){
                       dat_truth$location == location &
                       dat_truth$date <= date, ]
   matr <- subs[, grepl("value_", colnames(subs))]
+  if(!is.null(max_lag)){
+    print(max_lag)
+    print(colnames(matr))
+    matr <- matr[, paste0("value_", 0:max_lag, "w")]
+  }
   matr_dates <- matrix(subs$date, nrow = nrow(matr), ncol = ncol(matr))
   matr_delays <- 7*matrix((1:ncol(matr_dates)) - 1, byrow = TRUE,
                         nrow = nrow(matr), ncol = ncol(matr))
   matr_reporting_date <- matr_dates + matr_delays
   matr[matr_reporting_date > date] <- 0
   data.frame(date = subs$date,
-             value = rowSums(matr))
+             value = rowSums(matr, na.rm = TRUE))
 }
 
 # function to get truth data by date of appearance in RKI data:
@@ -104,7 +109,7 @@ create_table <- function(forecasts, dat_truth, population, model,
   
   # mapping between state codes and human-readable names
   bundeslaender <- c("DE" = "Alle (Deutschland)",
-                     "DE-BW" = "Baden-Württemberg", 	
+                     "DE-BW" = "Baden-W??rttemberg", 	
                      "DE-BY" = "Bayern", 	
                      "DE-BE" = "Berlin", 	
                      "DE-BB" = "Brandenburg", 	
@@ -119,7 +124,7 @@ create_table <- function(forecasts, dat_truth, population, model,
                      "DE-SN" = "Sachsen",
                      "DE-ST" = "Sachsen-Anhalt",
                      "DE-SH" = "Schleswig-Holstein", 	
-                     "DE-TH" = "Thüringen")
+                     "DE-TH" = "Th??ringen")
   
   # subset to relevant rows of forecast data:
   sub <- forecasts[forecasts$target_end_date == target_end_date &
