@@ -632,7 +632,7 @@ shinyServer(function(input, output, session) {
                     "Datenstand am Tag des Nowcasts",
                     "Nowcast (Unsicherheitsintervall)",
                     "Korrekturfaktor",
-                    "% Ver??nderung zur Vorwoche"
+                    "% Veränderung zur Vorwoche"
           )
         }else{
           coln <- c(ifelse(input$select_stratification == "state", "Bundesland", "Age group"),
@@ -650,7 +650,7 @@ shinyServer(function(input, output, session) {
                     options = list(dom = 'tB', pageLength = 17, buttons = c('csv')))
         })
       }else{ # if no data available: show place holder
-        output$table <- DT::renderDT(data.frame("Error" = "Keine Nowcasts verf??gbar f??r das gew??hlte Meldedatum."))
+        output$table <- DT::renderDT(data.frame("Error" = "Keine Nowcasts verfügbar für das gewählte Meldedatum."))
       }
 
     }else{
@@ -905,7 +905,7 @@ shinyServer(function(input, output, session) {
       )
 
       # Type of point nowcast
-      label <- ifelse(input$select_language == "DE", "Punktsch??tzer", "Point estimate")
+      label <- ifelse(input$select_language == "DE", "Punktschätzer", "Point estimate")
       choices <- if(input$select_language == "DE"){
         c("Median" = "median", "Erwartungswert" = "mean")
       }else{
@@ -954,7 +954,7 @@ shinyServer(function(input, output, session) {
       # log scale
       label <- NULL
       choices <- if(input$select_language == "DE"){
-        c("nat??rliche Skala" = "natural scale",
+        c("natürliche Skala" = "natural scale",
           "log-Skala"  ="log scale")
       }else{
         c("natural scale" = "natural scale",
@@ -1030,7 +1030,7 @@ shinyServer(function(input, output, session) {
 
       # Show retrospective nowcasts
       label <- ifelse(input$select_language == "DE",
-                      "Nachtr??glich erstellte Nowcasts zeigen",
+                      "Nachträglich erstellte Nowcasts zeigen",
                       "Show retrospective nowcasts")
       selected <- input$show_retrospective_nowcasts
       updateCheckboxInput(session, "show_retrospective_nowcasts",
@@ -1040,7 +1040,7 @@ shinyServer(function(input, output, session) {
 
       # Use same ylim in overview
       label <- ifelse(input$select_language == "DE",
-                      "Einheitliche y-Achsenabschnitte in ??bersicht",
+                      "Einheitliche y-Achsenabschnitte in Übersicht",
                       "Uniform y-axis ranges in overview")
       selected <- input$use_same_ylim
       updateCheckboxInput(session, "use_same_ylim",
@@ -1050,7 +1050,7 @@ shinyServer(function(input, output, session) {
 
       # Show summary table
       label <- ifelse(input$select_language == "DE",
-                      "Zeige ??bersichtstabelle",
+                      "Zeige Übersichtstabelle",
                       "Show summary table")
       selected <- input$show_table
       updateCheckboxInput(session, "show_table",
@@ -1073,8 +1073,8 @@ shinyServer(function(input, output, session) {
                       "Grafische Darstellung:",
                       "Graphical display")
       choices <- if(input$select_language == "DE"){
-        c("Interaktiv f??r mehrere Modelle" = "interactive",
-          "??berblick f??r ein Modell" = "overview")
+        c("Interaktiv für mehrere Modelle" = "interactive",
+          "Überblick für ein Modell" = "overview")
       }else{
         c("Interactive for several models" = "interactive",
           "Overview for one model" = "overview")

@@ -6,6 +6,7 @@ library(shinyhelper)
 library(magrittr)
 library(shinybusy)
 library(DT)
+library(MASS)
 
 # get auxiliary functions:
 source("functions.R")
@@ -75,7 +76,7 @@ shinyUI(fluidPage(
                                        "SARI (ICOSARI)" = "icosari-sari"),
                            width = "300px"),
             conditionalPanel("input.select_language == 'DE'",
-                             p("Nowcasts werden t??glich gegen 13:00 aktualisiert, k??nnen aber versp??tet sein falls Daten des RKI verz??gert ver??ffentlicht werden. Falls ein Nowcast f??r das gew??hlte Datum nicht vorliegt wird der aktuellste Nowcast der letzten 7 Tage gezeigt.",
+                             p("Nowcasts werden täglich gegen 13:00 aktualisiert, können aber verspätet sein falls Daten des RKI verzögert veröffentlicht werden. Falls ein Nowcast für das gewählte Datum nicht vorliegt wird der aktuellste Nowcast der letzten 7 Tage gezeigt.",
                                style = "font-size:11px;")),
             conditionalPanel("input.select_language == 'EN'",
                              p("Nowcasts are updated on daily at around 1pm, but may be delayed if input data from RKI are published later than usually. If a nowcast is not available for the chosen date, the most current nowcast from the last 7 days is shown.",
@@ -99,14 +100,14 @@ shinyUI(fluidPage(
                                             label = "Bundesland",
                                             choices = locations, width = "200px")),
             conditionalPanel("input.select_language == 'DE'",
-                             p("Beachten Sie beim Vergleich der Altersgruppen bzw. der Bundesl??nder die unterschiedlichen Skalen in der Grafik.",
+                             p("Beachten Sie beim Vergleich der Altersgruppen bzw. der Bundesländer die unterschiedlichen Skalen in der Grafik.",
                                style = "font-size:11px;")),
             conditionalPanel("input.select_language == 'EN'",
-                             p("When comparing age groups or Bundesl??nder please note that the scales in the figure differ.",
+                             p("When comparing age groups or Bundesländer please note that the scales in the figure differ.",
                                style = "font-size:11px;")),
             radioButtons("select_plot_type", label = "Grafische Darstellung:", 
-                         choices = c("Interaktiv f??r mehrere Modelle" = "interactive",
-                                     "??berblick f??r ein Modell" = "overview"), inline = TRUE),
+                         choices = c("Interaktiv für mehrere Modelle" = "interactive",
+                                     "Überblick für ein Modell" = "overview"), inline = TRUE),
             
             checkboxInput("show_truth_frozen", label = "Zeitreihe eingefrorener Werte", 
                           value = FALSE),
@@ -124,10 +125,10 @@ shinyUI(fluidPage(
                                                       "absolute Zahlen" = "absolute counts"),
                                           selected = "per 100.000", inline = TRUE),
                              radioButtons("select_log", label = NULL, 
-                                          choices = c("nat??rliche Skala" = "natural scale",
+                                          choices = c("natürliche Skala" = "natural scale",
                                                       "log-Skala"  ="log scale"), 
                                           selected = "natural scale", inline = TRUE),
-                             radioButtons("select_point_estimate", label = "Punktsch??tzer:", 
+                             radioButtons("select_point_estimate", label = "Punktschätzer:", 
                                           choices = c("Median" = "median", "Erwartungswert" = "mean"),
                                           selected = "median", inline = TRUE),
                              radioButtons("select_interval", label = "Unsicherheitsintervall", 
@@ -136,15 +137,15 @@ shinyUI(fluidPage(
                              conditionalPanel("input.select_language == 'DE'", strong("Weitere Anzeigeoptionen")),
                              conditionalPanel("input.select_language == 'EN'", strong("Further display options")),
                              
-                             checkboxInput("show_table", label = "Zeige ??bersichtstabelle (noch nicht verf??gbar)", 
+                             checkboxInput("show_table", label = "Zeige Übersichtstabelle (noch nicht verfügbar)", 
                                            value = FALSE),
-                             checkboxInput("show_truth_by_reporting", label = "Zeitreihe nach Erscheinen in RKI-Daten (noch nicht verf??gbar)", 
+                             checkboxInput("show_truth_by_reporting", label = "Zeitreihe nach Erscheinen in RKI-Daten (noch nicht verfügbar)", 
                                            value = FALSE),
-                             checkboxInput("show_retrospective_nowcasts", label = "Nachtr??glich erstellte Nowcasts zeigen", 
+                             checkboxInput("show_retrospective_nowcasts", label = "Nachträglich erstellte Nowcasts zeigen", 
                                            value = FALSE)
             ),
             conditionalPanel("input.select_language == 'DE'",
-                             helper(strong("Erkl??rung der Kontrollelemente"),
+                             helper(strong("Erklärung der Kontrollelemente"),
                                     content = "erklaerung",
                                     type = "markdown",
                                     size = "m")),
@@ -158,10 +159,10 @@ shinyUI(fluidPage(
         mainPanel(
             add_busy_spinner(spin = "fading-circle"),
             conditionalPanel("input.select_language == 'DE'",
-                             p(strong("Diese Seite ist derzeit in einer Pilotphase und dient nur zum wissenschaftlichen Austausch. Die Analysen werden noch nicht regelm????ig aktualisiert. Derzeit sind die Nowcasts au??erdem durch Meldeartefakte zu Weihnachten beeintr??chtigt.")),
-                             p("Diese Plattform vereint Nowcasts f??r ausgew??hlte epidemiologische Indikatoren zu respiratorischen Erregern in Deutschland. Sie ist Teil des Projektes", a('RespiNow', href="https://respinow.de/"), ". K??nftig sollen verschiedene Verfahren zusammengef??hrt werden, derzeit ist jedoch erst ein Modell operationell."),
-                             p("Alle derzeit dargestellten Daten stammen aus dem", a("RKI SurvStat", href = "https://survstat.rki.de/"), "Routine??berwachunssystem. Andere Datenquellen sollen demn??chst hinzugef??gt werden."),
-                             p("Bei Unregelm????igkeiten im Meldeprozess durch z.B. starke Belastung des Gesundheitssystems oder Feiertage kann die Verl??sslichkeit der Nowcasts beeintr??chtigt werden.")
+                             p(strong("Diese Seite ist derzeit in einer Pilotphase und dient nur zum wissenschaftlichen Austausch. Die Analysen werden noch nicht regelmäßig aktualisiert. Derzeit sind die Nowcasts außerdem durch Meldeartefakte zu Weihnachten beeinträchtigt.")),
+                             p("Diese Plattform vereint Nowcasts für ausgewählte epidemiologische Indikatoren zu respiratorischen Erregern in Deutschland. Sie ist Teil des Projektes", a('RespiNow', href="https://respinow.de/"), ". Künftig sollen verschiedene Verfahren zusammengeführt werden, derzeit ist jedoch erst ein Modell operationell."),
+                             p("Alle derzeit dargestellten Daten stammen aus dem", a("RKI SurvStat", href = "https://survstat.rki.de/"), "Routinebüberwachunssystem. Andere Datenquellen sollen demnächst hinzugefügt werden."),
+                             p("Bei Unregelmäßigkeiten im Meldeprozess durch z.B. starke Belastung des Gesundheitssystems oder Feiertage kann die Verlässlichkeit der Nowcasts beeinträchtigt werden.")
             ),
             conditionalPanel("input.select_language == 'EN'",
                              p(strong("This website is currently in a pilot phase and serves purely for scientific exchange. The analyses are not yet updated regularly.")),
@@ -178,13 +179,13 @@ shinyUI(fluidPage(
             #             ),
             
             conditionalPanel(paste("input.select_language == 'DE' &", disclaimer_necessary),
-                             strong("Nowcasts werden gew??hnlich gegen 13:00 aktualisiert, jedoch scheint f??r den heutigen Tag noch kein Update vorzuliegen. Eine Aktualisiserung wird u.U. erst morgen wieder verf??gbar (dies ist ein automatischer Hinweis)."),
+                             strong("Nowcasts werden gewöhnlich gegen 13:00 aktualisiert, jedoch scheint für den heutigen Tag noch kein Update vorzuliegen. Eine Aktualisiserung wird u.U. erst morgen wieder verfügbar (dies ist ein automatischer Hinweis)."),
             ),
             conditionalPanel(paste("input.select_language == 'EN' &", disclaimer_necessary),
                              strong("Nowcasts are usually updated at around 1pm, but it seems that there has not yet been an update for today. An update may only become available tomorrow (this is an automated notification)."),
             ),
             conditionalPanel("input.select_pathogen == 'survstat-rsv'",
-                             p(strong("Achtung: SurvStat-Daten f??r RSV sind nur f??r das Bundesland Sachsen verf??gbar. / SurvStat data for RSV are only available for the state of Saxony."))),
+                             p(strong("Achtung: SurvStat-Daten für RSV sind nur für das Bundesland Sachsen verfügbar. / SurvStat data for RSV are only available for the state of Saxony."))),
             
             conditionalPanel("input.select_plot_type == 'interactive'",
                              plotlyOutput("tsplot", height = "440px")),
@@ -193,7 +194,7 @@ shinyUI(fluidPage(
                                  selectInput("select_model", "Modell:",
                                              choices = sort(dat_models$model),
                                              selected = "NowcastHub-MeanEnsemble")),
-                             checkboxInput("use_same_ylim", label = "Einheitliche y-Achsenabschnitte in ??bersicht", 
+                             checkboxInput("use_same_ylim", label = "Einheitliche y-Achsenabschnitte in Übersicht", 
                                            value = TRUE)),
             conditionalPanel("input.select_plot_type == 'overview'",
                              plotOutput("overview_plot", height = "1300px")),
@@ -202,7 +203,7 @@ shinyUI(fluidPage(
                                  dateInput("select_target_end_date", label = "Meldedatum", value = max(available_nowcast_dates),
                                            min = min(available_nowcast_dates), max = max(available_nowcast_dates))),
                              conditionalPanel("input.select_language == 'DE'",
-                                              p("Untenstehende Tabelle fasst die Nowcasts eines gew??hlten Modells f??r ein bestimmtes Meldedatum (Zieldatum des Nowcasts) und verschiedene Bundesl??nder oder Altersgruppen zusammen. Der verwendete Datenstand ist der selbe wie f??r die grafischen Darstellung."),
+                                              p("Untenstehende Tabelle fasst die Nowcasts eines gewählten Modells für ein bestimmtes Meldedatum (Zieldatum des Nowcasts) und verschiedene Bundesländer oder Altersgruppen zusammen. Der verwendete Datenstand ist der selbe wie für die grafischen Darstellung."),
                              ),
                              conditionalPanel("input.select_language == 'EN'",
                                               p("This table summarizes the nowcasts made by the selected model for a given Meldedatum (target date of the nowcast) and all German states or age groups. The data version is the same as in the graphical display."),
@@ -233,9 +234,9 @@ shinyUI(fluidPage(
             # ),
             p(),
             conditionalPanel("input.select_language == 'DE'",
-                             p("Die interaktive Visualisierung funktioniert am besten unter Google Chrome und ist nicht f??r Mobilger??te optimiert.", style = style_explanation),
-                             p("Kontakt: ", a("Lehrstuhl f??r Statistische Methoden und ??konometrie", href = "https://statistik.econ.kit.edu/index.php"), 
-                               ", Karlsruher Institut f??r Technologie. Email: johannes.bracher@kit.edu", style = style_explanation)
+                             p("Die interaktive Visualisierung funktioniert am besten unter Google Chrome und ist nicht für Mobilgeräte optimiert.", style = style_explanation),
+                             p("Kontakt: ", a("Lehrstuhl für Statistische Methoden und Ökonometrie", href = "https://statistik.econ.kit.edu/index.php"), 
+                               ", Karlsruher Institut für Technologie. Email: johannes.bracher@kit.edu", style = style_explanation)
                              # p("Diese Plattform wird von Mitgliedern des ",
                              #   a("Lehrstuhls f??r ??konometrie und Statistik", href = "https://statistik.econ.kit.edu/index.php"),
                              #   "am Karlsruher Institut f??r Technologie betrieben. Kontakt: forecasthub@econ.kit.edu")

@@ -109,7 +109,7 @@ create_table <- function(forecasts, dat_truth, population, model,
   
   # mapping between state codes and human-readable names
   bundeslaender <- c("DE" = "Alle (Deutschland)",
-                     "DE-BW" = "Baden-W??rttemberg", 	
+                     "DE-BW" = "Baden-Württemberg", 	
                      "DE-BY" = "Bayern", 	
                      "DE-BE" = "Berlin", 	
                      "DE-BB" = "Brandenburg", 	
@@ -124,7 +124,7 @@ create_table <- function(forecasts, dat_truth, population, model,
                      "DE-SN" = "Sachsen",
                      "DE-ST" = "Sachsen-Anhalt",
                      "DE-SH" = "Schleswig-Holstein", 	
-                     "DE-TH" = "Th??ringen")
+                     "DE-TH" = "Thüringen")
   
   # subset to relevant rows of forecast data:
   sub <- forecasts[forecasts$target_end_date == target_end_date &
