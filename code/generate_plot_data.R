@@ -36,8 +36,8 @@ for(ds in data_sources){
 
 # write out data sources + targets:
 # this is created manually now:
-# df_targets <- data.frame(data_source = all_data_sources,
-#                          disease = all_diseases)
+df_targets <- data.frame(data_source = all_data_sources,
+                          disease = all_diseases)
 # write.csv(df_targets, file = "respinow_viz/plot_data/other/list_targets.csv",
 #           row.names = FALSE, quote = FALSE)
 
