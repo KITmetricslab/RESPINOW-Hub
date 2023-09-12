@@ -29,9 +29,10 @@ path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/
 
 file_dict = {
     'latest_data-NRZ-influenza.csv' : 'latest_data-nrz-influenza.csv',
-    'latest_data-NRZ-rsv.csv': 'latest_data-nrz-rsv.csv'
+    'latest_data-NRZ-rsv.csv': 'latest_data-nrz-rsv.csv',
+    'latest_data-NRZ-influenza-tests.csv' : 'latest_data-nrz-influenza-tests.csv',
+    'latest_data-NRZ-rsv-tests.csv' : 'latest_data-nrz-rsv-tests.csv'
 }
-
 
 for i in file_dict.keys():
     print(i)
