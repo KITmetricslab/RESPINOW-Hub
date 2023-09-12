@@ -50,7 +50,7 @@ for i in file_dict.keys():
 path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/SARI/'
 
 file_dict = {
-    'latest_data-SARI-archive.csv' : 'latest_data-icosari-sari.csv',
+    'latest_data-SARI-sari.csv' : 'latest_data-icosari-sari.csv',
 }
 
 for i in file_dict.keys():
