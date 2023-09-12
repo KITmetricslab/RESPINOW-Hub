@@ -1,0 +1,9 @@
+data_source,disease
+icosari,sari
+nrz,influenza
+nrz,rsv
+nrz,influenza-tests
+nrz,rsv-tests
+survstat,influenza
+survstat,pneumococcal
+survstat,rsv

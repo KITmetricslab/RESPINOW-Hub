@@ -35,10 +35,11 @@ for(ds in data_sources){
 }
 
 # write out data sources + targets:
-df_targets <- data.frame(data_source = all_data_sources,
-                         disease = all_diseases)
-write.csv(df_targets, file = "respinow_viz/plot_data/other/list_targets.csv",
-          row.names = FALSE, quote = FALSE)
+# this is created manually now:
+# df_targets <- data.frame(data_source = all_data_sources,
+#                          disease = all_diseases)
+# write.csv(df_targets, file = "respinow_viz/plot_data/other/list_targets.csv",
+#           row.names = FALSE, quote = FALSE)
 
 # write out models:
 all_models <- unique(all_models)
@@ -121,6 +122,15 @@ for(i in 1:nrow(df_targets)){
   fl_latest <- paste0("latest_data-", ds, "-", di, ".csv")
   file.copy(from = paste0("data/", ds, "/", di, "/", fl_latest),
             to = paste0("respinow_viz/plot_data/truth/", fl_latest), overwrite = TRUE)
+  
+  # try to copy triangle for number of tests:
+  fl_triangle_test <- paste0("reporting_triangle-", ds, "-", di, "-tests-preprocessed.csv")
+  file.copy(from = paste0("data/", ds, "/", di, "/", fl_triangle_test),
+            to = paste0("respinow_viz/plot_data/truth/", fl_triangle_test), overwrite = TRUE)
+  
+  fl_latest_test <- paste0("latest_data-", ds, "-", di, "-tests.csv")
+  file.copy(from = paste0("data/", ds, "/", di, "/", fl_latest_test),
+            to = paste0("respinow_viz/plot_data/truth/", fl_latest_test), overwrite = TRUE)
   
 }
 

@@ -34,6 +34,8 @@ if(local){
   forecast_files <- list.files("plot_data/submissions")
   # get model names:
   dat_models <- read.csv("plot_data/other/list_models.csv")
+  # get targets:
+  dat_targets <- read.csv("plot_data/other/list_targets.csv")
   # get population sizes:
   pop <- read.csv("plot_data/other/population_sizes.csv")
   # available versions of truth_data:
@@ -65,8 +67,9 @@ locations <- list_locations$location
 names(locations) <- list_locations$location_long
 
 # names of diseases:
-diseases <- c("survstat-rsv", "survstat-influenza", "survstat-pneumococcal",
-              "nrz-rsv", "nrz-influenza", "icosari-sari")
+# diseases <- c("survstat-rsv", "survstat-influenza", "survstat-pneumococcal",
+#               "nrz-rsv", "nrz-rsv-tests", "nrz-influenza", "icosari-sari")
+diseases <- paste(dat_targets$data_source, dat_targets$disease, sep = "-")
 
 # names of models:
 models <- sort(dat_models$model)
@@ -1011,14 +1014,18 @@ shinyServer(function(input, output, session) {
                    "RSV (SurvStat)" = "survstat-rsv",
                    "Pneumokokken (SurvStat)" = "survstat-pneumococcal",
                    "Saisonale Influenza (NRZ)" = "nrz-influenza",
+                   "Saisonale Influenza Tests (NRZ)" = "nrz-influenza-tests",
                    "RSV (NRZ)" = "nrz-rsv",
+                   "RSV Tests (NRZ)" = "nrz-rsv-tests",
                    "SARI (ICOSARI)" = "icosari-sari")
       if(input$select_language == "EN"){
         names(choices) <- c("Seasonal influenza (SurvStat)",
                             "RSV (SurvStat)",
                             "Pneumococcal disease (SurvStat)",
                             "Seasonal influenza (NRZ)" = "nrz-influenza",
+                            "Seasonal Influenza tests (NRZ)" = "nrz-influenza-tests",
                             "RSV (NRZ)" = "nrz-rsv",
+                            "RSV tests (NRZ)" = "nrz-rsv-tests",
                             "SARI (ICOSARI)" = "icosari-sari")
       }
       selected <- input$select_pathogen
