@@ -1,65 +1,72 @@
 import pandas as pd
 
-# SURVSTAT
+# Survstat
 
 path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/Survstat/'
 
-file_dict = {
-    'pneumococcal_disease_reporting_triangle_survstat.csv' : 'reporting_triangle-survstat-pneumococcal.csv',
-    'pneumococcal_disease_reporting_triangle_survstat_preprocessed.csv' : 'reporting_triangle-survstat-pneumococcal-preprocessed.csv',
-    'rsv_infection_reporting_triangle_survstat.csv': 'reporting_triangle-survstat-rsv.csv',
-    'rsv_infection_reporting_triangle_survstat_preprocessed.csv': 'reporting_triangle-survstat-rsv-preprocessed.csv',
-    'seasonal_influenza_reporting_triangle_survstat.csv': 'reporting_triangle-survstat-influenza.csv',
-    'seasonal_influenza_reporting_triangle_survstat_preprocessed.csv': 'reporting_triangle-survstat-influenza-preprocessed.csv'
-}
+files = [
+    'reporting_triangle-survstat-pneumococcal.csv',
+    'reporting_triangle-survstat-pneumococcal-preprocessed.csv',
 
-for i in file_dict.keys():
-    print(i)
-    if 'pneumococcal' in i:
+    'reporting_triangle-survstat-rsv.csv',
+    'reporting_triangle-survstat-rsv-preprocessed.csv',
+
+    'reporting_triangle-survstat-influenza.csv',
+    'reporting_triangle-survstat-influenza-preprocessed.csv'
+]
+
+for f in files:
+    print(f)
+    if 'pneumococcal' in f:
         target_path = '../data/survstat/pneumococcal/'
-    elif 'rsv' in i:
+    elif 'rsv' in f:
         target_path = '../data/survstat/rsv/'
-    elif 'influenza' in i:
+    elif 'influenza' in f:
         target_path = '../data/survstat/influenza/'
     
-    df = pd.read_csv(path + i)
-    df.to_csv(target_path + file_dict[i], index = False)
+    df = pd.read_csv(path + f)
+    df.to_csv(target_path + f, index = False)
 
 
 # NRZ
 
 path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/NRZ/'
 
-file_dict = {
-    'influenza_reporting_triangle.csv' : 'reporting_triangle-nrz-influenza.csv',
-    'influenza_reporting_triangle_preprocessed.csv' : 'reporting_triangle-nrz-influenza-preprocessed.csv',
-    'rsv_reporting_triangle.csv' : 'reporting_triangle-nrz-rsv.csv',
-    'rsv_reporting_triangle_preprocessed.csv' : 'reporting_triangle-nrz-rsv-preprocessed.csv'
-}
+files = [
+    'reporting_triangle-nrz-influenza.csv',
+    'reporting_triangle-nrz-influenza-preprocessed.csv',
+    'reporting_triangle-nrz-rsv.csv',
+    'reporting_triangle-nrz-rsv-preprocessed.csv',
+    
+    'reporting_triangle-nrz-influenza-tests.csv',
+    'reporting_triangle-nrz-influenza-tests-preprocessed.csv',
+    'reporting_triangle-nrz-rsv-tests.csv',
+    'reporting_triangle-nrz-rsv-tests-preprocessed.csv'
+]
 
-for i in file_dict.keys():
-    print(i)
-    if 'rsv' in i:
+for f in files:
+    print(f)
+    if 'rsv' in f:
         target_path = '../data/nrz/rsv/'
-    elif 'influenza' in i:
+    elif 'influenza' in f:
         target_path = '../data/nrz/influenza/'
     
-    df = pd.read_csv(path + i)
-    df.to_csv(target_path + file_dict[i], index = False)
+    df = pd.read_csv(path + f)
+    df.to_csv(target_path + f, index = False)
 
 
 # ICOSARI
 
 path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/SARI/'
 
-file_dict = {
-    'SARI_reporting_triangle.csv' : 'reporting_triangle-icosari-sari.csv',
-    'SARI_reporting_triangle_preprocessed.csv' : 'reporting_triangle-icosari-sari-preprocessed.csv'
-}
+files = [
+    'reporting_triangle-icosari-sari.csv',
+    'reporting_triangle-icosari-sari-preprocessed.csv'
+]
 
-for i in file_dict.keys():
-    print(i)
+for f in files:
+    print(f)
     target_path = '../data/icosari/sari/'
     
-    df = pd.read_csv(path + i)
-    df.to_csv(target_path + file_dict[i], index = False)
+    df = pd.read_csv(path + f)
+    df.to_csv(target_path + f, index = False)
