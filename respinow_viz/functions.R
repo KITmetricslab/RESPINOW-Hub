@@ -14,8 +14,6 @@ truth_as_of <- function(dat_truth, age_group = "00+", location = "DE", date, max
                       dat_truth$date <= date, ]
   matr <- subs[, grepl("value_", colnames(subs))]
   if(!is.null(max_lag)){
-    print(max_lag)
-    print(colnames(matr))
     matr <- matr[, paste0("value_", 0:max_lag, "w")]
   }
   matr_dates <- matrix(subs$date, nrow = nrow(matr), ncol = ncol(matr))
