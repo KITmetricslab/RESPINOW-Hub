@@ -125,7 +125,7 @@ for (disease in diseases) {
 previous_truth <- previous_tests <- list()
 for (disease in diseases) {
   previous_truth[[disease]] <- read.csv(paste0(path_truth, "latest_data-", disease, ".csv"),
-                                       colClasses = c(date = "Date"))
+                                        colClasses = c(date = "Date"))
   previous_truth[[disease]] <- subset(previous_truth[[disease]], date <= min(reporting_triangles[[disease]]$date))
   # make sure rows are ordered by date:
   previous_truth[[disease]] <- previous_truth[[disease]][order(previous_truth[[disease]]$date), ]
@@ -251,15 +251,17 @@ shinyServer(function(input, output, session) {
                  "truth_by_reporting" = 4,
                  "truth_frozen" = 5,
                  "old_tests" = 6,
-                 "current_tests" = 7)
+                 "current_tests" = 7,
+                 "old_proportion" = 8,
+                 "current_proportion" = 9)
     l_temp <- length(temp)
     for(i in seq_along(models)) temp[[models[i]]] <- 2*i + l_temp - 1:0 # layers for models
     plot_data$mapping <- temp
     
     # truth data form before time-stamped versions are available:
     previous_truth_temp <- subset(previous_truth[[input$select_pathogen]],
-                                 location == input$select_state &
-                                   age_group == input$select_age)
+                                  location == input$select_state &
+                                    age_group == input$select_age)
     previous_truth_temp <- previous_truth_temp[, c("date", "value")]
     
     # determine max_lag:
@@ -340,8 +342,7 @@ shinyServer(function(input, output, session) {
       
       # reverting necessary to avoid bug with mouseover texts (don't know why)
       plot_data$old_tests <- data.frame(x = rev(old_tests$date), y = rev(round(old_tests$value*pop_factor, 2)))
-      print(plot_data$old_tests)
-      
+
       # most recent tests data:
       current_tests <- truth_as_of(dat_truth = reporting_triangles_tests[[input$select_pathogen]],
                                    age_group = input$select_age,
@@ -353,12 +354,29 @@ shinyServer(function(input, output, session) {
       
       # reverting necessary to avoid bug with mouseover texts (don't know why)
       plot_data$current_tests <- data.frame(x = rev(current_tests$date), y = rev(round(current_tests$value*pop_factor, 2)))
+      
+      # get old proportions:
+      old_proportions_temp <- merge(plot_data$old_truth, plot_data$old_tests, by = "x")
+      old_proportions_temp$y <- round(old_proportions_temp$y.x/old_proportions_temp$y.y, 2) # round for nice display
+      old_proportions_temp$y.x <- old_proportions_temp$y.y <- NULL
+      plot_data$old_proportion <- old_proportions_temp
+      
+      # get current proportions:
+      current_proportions_temp <- merge(plot_data$current_truth, plot_data$current_tests, by = "x")
+      current_proportions_temp$y <- round(current_proportions_temp$y.x/current_proportions_temp$y.y, 2) # round for nice display
+      current_proportions_temp$y.x <- current_proportions_temp$y.y <- NULL
+      plot_data$current_proportion <- current_proportions_temp
+      
     }else{
       # hide layer somewhere if deactivated by user:
       plot_data$old_tests <- data.frame(x = min(reporting_triangles[[input$select_pathogen]]$date),
                                         y = 0)
       plot_data$current_tests <- data.frame(x = min(reporting_triangles[[input$select_pathogen]]$date),
                                             y = 0)
+      plot_data$old_proportion <- data.frame(x = min(reporting_triangles[[input$select_pathogen]]$date),
+                                             y = 0)
+      plot_data$current_proportion <- data.frame(x = min(reporting_triangles[[input$select_pathogen]]$date),
+                                                 y = 0)
     }
     
     
@@ -442,7 +460,9 @@ shinyServer(function(input, output, session) {
         }
       }
       # y axis limit
-      plot_data$ylim <- c(0, 1.1*max(c(plot_data$current_truth$y, max_vals), na.rm = TRUE))
+      plot_data$range_grey <- c(0, 1.2*max(c(plot_data$current_truth$y, max_vals), na.rm = TRUE))
+      plot_data$ylim <- c(0, 1.1*max(c(head(plot_data$current_truth$y, 10), max_vals), na.rm = TRUE))
+      print(plot_data$ylim)
     }
   })
   
@@ -453,30 +473,39 @@ shinyServer(function(input, output, session) {
     isolate({
       
       # compute default zoom (for some reason on millisecond scale):
-      min_Date <- Sys.Date() - 70
+      min_Date <- Sys.Date() - 150
       min_Date_ms <- as.numeric(difftime(min_Date, "1970-01-01")) * (24*60*60*1000)
       max_Date <- Sys.Date() + 5
       max_Date_ms <- as.numeric(difftime(max_Date, "1970-01-01")) * (24*60*60*1000)
       
       # print(plot_data$old_tests)
-      print(tests_available[input$select_pathogen])
-      
+      ay <- list(
+        tickfont = list(color = "red"),
+        overlaying = "y",
+        side = "right",
+        title = "% pos.",
+        zeroline = FALSE,
+        showline = FALSE,
+        visible = tests_available[input$select_pathogen]
+        )
+
       # initialize plot:
       p <- plot_ly(mode = "lines", hovertemplate = '%{y}', source = "tsplot") %>% # last argument ensures labels are completely visible
-        layout(yaxis = list(title = 'Inzidenz (pro 100.000)'), # axis + legend settings
+        layout(yaxis = list(title = 'Inzidenz (pro 100.000)', range = plot_data$ylim), # axis + legend settings
                xaxis = list(title = "Meldedatum", range = c(min_Date_ms, max_Date_ms)), # , rangeslider = list(type = "date")
                hovermode = "x unified",
-               hoverdistance = 5) %>%
+               hoverdistance = 5,
+               yaxis2 = ay) %>%
         add_polygons(x = c(min(previous_truth[[input$select_pathogen]]$date), as.Date(input$select_date), # grey shade to separate past and future
                            as.Date(input$select_date), min(previous_truth[[input$select_pathogen]]$date)),
-                     y = rep(plot_data$ylim, each = 2),
+                     y = rep(plot_data$range_grey, each = 2),
                      hoverinfo = "none", hoveron = "points",
                      inherit = FALSE,
                      fillcolor = "rgba(0.9, 0.9, 0.9, 0.5)",
                      line = list(width = 0),
                      showlegend = FALSE) %>%
         add_lines(x = rep(input$select_date, 2), # vertical line for selected date
-                  y = plot_data$ylim,
+                  y = plot_data$range_grey,
                   name = "current date",
                   hovertemplate = "%{x}",
                   line = list(color = 'rgb(0.5, 0.5, 0.5)', dash = "dot"),
@@ -512,6 +541,18 @@ shinyServer(function(input, output, session) {
                   name = paste("Gesamtzahl Tests, Datenstand", current_date),
                   line = list(color = 'rgb(150, 150, 250)'),
                   showlegend = tests_available[input$select_pathogen]) %>%
+        add_lines(x = plot_data$old_proportion$x, # trace for total number of tests as of selected date
+                  y = plot_data$old_proportion$y,
+                  name = paste("Positivquote, Datenstand", input$select_date),
+                  line = list(color = 'rgb(200, 0, 0)'),
+                  showlegend = tests_available[input$select_pathogen],
+                  yaxis = "y2") %>%
+        add_lines(x = plot_data$current_proportion$x, # trace for total number of tests, current data
+                  y = plot_data$current_proportion$y,
+                  name = paste("Positivquote, Datenstand", current_date),
+                  line = list(color = 'rgb(250, 150, 150)'),
+                  showlegend = tests_available[input$select_pathogen],
+                  yaxis = "y2") %>%
         event_register(event = "plotly_click") # enable clicking to select date
       
       # add nowcasts: run through models
@@ -564,11 +605,11 @@ shinyServer(function(input, output, session) {
   # update shaded area to mark selected date:
   observe({
     plotlyProxyInvoke(myPlotProxy, "restyle", list(x = list(rep(as.Date(input$select_date), 2)),
-                                                   y = list(plot_data$ylim)),
+                                                   y = list(plot_data$range_grey)),
                       list(1))
     plotlyProxyInvoke(myPlotProxy, "restyle", list(x = list(c(min(previous_truth[[input$select_pathogen]]$date), as.Date(input$select_date),
                                                               as.Date(input$select_date), min(previous_truth[[input$select_pathogen]]$date))),
-                                                   y = list(rep(plot_data$ylim, each = 2))),
+                                                   y = list(rep(plot_data$range_grey, each = 2))),
                       list(0))
   })
   
@@ -603,7 +644,7 @@ shinyServer(function(input, output, session) {
                       list(plot_data$mapping$truth_frozen))
   })
   
-  # updating most recent truth:
+  # updating most recent otal number of tests and proportions:
   observe({
     plotlyProxyInvoke(myPlotProxy, "restyle", list(x = list(plot_data$current_tests$x),
                                                    y = list(plot_data$current_tests$y),
@@ -622,6 +663,43 @@ shinyServer(function(input, output, session) {
                                                                  paste("Gesamtzahl Tests, Datenstand", input$select_date),
                                                                  paste("total number of tests, as of", input$select_date))),
                       list(plot_data$mapping$old_tests))
+  })
+  
+  # updating most recent otal number of tests and proportions:
+  observe({
+    plotlyProxyInvoke(myPlotProxy, "restyle", list(x = list(plot_data$current_proportion$x),
+                                                   y = list(plot_data$current_proportion$y),
+                                                   line = list(color = 'rgb(200, 0, 0)'),
+                                                   showlegend = tests_available[input$select_pathogen]),
+                      list(plot_data$mapping$current_proportion))
+  })
+  
+  # update proportion as of selected date:
+  observe({
+    plotlyProxyInvoke(myPlotProxy, "restyle", list(x = list(plot_data$old_proportion$x),
+                                                   y = list(plot_data$old_proportion$y),
+                                                   line = list(color = 'rgb(250, 150, 150)'),
+                                                   showlegend = tests_available[input$select_pathogen],
+                                                   name = ifelse(input$select_language == "DE",
+                                                                 paste("Positivanteil, Datenstand", input$select_date),
+                                                                 paste("proportion positive, as of", input$select_date))),
+                      list(plot_data$mapping$old_proportion))
+  })
+  
+  # update right axis:
+  observe({
+    ay <- list(
+      tickfont = list(color = "red"),
+      overlaying = "y",
+      side = "right",
+      title = "% pos.",
+      zeroline = FALSE,
+      showline = FALSE,
+      visible = as.logical(tests_available[input$select_pathogen]))
+    # as.logical necessary as otherwise plotly gets confused by naming of element
+
+    
+    plotlyProxyInvoke(myPlotProxy, "relayout", list(yaxis2 = ay))
   })
   
   # update nowcasts:
@@ -1115,18 +1193,24 @@ shinyServer(function(input, output, session) {
                    "RSV (SurvStat)" = "survstat-rsv",
                    "Pneumokokken (SurvStat)" = "survstat-pneumococcal",
                    "Saisonale Influenza (NRZ)" = "nrz-influenza",
-                   "Saisonale Influenza Tests (NRZ)" = "nrz-influenza-tests",
+                   # "Saisonale Influenza Tests (NRZ)" = "nrz-influenza-tests",
                    "RSV (NRZ)" = "nrz-rsv",
-                   "RSV Tests (NRZ)" = "nrz-rsv-tests",
+                   "Saisonale Influenza (CVN)" = "cvn-influenza",
+                   "RSV (CVN)" = "cvn-rsv",
+                   "Pneumokokken (CVN)" = "cvn-pneumococcal",
+                   # "RSV Tests (NRZ)" = "nrz-rsv-tests",
                    "SARI (ICOSARI)" = "icosari-sari")
       if(input$select_language == "EN"){
         names(choices) <- c("Seasonal influenza (SurvStat)",
                             "RSV (SurvStat)",
                             "Pneumococcal disease (SurvStat)",
                             "Seasonal influenza (NRZ)" = "nrz-influenza",
-                            "Seasonal Influenza tests (NRZ)" = "nrz-influenza-tests",
+                            # "Seasonal Influenza tests (NRZ)" = "nrz-influenza-tests",
                             "RSV (NRZ)" = "nrz-rsv",
-                            "RSV tests (NRZ)" = "nrz-rsv-tests",
+                            # "RSV tests (NRZ)" = "nrz-rsv-tests",
+                            "Seasonal influenza (CVN)" = "cvn-influenza",
+                            "RSV (CVN)" = "cvn-rsv",
+                            "Pneumococcal disease (CVN)" = "cvn-pneumococcal",
                             "SARI (ICOSARI)" = "icosari-sari")
       }
       selected <- input$select_pathogen
