@@ -70,3 +70,31 @@ for f in files:
     
     df = pd.read_csv(path + f)
     df.to_csv(target_path + f, index = False)
+
+
+# CVN
+
+path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/CVN/'
+
+files = [
+    'reporting_triangle-cvn-pneumococcal.csv',
+    'reporting_triangle-cvn-pneumococcal-preprocessed.csv',
+
+    'reporting_triangle-cvn-rsv.csv',
+    'reporting_triangle-cvn-rsv-preprocessed.csv',
+
+    'reporting_triangle-cvn-influenza.csv',
+    'reporting_triangle-cvn-influenza-preprocessed.csv'
+]
+
+for f in files:
+    print(f)
+    if 'pneumococcal' in f:
+        target_path = '../data/cvn/pneumococcal/'
+    elif 'rsv' in f:
+        target_path = '../data/cvn/rsv/'
+    elif 'influenza' in f:
+        target_path = '../data/cvn/influenza/'
+    
+    df = pd.read_csv(path + f)
+    df.to_csv(target_path + f, index = False)
