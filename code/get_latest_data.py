@@ -59,3 +59,27 @@ for i in file_dict.keys():
     
     df = pd.read_csv(path + i)
     df.to_csv(target_path + file_dict[i], index = False)
+
+
+# CVN
+
+path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/CVN/'
+
+file_dict = {
+    'latest_data-CVN-influenza.csv' : 'latest_data-cvn-influenza.csv',
+    'latest_data-CVN-rsv.csv': 'latest_data-cvn-rsv.csv',
+    'latest_data-CVN-pneumococcal.csv': 'latest_data-cvn-pneumococcal.csv'
+}
+
+for i in file_dict.keys():
+    print(i)
+    if 'pneumococcal' in i:
+        target_path = '../data/cvn/pneumococcal/'
+    elif 'rsv' in i:
+        target_path = '../data/cvn/rsv/'
+    elif 'influenza' in i:
+        target_path = '../data/cvn/influenza/'
+    
+    df = pd.read_csv(path + i)
+    df.to_csv(target_path + file_dict[i], index = False)
+    
