@@ -1,0 +1,135 @@
+---
+title: "Information on platform and submission"
+author: "RespiNow SP4"
+format: pdf
+editor: visual
+pdf-engine: pdflatex
+---
+
+## Where to find what
+
+Resources for the project are spread out across a few repositories and websites:
+
+- The official RespiNow website: (<https://respinow.de/>) contains some basic information, but is mainly for communicating to the outside.
+
+- The beta version of the visualization dashboard currently lives at <https://jobrac.shinyapps.io/respinow_viz/>. It now does most of what it needs to do, but still has a few bugs.
+
+- The repository <https://github.com/KITmetricslab/RESPINOW-Hub> is the backbone of the project. It contains the data we have aggregated and will collect the nowcasts / forecasts. See details in the following sections.
+
+- The repository <https://github.com/KITmetricslab/RESPINOW-Data> contains some data stuff which we pulled outside of the main repository. You likely don't need to look into this repository.
+
+
+## Truth data format
+
+Truth data is available in the folder [`data`](https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/data) of the [`RESPINOW-Hub`](https://github.com/KITmetricslab/RESPINOW-Hub) repository. Files are sorted by the data source and disease. For each indicator we provide three csv files:
+
+- `latest_data-<source>-<disease>.csv`: This file contains simple time series data in the format of weekly counts. See example [here](https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/data/survstat/influenza/latest_data-survstat-influenza.csv).
+```{r, echo=FALSE}
+dat <- read.csv("../data/survstat/rsv/latest_data-survstat-rsv.csv")
+dat[100:105, ]
+```
+
+The `date` variable corresponds to the Sunday concluding the respective week. These data may be stratified by `location` and `age_group`. Note that the last 1--2 values of this time series (in some cases more) are typically subject to revisions and may be overwritten with new, typically higher values.
+
+- `reporting_triangle-<source>-<disease>.csv`: For nowcasting we need to keep track of these revisions, which is why we provide so-called reporting triangles. These contain the weekly counts stratified by how many weeks it took until they appeared in the data. See example [here](https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/data/survstat/influenza/reporting_triangle-survstat-influenza.csv).
+```{r, echo=FALSE}
+triangle <- read.csv("../data/survstat/rsv/reporting_triangle-survstat-rsv.csv")
+triangle[56:63, ]
+```
+Values reported with a delay of more than 19 weeks are aggregated. Again data are potentially stratified by `location` and `age_group`. Note that this table occasionally contains negative numbers, meaning that data have been corrected downwards rather than upwards as we would expect.
+
+-`reporting_triangle-<source>-<disease>-preprocessed.csv`: As most nowcasting methods cannot deal with such negative increments we also provide a ``processed'' version of the reporting triangle, where these negative values have been removed via a simple heuristic shifting counts between neighbouring cells. This file is typically what will be used as the input for nowcasting. See example [here](https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/data/survstat/influenza/reporting_triangle-survstat-influenza-preprocessed.csv).
+```{r, echo=FALSE}
+triangle_processed <- read.csv("../data/survstat/rsv/reporting_triangle-survstat-rsv-preprocessed.csv")
+triangle_processed[56:63, ]
+```
+
+Note that the `latest_data` files typically reach further back in time. For the `reporting_trianle` files we are constrained to the time period during which we collected weekly data snapshots, which depending on the indicator in question is something like the last 12--24 months.
+
+## Nowcasting / forecasting targets and submission
+
+### Definition of the target
+
+For most indicators data can potentially be revised over very long time periods. Late revisions are rare and hardly predictable, but can be substantial. Our suggestion is to define the prediction target as the **number of events reported up to a given maximum delay** $D$, which could be $D = 4$ or 6 weeks. This would be the target for both the nowcasting part and the short-term forecasting part.
+
+### Prediction horizons
+
+For each of the indicators we suggest to issue nowcasts and forecasts for the following time points:
+
+- **nowcasts:** from $D - 1$ weeks back until the current week, i.e., all weeks for which revisions are still technically possible under the definition evoked in the previous section.
+- **forecasts:** we will not set a formal limit on how far into the future you want to predict. Seasonal diseases may be predictable a bit futher into the future than emerging ones, but we do not really know how this will play out post-COVID. The US FluSight project considers forecasts up to 4 weeks into the future, but we may limit at least public display to 2 weeks.
+
+## Submission
+
+### Folder structure
+
+Predictions will be collected in the folder [`submissions`](https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/submissions/), which will be further structured by target data source and disease. Within each of the resulting subfolders, each team will have a folder where to deposit predictions for that specific target.
+
+### File naming
+
+Submission files should in csv format and placed in the correct subfolder. The naming convention is
+
+`<submission date>-<data source>-<disease>-<team>-<model name>.csv`.
+
+An example of a correct name is
+
+`2022-11-13-survstat-influenza-KIT-sipmple_nowcast.csv`.
+
+Please note that for technical reasons the team and model names should not contain the character `"-"`,
+
+### File structure
+
+Teams are asked to provide their forecasts in a quantile-based format (even though we also accept submissions containing only point forecasts). The tabular version of the data model is a simple, long-form data format, with the following required columns: `['location', 'age_group', 'forecast_date', 'target_end_date', 'target', 'type', 'quantile', 'value']`. The contents of these columns are defined as follows.
+
+#### `forecast_date`
+
+The data version on which the nowcasts/forecasts are based in `YYYY-MM-DD` format. This `forecast_date` should be a Sunday and correspond to the date in the filename. Our submission system will only accept nowcasts marked with the current date as the `forecast_date`.
+
+#### `target`
+
+Values in the `target` column describe which quantity is being predicted as there may be several (e.g., total number of tests and positive tests). **We have not quite figured out how to handle this**.
+
+
+
+#### `target_end_date`:
+
+The date corresponding to the end time of the target, in `YYYY-MM-DD` format. This is the Sunday at the end of the week the prediction refers to.
+
+#### `location`
+
+A unique id for the location. We use `"DE"` for the national level and the following codes for the federal states:
+```{r, echo=FALSE}
+locations <- read.csv("../respinow_viz/plot_data/other/list_locations_survstat.csv")
+locations
+```
+
+Note that not all indicators may be available with age stratification. In this case just use `"DE"`.
+
+#### `age_group`
+
+One of the following to indicate the age group: `"00+"` (all age groups), `"00-04"`, `"05-14"`, `"15-34"`, `"35-59"`, `"60-79"`, `"80+"`. Note that not all indicators may be available with age stratification. In this case just use `"00+"`.
+
+
+#### `type`
+
+Either `"mean"` or `"quantile"`.
+
+#### `quantile`
+
+A value in `[0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975]`, stating which quantile is displayed in this row. If `type=="mean"` then `NA`. We encourage all groups to make available all 7 quantiles.
+
+#### `value`
+
+A numeric value representing the value of the quantile or mean prediction.
+
+For example, if `quantile` is 0.3 and `value` is 10, then this row is saying that the 30% quantile of the predictive distribution is 10. If `type` is `"mean"` and `value` is 15, then this row is saying that the predictive mean from this model is 15. 
+
+See this example file:
+```{r, echo=FALSE}
+nowcasts <- read.csv("../submissions/retrospective/survstat/influenza/KIT-epinowcast/2023-02-05-survstat-influenza-KIT-epinowcast.csv")
+nowcasts
+```
+
+## Submission rhythm
+
+We plan to have weekly updates. Maybe we can have a system where nowcasts are updated on Monday and forecasts from models which require nowcasts as input are updated on Tuesdays.

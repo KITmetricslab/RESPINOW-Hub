@@ -1,0 +1,322 @@
+---
+title: "Overview of data sets"
+author: "RespiNow SP4"
+format: pdf
+editor: visual
+pdf-engine: pdflatex
+---
+
+This document contains a summary of relevant information on the different data sources we are using within RespiNow SP4. It will be revised over time.
+
+# SurvStat
+
+**Definition of the indicator:** SurvStat data contain weekly numbers of laboratory-confirmed pathogen detections for a number of notifiable diseases. Cases are assigned to a week of notification based on the date when the local health authority was notified.
+
+**Pathogens / conditions:** Notifiable diseases include seasonal influenza (direct detection) and pneumococcal disease. RSV is only notifiable in the state of Saxony.
+
+**Reporting procedure:** Usually laboratories report directly to local health authorities (Gesundheitsämter). Via state-level administrations (Landesbehöden) these are forwarded to Robert-Koch-Institut.
+
+![Reporting procedure in SurvStat. Source: RKI.](figures/survstat.png){width="250" fig-pos="h!"}
+
+**Stratification variables:** data are stratified by various characteristics; we use data for the whole of Germany, stratified by age group and stratified by region. Note that instead of the stratification by federal state as provided in the data we use the slightly coarser "AGI regions". These aggregate some smaller states (Niedersachsen + Bremen, Brandenburg + Berlin, Rheinland-Pfalz + Saarland, Schleswig-Holstein + Hamburg), leading to a total of 12 rather than 16 regions.
+
+**Limitations /challenges / open questions:**
+
+-   Laboratory analyses are only performed for part of all patients presenting influenza-like symptoms, meaning that SurvStat data only capture a subset of all cases. The number of laboratory analyses performed depends on numerous factors including reimbursement schemes and temporary changes in regulations (e.g., during the 2009 influenza pandemic). Reporting fractions can therefore fluctuate.
+-   RSV is only notifiable in Saxony and we lack data on other states for this disease.
+
+**Sources:**
+
+-   [Bericht zur Epidemiologie der Influenza in Deutschland Saison 2018/19](https://influenza.rki.de/Saisonbericht.aspx), Pages 16 and following.
+
+-   [RKI SurvStat documentation](https://survstat.rki.de/Content/Instruction/Content.aspx)
+
+**Relevant files**
+
+-   Reporting triangles and time series in subfolders of [`data/survstat`](https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/data/survstat).
+
+**Illustrative plots**
+
+```{r, echo=FALSE}
+source("../respinow_viz/functions.R")
+library(RColorBrewer)
+```
+
+```{r, echo=FALSE}
+# plots:
+plot_latest_truth <- function(latest_truth, location = "DE", age_group = "00+", label = ""){
+  latest_truth <- latest_truth[latest_truth$location == location & latest_truth$age_group == age_group, ]
+  plot(latest_truth$date, latest_truth$value, type = "l", xlab = "", ylab = "weekly cases",
+       main = paste0(label, ", ", location, ", ", age_group), col = "darkblue")
+}
+```
+
+```{r, fig.height=4, fig.width=10, echo=FALSE}
+labels_survstat <- c("influenza" = "SurvStat - seasonal influenza",
+                     "pneumococcal" = "SurvStat - pneumococcal disease",
+                     "rsv" = "SurvStat - RSV")
+
+for(disease in c("influenza", "rsv", "pneumococcal")){
+  latest_truth <- read.csv(paste0("../data/survstat/", disease, "/latest_data-survstat-", disease,".csv"),
+                           colClasses = c("date" = "Date"))
+  plot_latest_truth(latest_truth, label = labels_survstat[disease])
+  
+}
+```
+
+```{r, echo=FALSE}
+summarize_delays <- function(triangle, latest_truth, triangle2 = NULL, latest_truth2 = NULL,
+                             location = "DE", age_group = "00+", label = "", ylim = NULL){
+  
+  latest_truth <- latest_truth[latest_truth$location == location & latest_truth$age_group == age_group, ]
+
+  max_date <- max(latest_truth$date)
+  min_date <- max_date - 365
+  triangle <- triangle[triangle$location == location & triangle$age_group == age_group & triangle$date >= min_date, ]
+  
+  distr <- colSums(triangle[grepl("value_", colnames(triangle))], na.rm = TRUE)
+  distr[5] <- sum(distr[5:11])
+  
+  ylim <- c(0, 1.1*max(latest_truth$value))
+  
+  if(!is.null(latest_truth2) & !is.null(triangle2)){
+    latest_truth2 <- latest_truth2[latest_truth2$location == location & latest_truth2$age_group == age_group, ]
+    triangle2 <- triangle2[triangle2$location == location & triangle2$age_group == age_group & triangle2$date >= min_date, ]
+    
+    distr2 <- colSums(triangle2[grepl("value_", colnames(triangle2))], na.rm = TRUE)
+    distr2[5] <- sum(distr2[5:11])
+    
+    ylim <- c(0, 1.1*max(c(latest_truth$value, latest_truth2$value)))
+  }
+  
+  cols <- brewer.pal(5, "Blues")
+  cols <- c(cols, rep(cols[5], 7))
+  layout(matrix(c(1, 1, 1, 1, 2), nrow = 1))
+  plot(latest_truth$date, latest_truth$value, type = "l", xlab = "", ylab = "weekly cases",
+       main = paste0(label, ", ", location, ", ", age_group), xlim = max(latest_truth$date) - c(365, 0),
+       col = "darkred", ylim = ylim)
+  dts <- triangle$date
+  for(i in seq_along(dts)){
+    dt <- dts[i]
+    truth_temp <- truth_as_of(triangle, date = dt)
+    lines(truth_temp$date, truth_temp$value, col = "red", lwd = 1)
+    
+    if(!is.null(triangle2)){
+      truth_temp2 <- truth_as_of(triangle2, date = dt)
+      lines(truth_temp2$date, truth_temp2$value, col = "lightblue", lwd = 1)
+    }
+  }
+  lines(latest_truth$date, latest_truth$value, lwd = 1, col = "darkred")
+  if(!is.null(triangle2)){
+    lines(latest_truth2$date, latest_truth2$value, lwd = 1, col = "darkblue")
+  }
+  
+  legend <- c("final data", "real-time")
+  cols_legend <- c("darkred", "red")
+  if(!is.null(triangle2)){
+    cols_legend <- c(cols_legend, "darkblue", "lightblue")
+    legend <- c(legend, "final # tests", "real-time # tests")
+  }
+  legend("topleft", legend = legend,
+         col = cols_legend, lty = 1, bty = "n")
+  legend("topright", legend = c("Delays", "1", "2", "3", "4", "> 4"),
+         pt.bg = c(NA, cols), pch = c(NA, rep(22, 5)), bty = "n")
+  
+  if(is.null(triangle2)){
+    matr <- matrix(distr)/sum(distr)
+  }else{
+    matr <- cbind(distr/sum(distr), distr2/sum(distr2))
+  }
+  
+  barplot(matr, col = cols, main = "Delays")
+}
+```
+
+```{r, echo=FALSE}
+for(disease in c("influenza", "pneumococcal", "rsv")){
+  triangle <- read.csv(paste0("../data/survstat/", disease, "/reporting_triangle-survstat-", disease,".csv"),
+                       colClasses = c("date" = "Date"))
+  latest_truth <- read.csv(paste0("../data/survstat/", disease, "/latest_data-survstat-", disease,".csv"),
+                           colClasses = c("date" = "Date"))
+
+  summarize_delays(triangle = triangle, latest_truth = latest_truth, label = labels_survstat[disease])
+}
+```
+
+# AGI (Arbeitsgruppe Influenza) Sentinel Surveillance
+
+## Konsultationsinzidenz (consultation incidence)
+
+**Definition of the indicator:** the estimated weekly number of GP consultations for acute respiratory infections per 100.000 inhabitants.
+
+**Pathogens / conditions:** this is a syndromic indicator which is not specific to one pathogen. "Acute respiratory infection" is defined in terms of ICD-10 diagnostic codes (J00 -- J22, B34.9 and J44.0).
+
+**Reporting procedure:** Consultations are reported by approximately 600 sentinel GP practices (\> 1% of Gps). Reporting is done directly to RKI either electronically (SEED-ARE system, used by 37% of practices in 2019/19) or by fax.
+
+**Stratification variables:** We have access to time series stratified by age group (0-4, 5-14, 15-34, 35-49, 50-59, 60 and above).
+
+**Limitations / challenges / open questions:**
+
+-   We are unsure about how strongly the set of sentinel GPs changes from year to year and how this affects the data.
+
+-   unsure about how dates are assigned -- by date of test or by date of reporting?
+
+**Sources:**
+
+-   [Bericht zur Epidemiologie der Influenza in Deutschland Saison 2018/19](https://influenza.rki.de/Saisonbericht.aspx), Pages 23 and following (in German)
+-   [Überwachung von COVID-19 durch Erweiterung der etablierten Surveillance für Atemwegsinfektionen](https://doi.org/10.1007/s00103-021-03303-2)
+
+**Related data:**
+
+-   The "Praxisindex" (parctice index) represents the average (across GP practices) relative deviation from a "normal" level during the winter period.
+
+**Relevant files:** - Not available / extracted yet.
+
+**Illustrative figures:**
+
+![Display of consultation incidence in AGI Weekly Report. Source: AGI/RKI.](figures/konsultationsinzidenz.png){width="650" fig-pos="h!"}
+
+
+# Nationales Referenzzentrum (NRZ, National Reference Center) virological surveillance
+
+**Definition of the indicator:** Weekly total number of samples tested for different viruses via PCR and the number of positive samples.
+
+**Pathogens / conditions:** seasonal influenza and RSV. For influenza different types are distinguished, but we are not using these information.
+
+**Reporting procedure:** roughly 20% of the sentinel GP practices participating in AGI are equipped to perform nose swabs. GPs are instructed to swab the first patient consulting for a set of symptoms (fever, respiratory symptoms, headache, \...) of the week (per age group) and send the sample to the National Reference Center. The criteria are stricter than the ARE criteria, but if no patients presenting them are available, ARE patients can be swabbed.
+
+**Stratification variables:** We have access to time series by ARE region.
+
+**Limitations / challenges / open questions:**
+
+-   data are currently not available in a machine-readable format and need to be extracted from figures (but this works well).
+-   unsure about how dates are assigned -- by date of test or by date of reporting?
+
+**Sources:**
+
+-   [Bericht zur Epidemiologie der Influenza in Deutschland Saison 2018/19](https://influenza.rki.de/Saisonbericht.aspx), Pages 26 and following (in German)
+
+-   [Überwachung von COVID-19 durch Erweiterung der etablierten Surveillance für Atemwegsinfektionen](https://doi.org/10.1007/s00103-021-03303-2)
+
+**Relevant files:**
+
+-   Reporting triangles and time series in subfolders of [`data/nrz`](https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/data/nrz).
+
+**Illustrative figures**
+
+```{r, echo=FALSE}
+labels_nrz <- c("influenza" = "NRZ - seasonal influenza",
+                     "rsv" = "NRZ - RSV")
+disease <- "influenza"
+for(disease in c("influenza", "rsv")){
+  latest_truth_tests <- read.csv(paste0("../data/nrz/", disease, "/latest_data-nrz-", disease,"-tests.csv"),
+                           colClasses = c("date" = "Date"))
+  latest_truth <- read.csv(paste0("../data/nrz/", disease, "/latest_data-nrz-", disease,".csv"),
+                           colClasses = c("date" = "Date"))
+  latest_truth <- subset(latest_truth, location == "DE" & age_group == "00+")
+  plot_latest_truth(latest_truth_tests, label = labels_nrz[disease])
+  lines(latest_truth$date, latest_truth$value, col = "darkred")
+}
+```
+
+```{r, echo=FALSE}
+for(disease in c("influenza", "rsv")){
+  triangle_tests <- read.csv(paste0("../data/nrz/", disease, "/reporting_triangle-nrz-", disease,"-tests.csv"),
+                       colClasses = c("date" = "Date"))
+  latest_truth_tests <- read.csv(paste0("../data/nrz/", disease, "/latest_data-nrz-", disease,"-tests.csv"),
+                           colClasses = c("date" = "Date"))
+  
+  triangle <- read.csv(paste0("../data/nrz/", disease, "/reporting_triangle-nrz-", disease,".csv"),
+                       colClasses = c("date" = "Date"))
+  latest_truth <- read.csv(paste0("../data/nrz/", disease, "/latest_data-nrz-", disease,".csv"),
+                           colClasses = c("date" = "Date"))
+
+  summarize_delays(triangle = triangle, latest_truth = latest_truth, 
+                   triangle2 = triangle_tests, latest_truth2 = latest_truth_tests,
+                   label = labels_nrz[disease])
+}
+```
+
+# ICOSARI hospital sentinel
+
+**Definition of the indicator:** Weekly numbers of new SARI (severe acute respiratory infections) hospitalizations.
+
+**Pathogens / conditions:** this is a syndromic indicator which is not specific to one pathogen. "Acute respiratory infection" is defined in terms of ICD-10 diagnostic codes (J09 -- J22).
+
+**Reporting procedure:** Around 70-80 hospitals from a large hospital operator (Helios Kliniken GmbH) report new hospitalizations (from 13/16 German states, covering 5-6% of hospitalizations in Germany). Reporting is weekly to RKI, but unless I am mistaken, done at discharge (i.e., with a delay).
+
+**Stratification variables:** Age groups 00--04, 05--14, 15--34, 35--59, 60--79, 80+.
+
+**Limitations / challenges / open questions:**
+
+-   I am not entirely sure about the interpretation. I think interpretation should likely focus on positivity percentages. However, these are influenced by both the pathogen in question and all others (as they influence the ``denominator'').
+-   data are not available in machine-readable format and extracted from figures by a student assistant.
+-   unclear how hospitalizations are assigned to dates -- by admission or discharge?
+-   number of contributing hospitals varies over time -- how does this affect data? Seems to slightly change even within seasons.
+
+**Sources:**
+
+-   [Buda et al (2017): Establishing an ICD-10 code based SARI-surveillance in Germany -- description of the system and first results from five recent influenza seasons](https://doi.org/10.1186/s12889-017-4515-1)
+
+-   [Überwachung von COVID-19 durch Erweiterung der etablierten Surveillance für Atemwegsinfektionen](https://doi.org/10.1007/s00103-021-03303-2)
+
+-   Reporting triangles and time series in subfolders of [`data/nrz`](https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/data/nrz).
+
+**Illustrative figures**
+
+```{r, fig.height=4, fig.width=10, echo=FALSE}
+labels_icosari <- c("sari" = "SARI")
+
+for(disease in c("sari")){
+  latest_truth <- read.csv(paste0("../data/icosari/", disease, "/latest_data-icosari-", disease,".csv"),
+                           colClasses = c("date" = "Date"))
+  plot_latest_truth(latest_truth, label = labels_icosari[disease])
+  
+}
+```
+
+```{r, echo=FALSE}
+for(disease in c("sari")){
+  triangle <- read.csv(paste0("../data/icosari/", disease, "/reporting_triangle-icosari-", disease,".csv"),
+                       colClasses = c("date" = "Date"))
+  latest_truth <- read.csv(paste0("../data/icosari/", disease, "/latest_data-icosari-", disease,".csv"),
+                           colClasses = c("date" = "Date"))
+
+  summarize_delays(triangle = triangle, latest_truth = latest_truth, label = labels_icosari[disease])
+}
+```
+
+## Network clinical virology
+
+**Limitations / challenges / open questions:**
+
+-   Delays seem to be very long.
+
+**Sources:**
+- [Horemheb‑Rubio et al: Respiratory viruses dynamics and interactions: ten years of surveillance in central Europe](https://doi.org/10.1186/s12889‑022‑13555‑5)
+
+**Illustrative figures**
+
+```{r, fig.height=4, fig.width=10, echo=FALSE}
+labels_cvn <- c("influenza" = "CVN - seasonal influenza",
+                "pneumococcal" = "CVN - pneumococcal disease",
+                "rsv" = "CVN - RSV")
+
+for(disease in c("influenza", "pneumococcal", "rsv")){
+  latest_truth <- read.csv(paste0("../data/cvn/", disease, "/latest_data-cvn-", disease,".csv"),
+                           colClasses = c("date" = "Date"))
+  plot_latest_truth(latest_truth, label = labels_cvn[disease])
+  
+}
+```
+
+```{r, echo=FALSE}
+for(disease in c("influenza", "pneumococcal", "rsv")){
+  triangle <- read.csv(paste0("../data/cvn/", disease, "/reporting_triangle-cvn-", disease,".csv"),
+                       colClasses = c("date" = "Date"))
+  latest_truth <- read.csv(paste0("../data/cvn/", disease, "/latest_data-cvn-", disease,".csv"),
+                           colClasses = c("date" = "Date"))
+
+  summarize_delays(triangle = triangle, latest_truth = latest_truth, label = labels_cvn[disease])
+}
+```
