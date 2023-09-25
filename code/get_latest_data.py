@@ -82,4 +82,19 @@ for i in file_dict.keys():
     
     df = pd.read_csv(path + i)
     df.to_csv(target_path + file_dict[i], index = False)
+
+
+# AGI
+
+path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/AGI/'
+
+file_dict = {
+    'latest_data-AGI-are.csv' : 'latest_data-agi-are.csv',
+}
+
+for i in file_dict.keys():
+    print(i)
+    target_path = '../data/agi/are/'
     
+    df = pd.read_csv(path + i)
+    df.to_csv(target_path + file_dict[i], index = False)
