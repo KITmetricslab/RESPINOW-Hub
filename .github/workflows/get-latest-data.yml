@@ -1,8 +1,8 @@
 name: "get-latest-data"
 on:
   workflow_dispatch:
-  # schedule:
-  #   - cron: "0 4 * * 1"
+  schedule:
+    - cron: "0 9,17 * * 1,5"
   
 
 jobs:
