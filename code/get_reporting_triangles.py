@@ -12,16 +12,7 @@ files = [
     'reporting_triangle-survstat-rsv-preprocessed.csv',
 
     'reporting_triangle-survstat-influenza.csv',
-    'reporting_triangle-survstat-influenza-preprocessed.csv',
-
-    'reporting_triangle-survstat-pneumococcal-tests.csv',
-    'reporting_triangle-survstat-pneumococcal-tests-preprocessed.csv',
-
-    'reporting_triangle-survstat-rsv-tests.csv',
-    'reporting_triangle-survstat-rsv-tests-preprocessed.csv',
-
-    'reporting_triangle-survstat-influenza-tests.csv',
-    'reporting_triangle-survstat-influenza-tests-preprocessed.csv'
+    'reporting_triangle-survstat-influenza-preprocessed.csv'
 ]
 
 for f in files:
@@ -93,7 +84,16 @@ files = [
     'reporting_triangle-cvn-rsv-preprocessed.csv',
 
     'reporting_triangle-cvn-influenza.csv',
-    'reporting_triangle-cvn-influenza-preprocessed.csv'
+    'reporting_triangle-cvn-influenza-preprocessed.csv',
+
+    'reporting_triangle-cvn-pneumococcal-tests.csv',
+    'reporting_triangle-cvn-pneumococcal-tests-preprocessed.csv',
+
+    'reporting_triangle-cvn-rsv-tests.csv',
+    'reporting_triangle-cvn-rsv-tests-preprocessed.csv',
+
+    'reporting_triangle-cvn-influenza-tests.csv',
+    'reporting_triangle-cvn-influenza-tests-preprocessed.csv'
 ]
 
 for f in files:
