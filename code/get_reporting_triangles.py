@@ -12,7 +12,16 @@ files = [
     'reporting_triangle-survstat-rsv-preprocessed.csv',
 
     'reporting_triangle-survstat-influenza.csv',
-    'reporting_triangle-survstat-influenza-preprocessed.csv'
+    'reporting_triangle-survstat-influenza-preprocessed.csv',
+
+    'reporting_triangle-survstat-pneumococcal-tests.csv',
+    'reporting_triangle-survstat-pneumococcal-tests-preprocessed.csv',
+
+    'reporting_triangle-survstat-rsv-tests.csv',
+    'reporting_triangle-survstat-rsv-tests-preprocessed.csv',
+
+    'reporting_triangle-survstat-influenza-tests.csv',
+    'reporting_triangle-survstat-influenza-tests-preprocessed.csv'
 ]
 
 for f in files:
