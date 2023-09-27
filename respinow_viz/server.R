@@ -324,7 +324,7 @@ shinyServer(function(input, output, session) {
     # Data on number of tests
     ####################################
     
-    if(!is.null(input$select_pathogen) & input$select_pathogen %in% c("nrz-influenza", "nrz-rsv")){
+    if(!is.null(input$select_pathogen) & tests_available[input$select_pathogen]){
       # tests data form before time-stamped versions are available:
       previous_tests_temp <- subset(previous_tests[[input$select_pathogen]],
                                     location == input$select_state &
@@ -1199,6 +1199,7 @@ shinyServer(function(input, output, session) {
                    "RSV (CVN)" = "cvn-rsv",
                    "Pneumokokken (CVN)" = "cvn-pneumococcal",
                    # "RSV Tests (NRZ)" = "nrz-rsv-tests",
+                   "ARE (AGI)" = "agi-are",
                    "SARI (ICOSARI)" = "icosari-sari")
       if(input$select_language == "EN"){
         names(choices) <- c("Seasonal influenza (SurvStat)",
@@ -1211,6 +1212,7 @@ shinyServer(function(input, output, session) {
                             "Seasonal influenza (CVN)" = "cvn-influenza",
                             "RSV (CVN)" = "cvn-rsv",
                             "Pneumococcal disease (CVN)" = "cvn-pneumococcal",
+                            "ARI (AGI)" = "agi-are",
                             "SARI (ICOSARI)" = "icosari-sari")
       }
       selected <- input$select_pathogen

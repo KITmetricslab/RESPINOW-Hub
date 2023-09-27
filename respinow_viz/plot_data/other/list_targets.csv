@@ -5,6 +5,7 @@ nrz,rsv,TRUE
 survstat,influenza,FALSE
 survstat,pneumococcal,FALSE
 survstat,rsv,FALSE
-cvn,influenza,FALSE
-cvn,rsv,FALSE
-cvn,pneumococcal,FALSE
+cvn,influenza,TRUE
+cvn,rsv,TRUE
+cvn,pneumococcal,TRUE
+agi,are,FALSE

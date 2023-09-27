@@ -75,6 +75,7 @@ shinyUI(fluidPage(
                                        # "Saisonale Influenza Tests (NRZ)" = "nrz-influenza-tests",
                                        "RSV (NRZ)" = "nrz-rsv",
                                        # "RSV Tests (NRZ)" = "nrz-rsv-tests",
+                                       "ARE (AGI)" = "agi-are",
                                        "SARI (ICOSARI)" = "icosari-sari"),
                            width = "300px"),
             conditionalPanel("input.select_language == 'DE'",
@@ -161,15 +162,15 @@ shinyUI(fluidPage(
         mainPanel(
             add_busy_spinner(spin = "fading-circle"),
             conditionalPanel("input.select_language == 'DE'",
-                             p(strong("Diese Seite ist derzeit in einer Pilotphase und dient nur zum wissenschaftlichen Austausch. Die Analysen werden noch nicht regelmäßig aktualisiert. Derzeit sind die Nowcasts außerdem durch Meldeartefakte zu Weihnachten beeinträchtigt.")),
-                             p("Diese Plattform vereint Nowcasts für ausgewählte epidemiologische Indikatoren zu respiratorischen Erregern in Deutschland. Sie ist Teil des Projektes", a('RespiNow', href="https://respinow.de/"), ". Künftig sollen verschiedene Verfahren zusammengeführt werden, derzeit ist jedoch erst ein Modell operationell."),
-                             p("Alle derzeit dargestellten Daten stammen aus dem", a("RKI SurvStat", href = "https://survstat.rki.de/"), "Routinebüberwachunssystem. Andere Datenquellen sollen demnächst hinzugefügt werden."),
+                             p(strong("Diese Seite ist derzeit in einer Pilotphase und dient nur zum wissenschaftlichen Austausch. Die Analysen werden noch nicht regelmäßig aktualisiert.")),
+                             p("Diese Plattform vereint Nowcasts für ausgewählte epidemiologische Indikatoren zu respiratorischen Erregern in Deutschland. Sie ist Teil des Projektes", a('RespiNow', href="https://respinow.de/"), " innerhalb des ", a("MONID Netzwerks", href = "https://webszh.uk-halle.de/monid/"), ". Künftig sollen verschiedene Verfahren zusammengeführt werden, derzeit ist jedoch erst ein Modell operationell."),
+                             p("Die Datenquellen sind am Ende der Seite angegeben."),
                              p("Bei Unregelmäßigkeiten im Meldeprozess durch z.B. starke Belastung des Gesundheitssystems oder Feiertage kann die Verlässlichkeit der Nowcasts beeinträchtigt werden.")
             ),
             conditionalPanel("input.select_language == 'EN'",
                              p(strong("This website is currently in a pilot phase and serves purely for scientific exchange. The analyses are not yet updated regularly.")),
-                             p("This platform unites nowcasts of selected epidemiological indicators on respiratory diseases in Germany, with the goal of providing reliable assessments of recent trends. We aim to provide results from multiple independently run models, but at the current stage only one is already operational. This project is part of the consortium", a('RespiNow', href="https://respinow.de/"), "."),
-                             p("All currently displayed data come from the", a("RKI SurvStat", href = "https://survstat.rki.de/"), "routine surveillance system. Other data sources shall be added shortly."),
+                             p("This platform unites nowcasts of selected epidemiological indicators on respiratory diseases in Germany, with the goal of providing reliable assessments of recent trends. We aim to provide results from multiple independently run models, but at the current stage only one is already operational. This project is part of the consortium", a('RespiNow', href="https://respinow.de/"), "within the", a("MONID Network", href = "https://webszh.uk-halle.de/monid/"), "."),
+                             p("Data sources are indicated at the bottom of the page."),
                              p("If there are irregularities in the reporting process due to, for example, high burdens on the health care system or holidays, the nowcasts may be less reliable.")
             ),
             
@@ -251,6 +252,22 @@ shinyUI(fluidPage(
                              #   a("Chair of Statistics and Econometrics", href = "https://statistik.econ.kit.edu/index.php"),
                              #   "at Karlsruhe Institute of Technology. Contact: forecasthub@econ.kit.edu")
             ),
+            conditionalPanel("input.select_language == 'DE'",
+                             p("Datenquellen:", style = style_explanation),
+                             p("AGI: ", a("Wochenberichte Arbeitsgemeinschaft Influenza", href = "https://influenza.rki.de/Saisonbericht.aspx"), 
+                               "- CVN: ", a("Clinical Virology Network", href = "https://clinical-virology.net/en"), 
+                               "- ICOSARI: ", a("Robert Koch Institut", href = "https://github.com/robert-koch-institut/ARE-Konsultationsinzidenz"), 
+                               "- NRZ: ", a("Virologische Surveillance, Nationales Referenzzentrum", href = "https://influenza.rki.de/Diagrams.aspx"), 
+                               "- SurvStat: ", a("SurvStat@RKI 2.0, Robert Koch Institut", href = "https://survstat.rki.de"), style = style_explanation)
+            ),
+            conditionalPanel("input.select_language == 'EN'",
+                             p("Data sources:", style = style_explanation),
+                             p("AGI: ", a("Weekly reports, Arbeitsgemeinschaft Influenza", href = "https://influenza.rki.de/Saisonbericht.aspx"), 
+                               "- CVN: ", a("Clinical Virology Network", href = "https://clinical-virology.net/en"), 
+                               "- ICOSARI: ", a("Robert Koch Institut", href = "https://github.com/robert-koch-institut/ARE-Konsultationsinzidenz"), 
+                               "- NRZ: ", a("Virological surveillance, National Reference Centre", href = "https://influenza.rki.de/Diagrams.aspx"), 
+                               "- SurvStat: ", a("SurvStat@RKI 2.0, Robert Koch Institut", href = "https://survstat.rki.de"), style = style_explanation)
+            ),
             # conditionalPanel("input.select_language == 'DE'",
             #                  p(a("covid19nowcasthub.de", href = "https://covid19nowcasthub.de"), " - ",
             #                    a("Lehrstuhl f??r ??konometrie und Statistik, Karlsruher Institut f??r Technologie", href = "https://statistik.econ.kit.edu/index.php"), " - ",
@@ -261,6 +278,8 @@ shinyUI(fluidPage(
             #                    a("Chair of Statistics and Econometrics, Karlsruhe Institute of Technology", href = "https://statistik.econ.kit.edu/index.php"), "-",
             #                    a("Contact", href = "https://covid19nowcasthub.de/contact.html"))
             # )
+            div(img(src='respinow.png', align = "left", height="25%", width="25%")),
+            div(img(src='monid.jpg', align = "right", height="35%", width="35%"))
         )
     )
 ))
