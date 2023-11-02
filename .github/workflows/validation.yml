@@ -1,0 +1,35 @@
+name: validation
+
+on:
+  pull_request_target:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.2]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: 'KITmetricslab/RESPINOW-Hub-validations'
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+        
+    - run: pip3 install -r requirements.txt
+    - run: python3 main.py
+      env:
+        GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        
+    - name: Automerge check
+      uses: "pascalgn/automerge-action@v0.13.1"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        MERGE_LABELS: "automerge,data-submission,!other-files-updated,!metadata-change,!forecast-updated,!forecast-deleted,!viz,!code"
