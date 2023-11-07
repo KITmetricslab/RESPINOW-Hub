@@ -506,7 +506,7 @@ shinyServer(function(input, output, session) {
                      showlegend = FALSE) %>%
         add_lines(x = rep(input$select_date, 2), # vertical line for selected date
                   y = plot_data$range_grey,
-                  name = "current date",
+                  name = ifelse(input$select_language == "DE", "Erstellungsdatum", "date nowcast was created"),
                   hovertemplate = "%{x}",
                   line = list(color = 'rgb(0.5, 0.5, 0.5)', dash = "dot"),
                   showlegend = FALSE) %>%
@@ -1189,7 +1189,8 @@ shinyServer(function(input, output, session) {
       label <- ifelse(input$select_language == "DE",
                       "Krankheit / Indikator",
                       "Disease / indicator")
-      choices <- c("Saisonale Influenza (SurvStat)" = "survstat-influenza",
+      choices <- c("SARI (ICOSARI)" = "icosari-sari",
+                   "Saisonale Influenza (SurvStat)" = "survstat-influenza",
                    "RSV (SurvStat)" = "survstat-rsv",
                    "Pneumokokken (SurvStat)" = "survstat-pneumococcal",
                    "Saisonale Influenza (NRZ)" = "nrz-influenza",
@@ -1199,10 +1200,10 @@ shinyServer(function(input, output, session) {
                    "RSV (CVN)" = "cvn-rsv",
                    "Pneumokokken (CVN)" = "cvn-pneumococcal",
                    # "RSV Tests (NRZ)" = "nrz-rsv-tests",
-                   "ARE (AGI)" = "agi-are",
-                   "SARI (ICOSARI)" = "icosari-sari")
+                   "ARE (AGI)" = "agi-are")
       if(input$select_language == "EN"){
-        names(choices) <- c("Seasonal influenza (SurvStat)",
+        names(choices) <- c("SARI (ICOSARI)" = "icosari-sari",
+                            "Seasonal influenza (SurvStat)",
                             "RSV (SurvStat)",
                             "Pneumococcal disease (SurvStat)",
                             "Seasonal influenza (NRZ)" = "nrz-influenza",
@@ -1212,8 +1213,7 @@ shinyServer(function(input, output, session) {
                             "Seasonal influenza (CVN)" = "cvn-influenza",
                             "RSV (CVN)" = "cvn-rsv",
                             "Pneumococcal disease (CVN)" = "cvn-pneumococcal",
-                            "ARI (AGI)" = "agi-are",
-                            "SARI (ICOSARI)" = "icosari-sari")
+                            "ARI (AGI)" = "agi-are")
       }
       selected <- input$select_pathogen
       updateSelectInput(session, "select_pathogen",
@@ -1267,8 +1267,8 @@ shinyServer(function(input, output, session) {
                       "Grafische Darstellung:",
                       "Graphical display")
       choices <- if(input$select_language == "DE"){
-        c("Interaktiv für mehrere Modelle" = "interactive",
-          "Überblick für ein Modell" = "overview")
+        c("Interaktiv, mehrere Modelle" = "interactive",
+          "Detailliert, ein Modell" = "overview")
       }else{
         c("Interactive for several models" = "interactive",
           "Overview for one model" = "overview")
