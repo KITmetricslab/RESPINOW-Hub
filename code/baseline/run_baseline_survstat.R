@@ -12,7 +12,7 @@ if(run_individually){
   # library used for rolling sums:
   library(zoo)
   # get functions:
-  source(paste0(path_repo, "/code/baseline/functions.R"))
+  source(paste0(path_repo, "/code/baseline/functions_new.R"))
   source(paste0(path_repo, "/respinow_viz/functions.R"))
   
   # should nowcasts be plotted for all strata?
@@ -20,15 +20,16 @@ if(run_individually){
 }
 
 # define data source:
-data_source <- "icosari"
+data_source <- "survstat"
 
 # the diseases present in the data source:
 diseases <- list.dirs(paste0(path_repo, "/data/", data_source), recursive = FALSE, full.names = FALSE)
 # diseases <- "sari"
+diseases <- "pneumococcal"
 
 # dates for which to produce nowcasts:
-forecast_dates <- seq(from = as.Date("2023-11-16"),
-                      to = as.Date("2023-11-16"),
+forecast_dates <- seq(from = as.Date("2023-08-03"),
+                      to = as.Date("2023-11-23"),
                       by = 7)
 
 # set the sizes of training data sets
@@ -59,63 +60,64 @@ for(i in seq_along(forecast_dates)){
     # a place holder for a data frame in which nowcasts will be stored 
     all_nc <- NULL
     
-    # generate nowcasts for age groups ("00+" is covered in loop over locations)
-    # identify age groups:
-    ags <- character(0) # sort(unique(triangles[[disease]]$age_group))
-    for(ag in ags){
-      
-      # subsetting to relevant data:
-      observed_temp <- subset(triangles[[disease]], location == "DE" & age_group == ag)
-      # generate truth data as of forecast_date
-      observed_temp_back_in_time <- back_in_time_df(observed_temp, date = forecast_date)
-      
-      # prepare for plotting:
-      # latest values (red line in plot):
-      plot_data <- data.frame(date = observed_temp$date,
-                              value = rowSums(observed_temp[, grepl("value_", colnames(observed_temp))],
-                                              na.rm = TRUE))
-      # values as in real time (black line in plot)
-      plot_data_back_in_time <- data.frame(date = as.Date(observed_temp_back_in_time$date),
-                                           value = rowSums(observed_temp_back_in_time[, grepl("value_", colnames(observed_temp_back_in_time))], 
-                                                           na.rm = TRUE))
-      
-      # compute nowcast:
-      debug(compute_nowcast)
-      nc <- compute_nowcast(observed = observed_temp_back_in_time, 
-                            location = "DE", 
-                            age_group = ag, 
-                            forecast_date = forecast_date,
-                            n_history_expectations = n_history_expectations, 
-                            n_history_dispersion = n_history_dispersion,
-                            min_horizon = 0,
-                            max_horizon = max_horizon,
-                            max_delay = max_delay,
-                            pathogen = disease,
-                            target_type = "inc case")
-      
-      # generate a plot if desired:
-      # note: plot does currently not take max_lag into account
-      if(plot_all){
-        plot_forecast(forecasts = nc,
-                      location = "DE", age_group = ag,
-                      truth = plot_data_back_in_time, target_type = paste("inc case"),
-                      levels_coverage = c(0.5, 0.95),
-                      start = as.Date(forecast_date) - 135,
-                      end = as.Date(forecast_date) + 28,
-                      forecast_date = forecast_date, 
-                      ylim = c(0, 1.2*max(tail(plot_data_back_in_time$value, 20)))
-        )
-        lines(plot_data$date, plot_data$value, col = "red", lty  ="solid")
-        title(paste0(disease, ", ", ag, ", ", forecast_date))
-      }
-      
-      # store in all_nc:
-      if(is.null(all_nc)){
-        all_nc <- nc
-      }else{
-        all_nc <- rbind(all_nc, nc)
-      }
-    }
+    # # generate nowcasts for age groups ("00+" is covered in loop over locations)
+    # # identify age groups:
+    # ags <- character(0) # sort(unique(triangles[[disease]]$age_group))
+    # for(ag in ags){
+    # 
+    #   # prepare for plotting:
+    #   # truth data as of forecast_date, subset to relevant stratum
+    #   observed_back_in_time <- data_as_of(dat_truth = triangles[[disease]], date = forecast_date,
+    #                                       location = "DE", age_group = ag, max_lag = max_delay)
+    #   plot_data_back_in_time <- data.frame(date = as.Date(observed_back_in_time$date),
+    #                                        value = rowSums(observed_back_in_time[, grepl("value_", colnames(observed_back_in_time))], 
+    #                                                        na.rm = TRUE))
+    #   
+    #   # current version of truth data, subset to relevant stratum
+    #   observed_current <- data_as_of(dat_truth = triangles[[disease]], date = Sys.Date(),
+    #                                  location = "DE", age_group = ag, max_lag = max_delay)
+    #   plot_data_current <- data.frame(date = observed_current$date,
+    #                                   value = rowSums(observed_current[, grepl("value_", colnames(observed_current))],
+    #                                                   na.rm = TRUE))
+    #   
+    #   # compute nowcast:
+    #   nc <- compute_nowcast(observed = triangles[[disease]], 
+    #                         location = "DE", 
+    #                         age_group = ag,
+    #                         forecast_date = forecast_date,
+    #                         n_history_expectations = n_history_expectations,
+    #                         n_history_dispersion = n_history_dispersion,
+    #                         min_horizon = 0,
+    #                         max_horizon = max_horizon,
+    #                         max_delay = max_delay,
+    #                         pathogen = disease,
+    #                         target_type = "inc case")
+    #   nc <- nc$result
+    #   
+    #   # generate a plot if desired:
+    #   # note: plot does currently not take max_lag into account
+    #   if(plot_all){
+    #     plot_forecast(forecasts = nc,
+    #                   location = "DE", age_group = ag,
+    #                   truth = plot_data_back_in_time, target_type = paste("inc case"),
+    #                   levels_coverage = c(0.5, 0.95),
+    #                   start = as.Date(forecast_date) - 135,
+    #                   end = as.Date(forecast_date) + 28,
+    #                   forecast_date = forecast_date,
+    #                   ylim = c(0, 1.2*max(tail(plot_data_back_in_time$value, 20)))
+    #     )
+    #     lines(plot_data$date, plot_data$value, col = "red", lty  ="solid")
+    #     title(paste0(disease, ", ", ag, ", ", forecast_date))
+    #   }
+    # 
+    #   # store in all_nc:
+    #   if(is.null(all_nc)){
+    #     all_nc <- nc
+    #   }else{
+    #     all_nc <- rbind(all_nc, nc)
+    #   }
+    # }
+    
     
     # generate nowcasts for federal states:
     # identify locations:
@@ -123,25 +125,24 @@ for(i in seq_along(forecast_dates)){
     
     # run through locations:
     for(loc in locations){
-      # subset to relevant data
-      observed_temp <- subset(triangles[[disease]], location == loc & age_group == "00+")
-      # generate truth data as of forecast_date
-      observed_temp_back_in_time <- back_in_time_df(dat_truth = observed_temp, date = forecast_date,
-                                                location = loc, age_group = "00+", max_lag = max_delay)
       
       # prepare for plotting:
-      # latest values (red line in plot):
-      plot_data <- data.frame(date = observed_temp$date,
-                              value = rowSums(observed_temp[, grepl("value_", colnames(observed_temp))],
-                                              na.rm = TRUE))
-      # values as in real time (black line in plot)
-      plot_data_back_in_time <- data.frame(date = as.Date(observed_temp_back_in_time$date),
-                                           value = rowSums(observed_temp_back_in_time[, grepl("value_", colnames(observed_temp_back_in_time))], 
+      # truth data as of forecast_date, subset to relevant stratum
+      observed_back_in_time <- data_as_of(dat_truth = triangles[[disease]], date = forecast_date,
+                                          location = loc, age_group = "00+", max_lag = max_delay)
+      plot_data_back_in_time <- data.frame(date = as.Date(observed_back_in_time$date),
+                                           value = rowSums(observed_back_in_time[, grepl("value_", colnames(observed_back_in_time))], 
                                                            na.rm = TRUE))
       
+      # current version of truth data, subset to relevant stratum
+      observed_current <- data_as_of(dat_truth = triangles[[disease]], date = Sys.Date(),
+                                     location = loc, age_group = "00+", max_lag = max_delay)
+      plot_data_current <- data.frame(date = observed_current$date,
+                                      value = rowSums(observed_current[, grepl("value_", colnames(observed_current))],
+                                                      na.rm = TRUE))
+      
       # compute nowcast:
-      undebug(compute_nowcast)
-      nc <- compute_nowcast(observed = observed_temp_back_in_time, 
+      nc <- compute_nowcast(observed = triangles[[disease]], 
                             location = loc, 
                             age_group = "00+",
                             forecast_date = forecast_date,
@@ -152,10 +153,11 @@ for(i in seq_along(forecast_dates)){
                             max_delay = max_delay,
                             pathogen = disease,
                             target_type = "inc case")
+      nc <- nc$result
       
       # generate a plot if desired:
       if(plot_all | loc == "DE"){
-        
+        # undebug(plot_forecast)
         plot_forecast(forecasts = nc,
                       location = loc, age_group = "00+",
                       truth = plot_data_back_in_time, target_type = paste("inc case"),
@@ -163,9 +165,9 @@ for(i in seq_along(forecast_dates)){
                       start = as.Date(forecast_date) - 135,
                       end = as.Date(forecast_date) + 28,
                       forecast_date = forecast_date, 
-                      ylim = c(0, 1.2*max(tail(plot_data_back_in_time$value, 20)))
+                      ylim = c(0, 2*max(tail(plot_data_back_in_time$value, 10)))
         )
-        lines(plot_data$date, plot_data$value, col = "red", lty  ="solid")
+        lines(plot_data_current$date, plot_data_current$value, col = "red", lty  ="solid")
         title(paste0(disease, ",", loc, ", ", forecast_date))
       }
       
@@ -181,20 +183,6 @@ for(i in seq_along(forecast_dates)){
     write.csv(all_nc, file = paste0(path_repo, "/submissions/retrospective/", data_source, "/", disease, "/KIT-simple_nowcast/",
                                     forecast_date, "-", data_source, "-", disease, "-KIT-simple_nowcast.csv"), row.names = FALSE)
   }
-  
-  # all_nc$data_source <- "survstat"
-  
-
-  
-  # # No writing out if used through_run_baseline_all
-  # if(run_individually){
-  #   if(forecast_date == Sys.Date()){
-  #     write.csv(all_nc, file = paste0("../../data-processed/KIT-simple_nowcast/", forecast_date, "-KIT-simple_nowcast.csv"), row.names = FALSE)
-  #   }else{
-  #     cat("forecast_date is in the past, writing to data-processed_retrospective \n")
-  #     write.csv(all_nc, file = paste0("../../data-processed_retrospective/KIT-simple_nowcast/", forecast_date, "-KIT-simple_nowcast.csv"), row.names = FALSE)
-  #   }
-  # }
 }
 
 
