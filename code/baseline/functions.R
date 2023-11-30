@@ -56,61 +56,58 @@ get_delays_numeric <- function(col_names){
   return(num)
 }
 
-######### ACTUALLY NEED BACK_IN_TIME!
-#' # restrict a reporting triangle to the information available at a given time point t
-#' #' @param observed the observations / reporting triangle matrix
-#' #' @param t said time point
-#' back_in_time <- function(observed, t){
-#'   observed <- observed[1:t, ]
-#'   for(i in 1:(ncol(observed) - 1)){
-#'     observed[t - i + 1, (i + 1):ncol(observed)] <- NA
-#'   }
-#'   observed
-#' }
-#' 
-#' # wrapper around back_in_time to apply it to a data frame in our usual format
-#' #' @param observed the observations / reporting triangle data.frame
-#' #' @param date date (which data version should be retrieved?)
-#' back_in_time_df <- function(observed, date){
-#'   observed <- observed[observed$date <= date, ]
-#'   cols_value <- grepl("value_", colnames(observed))
-#'   matr <- as.matrix(observed[, cols_value])
-#'   for(i in 0:(ncol(matr) - 2)){
-#'     matr[nrow(matr) - i, (i + 2):ncol(matr)] <- NA
-#'   }
-#'   observed[, cols_value] <- matr
-#'   return(observed)
-#' }
-
-
-back_in_time_df <- function(dat_truth, age_group = "00+", location = "DE", date, max_lag = NULL){
-  if(!weekdays(date) == "Thursday") warning("date is usually expected to be a Thursday.")
-  if(is.null(date)){
-    date <- max(dat_truth$date)
+# transform weekday from string to number
+weekday_as_number <- function(weekday){
+  weekdays <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+  if(!weekday %in% weekdays){
+    stop("Argument weekday does not correspond to an English-language day of the week.")
+  } else{
+    which(weekdays == weekday)
   }
+}
+
+# get historic version of the data:
+data_as_of <- function(dat_truth, age_group = "00+", location = "DE", date, weekday_data_updates = "Thursday", max_lag = NULL){
+  # check arguments:
+  if(!weekdays(date) == "Thursday") warning("date is usually expected to be a Thursday.")
   date <- as.Date(date)
   
-  # if a column for delay -1 is contained: keep one more data point
-  to_add <- ifelse("value_-1w" %in% colnames(dat_truth), 7, 0)
+  # subset to age group and location
   subs <- dat_truth[dat_truth$age_group == age_group &
-                      dat_truth$location == location &
-                      dat_truth$date <= date + to_add, ]
+                      dat_truth$location == location, ]
+  # get matrix containing reporting triangle:
   matr <- subs[, grepl("value_", colnames(subs))]
+  # find out which delays the columns correspond to:
   lags_numeric <- get_delays_numeric(col_names = colnames(matr))
   
+  # restrict to columns up to max_lag if provided:
   if(!is.null(max_lag)){
     lags_numeric <- lags_numeric[lags_numeric <= max_lag]
     matr <- matr[, paste0("value_", lags_numeric, "w")]
   }
+  
+  # set up matrix with dates as in data (ends of weeks, typically Sundays)
   matr_dates <- matrix(subs$date, nrow = nrow(matr), ncol = ncol(matr))
+  
+  # set up matrix with delays corresponding to the columns:
+  # how many days to add due to day of week when data are updated?
+  weekday_data_updates_numeric <- weekday_as_number(weekday_data_updates)
+  # delay matrix combining weeks (columns of triangle) and additional days (weekday_data_updates_numeric)
   matr_delays <- 7*matrix(lags_numeric, byrow = TRUE,
-                          nrow = nrow(matr), ncol = ncol(matr)) + 4 # plus 4 as data are used as on Thursday
+                          nrow = nrow(matr), ncol = ncol(matr)) + weekday_data_updates_numeric
   
+  # matrix with dates when respective counts became available
   matr_reporting_date <- matr_dates + matr_delays
-  matr[matr_reporting_date > date] <- 0
+  matr[matr_reporting_date > date] <- NA
   
-  data.frame(date = subs$date,
-             matr)
+  # re-arrange into data.frame
+  res <- data.frame(date = subs$date, matr)
+  
+  # remove rows with only NAs:
+  inds_to_keep <- rowSums(!is.na(matr)) > 0
+  res <- res[inds_to_keep, ]
+  
+  return(res)
 }
 
 # get the indices corresponding to the nowcasted quantities for a w-day rolling sum
@@ -128,15 +125,6 @@ indices_nowcast <- function(observed, d, w = 7, n_history_expectations = 60){
   return(res)
 }
 
-back_in_time <- function(observed, t){
-  observed <- observed[1:t, ]
-  for(i in 1:(ncol(observed) - 1)){
-    observed[t - i + 1, (i + 1):ncol(observed)] <- NA
-  }
-  observed
-}
-
-
 # fit the size parameter of a negative binomial via maximum likelihood
 #' @param x the observed values
 #' @param mu the expected values
@@ -151,66 +139,117 @@ fit_nb <- function(x, mu){
 #' @param location the location for which to generate nowcasts
 #' @param age_group the age group for which to generate nowcasts
 #' @param min_horizon the minimum horizon for which to generate a nowcast (e.g., 2 for up to 2 days before the current date)
+# 
+# observed <- triangles[[disease]]
+# location <- loc
+# age_group <- "00+"
+# forecast_date <- forecast_date
+# n_history_expectations <- n_history_expectations
+# n_history_dispersion <- n_history_dispersion
+# min_horizon <- 0
+# max_horizon <- max_horizon
+# max_delay <- max_delay
+# pathogen <- disease
+# target_type <- "inc case"
+# weekday_data_updates <- "Thursday"
+
+
 compute_nowcast <- function(observed, location = "DE", age_group = "00+", forecast_date = NA, pathogen = NA, target_type = "",
-                            min_horizon = 2, max_horizon = 28, 
-                            max_delay = 40, n_history_expectations = 60, n_history_dispersion = 60){
+                            min_horizon = 0, max_horizon = 4, weekday_end_of_week = "Sunday", weekday_data_updates = "Thursday",
+                            max_delay = 4, n_history_expectations = 15, n_history_dispersion = 15){
   
   if(any(observed$date >= forecast_date)){
-    message("Reporting triangle contains dates later than forecast_date: ", 
-            paste(observed$date[observed$date > forecast_date], collapse = ", "),
-            ". This may occur for some data sources, but can be an indication of problems.")
+    message("Reporting triangle contains dates later than forecast_date. ", 
+            # paste(observed$date[observed$date > forecast_date], collapse = ", "),
+            " Note that data will be subsetted to those available on forecast_date (if applicable, negative delays are respected).")
   }
   
-  # subset to location and age group:
-  observed <- subset(observed, location == location & age_group == age_group)
+  if(weekdays(forecast_date) != weekday_data_updates){
+    message("forecast_date is a different weekday than weekday_data_updates. This may be unintended.")
+  }
   
-  # reporting triangle as matrix
-  ### NEED TO CHECK FOR DELAY -1
-  matr_observed <- as.matrix(observed[, grepl("value", colnames(observed))])
-  # reduce to max delay:
-  delays_numeric <- get_delays_numeric(col_names = colnames(matr_observed))
-  matr_observed <- matr_observed[, delays_numeric <= max_delay]
+  # which horizons need to be considered?
+  horizons <- get_delays_numeric(col_names = colnames(observed)[grepl("value", colnames(observed))])
+  horizons <- horizons[horizons <= max_horizon]
+  n_horizons <- length(horizons)
+  
+  # bring to state as of forecast_date, subset to location and age group:
+  observed_temp <- data_as_of(observed, age_group = age_group, location = location, date = forecast_date,
+                              weekday_data_updates = weekday_data_updates, max_lag = max_delay)
+  # turn into matrix:
+  matr_observed <- as.matrix(observed_temp[, grepl("value", colnames(observed_temp))])
   # name rows:
-  rownames(matr_observed) <- observed$date
-  
-  nr <- nrow(matr_observed)
-  nc <- ncol(matr_observed)
-  
-  # compute point forecasts
-  expectation_to_add <- # full expectations
-    expectation_to_add_already_observed <- # expectations of the sum over already observable quantities
-    to_add_already_observed <- # sums over the respective observed quantities
-    matrix(NA, nrow = nr, ncol = max_horizon + 1,
-           dimnames = list(observed$date, NULL))
+  rownames(matr_observed) <- as.character(observed_temp$date)
   
   # generate point forecasts for current date and n_history_dispersion preceding weeks
   # these are necessary to estimate dispersion parameters
-  for(t in (nr - n_history_dispersion):nr){
-    matr_observed_temp <- back_in_time(matr_observed, t)
+  # determine dates
+  all_forecast_dates <- seq(from = forecast_date - 7*(n_history_dispersion), by = 7, to = forecast_date)
+  # set up matrices to sore results:
+  expectation_to_add <- # full expectations
+    expectation_to_add_already_observed <- # expectations of the sum over already observable quantities
+    to_add_already_observed <- # sums over the respective observed quantities
+    matrix(NA, nrow = length(all_forecast_dates), ncol = ncol(matr_observed),
+           dimnames = list(as.character(all_forecast_dates), NULL))
+  
+  for(t in seq_along(all_forecast_dates)){
+    # identify date for which to compute retrospective nowcast
+    forecast_date_temp <- all_forecast_dates[t]
+    # bring to state of forecast_date_temp, subset to location and age group:
+    observed_temp <- data_as_of(observed, age_group = age_group, location = location, date = forecast_date_temp,
+                                weekday_data_updates = weekday_data_updates, max_lag = max_delay)
+    # turn into matrix:
+    matr_observed_temp <- as.matrix(observed_temp[, grepl("value", colnames(observed_temp))])
+    # name rows:
+    rownames(matr_observed_temp) <- as.character(observed_temp$date)
+    
+    # get same subset of the reporting triangle, but filled as far as possible at time of nowcast:
+    matr_observed_temp_full <- matr_observed[which(rownames(matr_observed) %in% 
+                                                     tail(rownames(matr_observed_temp), n_history_expectations)), ]
+    # this is needed to estimate dispersion parameters below
+    
+    # generate retrospective point nowcast:
     point_forecasts_temp <- compute_expectations(matr_observed_temp, n_history = n_history_expectations)
     
-    for(d in min_horizon:max_horizon){
-      inds_nowc <- indices_nowcast(matr_observed_temp, d = d, w = 1,
+    # structure by things already observed or not (necessary to use of partial observations)
+    for(d in 1:n_horizons){
+      # which indices in the matrix correspond to nowcasts at horizon d?
+      inds_nowc <- indices_nowcast(matr_observed_temp, d = d - 1, w = 1,
                                    n_history_expectations = n_history_expectations)
-      inds_already_observed <- tail(!is.na(matr_observed[1:t, ]), n_history_expectations)
+      # compute sum of expected values for nowcast at horizon d over all elements of the reporting
+      # triangle which have not yet been observed at time forecast_date_temp
+      expectation_to_add[t, d] <- sum(point_forecasts_temp*inds_nowc, na.rm = TRUE)
       
-      expectation_to_add[t, d + 1] <- sum(point_forecasts_temp*inds_nowc, na.rm = TRUE)
-      expectation_to_add_already_observed[t, d + 1] <- sum(point_forecasts_temp*inds_already_observed*inds_nowc, na.rm = TRUE)
-      to_add_already_observed[t, d + 1] <- sum(tail(matr_observed[1:t, ], n_history_expectations)*
-                                                 inds_already_observed*inds_nowc, na.rm = TRUE)
+      # which indices of the reporting triangle are already known at forecast_date?
+      # (the one from the original function call, not forecast_date_temp)
+      inds_already_observed <- !is.na(matr_observed_temp_full)
+      
+      # compute sum of expected values for nowcast at horizon d over all elements of the reporting
+      # triangle which have not yet been observed at time forecast_date_temp, but have been observed at forecast_date
+      expectation_to_add_already_observed[t, d] <- sum(point_forecasts_temp*inds_already_observed*inds_nowc, na.rm = TRUE)
+      # compute the corresponding observed values
+      to_add_already_observed[t, d] <- sum(matr_observed_temp_full*
+                                             inds_already_observed*inds_nowc, na.rm = TRUE)
     }
   }
   
-  # remove last row to estimate dispersion
+  # have to remove last row to estimate dispersion
   expectation_to_add_already_observed <- expectation_to_add_already_observed[-nrow(expectation_to_add_already_observed), ]
   to_add_already_observed <- to_add_already_observed[-nrow(to_add_already_observed), ]
   
   # estimate dispersion
-  size_params <- numeric(max_horizon +1)
-  for(i in min_horizon:max_horizon){
-    size_params[i + 1] <- fit_nb(x = to_add_already_observed[, i + 1], 
-                                 mu = expectation_to_add_already_observed[, i + 1] + 0.1)
-    # plus 0.1 to avoid ill-defined NB
+  size_params <- numeric(n_horizons)
+  to_keep <- expectation_to_add_already_observed[, 1] > 0
+  to_keep[length(to_keep)] <- FALSE
+  to_add_already_observed <- to_add_already_observed[to_keep, ]
+  expectation_to_add_already_observed <- expectation_to_add_already_observed[to_keep, ]
+  
+  # run through horizons
+  for(i in 1:n_horizons){
+    obs_temp <- to_add_already_observed[, i]
+    mu_temp <- expectation_to_add_already_observed[, i] + 0.1 # plus 0.1 to avoid ill-defined NB
+    size_params[i] <- fit_nb(x = obs_temp, 
+                             mu = mu_temp)
   }
   
   
@@ -220,33 +259,36 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+", foreca
   df_all <- NULL
   
   # run through horizons:
-  for(d in min_horizon:max_horizon){
-    # by how much do we need to shift quantiles upwards?
-    already_observed <- sum(matr_observed[nrow(matr_observed) - (d), ], na.rm = TRUE)
+  for(d in 1:n_horizons){
+    # get numeric horizon - only needed in creation of data.frame
+    h <- horizons[d]
     
-    # NEED TO HANDLE DATES CORRECTLY
+    # by how much do we need to shift quantiles upwards? Note that this needs to use index d
+    already_observed <- sum(matr_observed_temp[nrow(matr_observed_temp) - d + 1, ], na.rm = TRUE)
+    
     # data frame for expecations:
+    weekday_data_updates_numeric <- weekday_as_number(weekday_data_updates)
     df_mean <- data.frame(location = location,
                           age_group = age_group,
                           forecast_date = forecast_date,
-                          target_end_date = forecast_date - 7*d,
-                          target = paste0(-d, " week ahead ", target_type),
+                          target_end_date = forecast_date - weekday_data_updates_numeric - 7*h,
+                          target = paste0(-h, " week ahead ", target_type),
                           type = "mean",
                           quantile = NA,
-                          value = round(mu[d + 1] + already_observed),
+                          value = round(mu[d] + already_observed),
                           pathogen = pathogen)
     
     # obtain quantiles:
     qtls0 <- qnbinom(quantile_levels, 
-                     size = size_params[d + 1], mu = mu[d + 1])
+                     size = size_params[d], mu = mu[d])
     # shift them up by already oberved values
     qtls <- qtls0 + already_observed
     # data.frame for quantiles:
     df_qtls <- data.frame(location = location,
                           age_group = age_group,
                           forecast_date = forecast_date,
-                          target_end_date = forecast_date - 7*d,
-                          target = paste0(-d, " week ahead ", target_type),
+                          target_end_date = forecast_date - weekday_data_updates_numeric - 7*h,
+                          target = paste0(-h, " week ahead ", target_type),
                           type = "quantile",
                           quantile = quantile_levels,
                           value = qtls,
