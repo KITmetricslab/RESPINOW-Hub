@@ -30,29 +30,87 @@ compute_expectations <- function(observed, n_history = 60, remove_observed = TRU
   return(expectation)
 }
 
-# restrict a reporting triangle to the information available at a given time point t
-#' @param observed the observations / reporting triangle matrix
-#' @param t said time point
-back_in_time <- function(observed, t){
-  observed <- observed[1:t, ]
-  for(i in 1:(ncol(observed) - 1)){
-    observed[t - i + 1, (i + 1):ncol(observed)] <- NA
+#' extract numeric values of delay categories from column names of a reporting triangle
+get_delays_numeric <- function(col_names){
+  # handle minus one separately
+  if(col_names[1] == "value_.1w"){
+    col_names[1] <- "value-1w"
   }
-  observed
+  # handle ">" in last element separately, removing "." or ">"
+  n <- length(col_names)
+  col_names[n] <- gsub(".", "", col_names[n], fixed = TRUE)
+  col_names[n] <- gsub(">", "", col_names[n], fixed = TRUE)
+  
+  # replace string bits:
+  col_names <- gsub("value_", "", col_names)
+  col_names <- gsub("w", "", col_names)
+  
+  # to numeric:
+  num <- as.numeric(col_names)
+  
+  # handle last element separately, catch case where it was ">":
+  if(num[length(num)] == num[length(num) - 1]){
+    num[length(num)] <- num[length(num)] + 1
+  }
+  
+  return(num)
 }
 
-# wrapper around back_in_time to apply it to a data frame in our usual format
-#' @param observed the observations / reporting triangle data.frame
-#' @param date date (which data version should be retrieved?)
-back_in_time_df <- function(observed, date){
-  observed <- observed[observed$date <= date, ]
-  cols_value <- grepl("value_", colnames(observed))
-  matr <- as.matrix(observed[, cols_value])
-  for(i in 0:(ncol(matr) - 2)){
-    matr[nrow(matr) - i, (i + 2):ncol(matr)] <- NA
+######### ACTUALLY NEED BACK_IN_TIME!
+#' # restrict a reporting triangle to the information available at a given time point t
+#' #' @param observed the observations / reporting triangle matrix
+#' #' @param t said time point
+#' back_in_time <- function(observed, t){
+#'   observed <- observed[1:t, ]
+#'   for(i in 1:(ncol(observed) - 1)){
+#'     observed[t - i + 1, (i + 1):ncol(observed)] <- NA
+#'   }
+#'   observed
+#' }
+#' 
+#' # wrapper around back_in_time to apply it to a data frame in our usual format
+#' #' @param observed the observations / reporting triangle data.frame
+#' #' @param date date (which data version should be retrieved?)
+#' back_in_time_df <- function(observed, date){
+#'   observed <- observed[observed$date <= date, ]
+#'   cols_value <- grepl("value_", colnames(observed))
+#'   matr <- as.matrix(observed[, cols_value])
+#'   for(i in 0:(ncol(matr) - 2)){
+#'     matr[nrow(matr) - i, (i + 2):ncol(matr)] <- NA
+#'   }
+#'   observed[, cols_value] <- matr
+#'   return(observed)
+#' }
+
+
+back_in_time_df <- function(dat_truth, age_group = "00+", location = "DE", date, max_lag = NULL){
+  if(!weekdays(date) == "Thursday") warning("date is usually expected to be a Thursday.")
+  if(is.null(date)){
+    date <- max(dat_truth$date)
   }
-  observed[, cols_value] <- matr
-  return(observed)
+  date <- as.Date(date)
+  
+  # if a column for delay -1 is contained: keep one more data point
+  to_add <- ifelse("value_-1w" %in% colnames(dat_truth), 7, 0)
+  subs <- dat_truth[dat_truth$age_group == age_group &
+                      dat_truth$location == location &
+                      dat_truth$date <= date + to_add, ]
+  matr <- subs[, grepl("value_", colnames(subs))]
+  lags_numeric <- get_delays_numeric(col_names = colnames(matr))
+  
+  if(!is.null(max_lag)){
+    lags_numeric <- lags_numeric[lags_numeric <= max_lag]
+    matr <- matr[, paste0("value_", lags_numeric, "w")]
+  }
+  matr_dates <- matrix(subs$date, nrow = nrow(matr), ncol = ncol(matr))
+  matr_delays <- 7*matrix(lags_numeric, byrow = TRUE,
+                          nrow = nrow(matr), ncol = ncol(matr)) + 4 # plus 4 as data are used as on Thursday
+  
+  matr_reporting_date <- matr_dates + matr_delays
+  matr[matr_reporting_date > date] <- 0
+  
+  data.frame(date = subs$date,
+             matr)
 }
 
 # get the indices corresponding to the nowcasted quantities for a w-day rolling sum
@@ -70,6 +128,15 @@ indices_nowcast <- function(observed, d, w = 7, n_history_expectations = 60){
   return(res)
 }
 
+back_in_time <- function(observed, t){
+  observed <- observed[1:t, ]
+  for(i in 1:(ncol(observed) - 1)){
+    observed[t - i + 1, (i + 1):ncol(observed)] <- NA
+  }
+  observed
+}
+
+
 # fit the size parameter of a negative binomial via maximum likelihood
 #' @param x the observed values
 #' @param mu the expected values
@@ -84,22 +151,26 @@ fit_nb <- function(x, mu){
 #' @param location the location for which to generate nowcasts
 #' @param age_group the age group for which to generate nowcasts
 #' @param min_horizon the minimum horizon for which to generate a nowcast (e.g., 2 for up to 2 days before the current date)
-compute_nowcast <- function(observed, location = "DE", age_group = "00+", pathogen = NA, target_type = "",
+compute_nowcast <- function(observed, location = "DE", age_group = "00+", forecast_date = NA, pathogen = NA, target_type = "",
                             min_horizon = 2, max_horizon = 28, 
                             max_delay = 40, n_history_expectations = 60, n_history_dispersion = 60){
+  
+  if(any(observed$date >= forecast_date)){
+    message("Reporting triangle contains dates later than forecast_date: ", 
+            paste(observed$date[observed$date > forecast_date], collapse = ", "),
+            ". This may occur for some data sources, but can be an indication of problems.")
+  }
   
   # subset to location and age group:
   observed <- subset(observed, location == location & age_group == age_group)
   
   # reporting triangle as matrix
+  ### NEED TO CHECK FOR DELAY -1
   matr_observed <- as.matrix(observed[, grepl("value", colnames(observed))])
   # reduce to max delay:
-  matr_observed <- cbind(matr_observed[, 1:(max_delay + 1)], 
-                         matrix(rowSums(matr_observed[, -(1:(max_delay))], 
-                                        na.rm = TRUE), ncol = 1))
-  
-  colnames(matr_observed)[max_delay + 2] <- paste0("value_", max_delay + 1, "w")
-  observed[nrow(matr_observed) - 0:max_delay, max_delay + 2] <- NA
+  delays_numeric <- get_delays_numeric(col_names = colnames(matr_observed))
+  matr_observed <- matr_observed[, delays_numeric <= max_delay]
+  # name rows:
   rownames(matr_observed) <- observed$date
   
   nr <- nrow(matr_observed)
@@ -119,7 +190,8 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+", pathog
     point_forecasts_temp <- compute_expectations(matr_observed_temp, n_history = n_history_expectations)
     
     for(d in min_horizon:max_horizon){
-      inds_nowc <- indices_nowcast(matr_observed_temp, d = d, n_history_expectations = n_history_expectations)
+      inds_nowc <- indices_nowcast(matr_observed_temp, d = d, w = 1,
+                                   n_history_expectations = n_history_expectations)
       inds_already_observed <- tail(!is.na(matr_observed[1:t, ]), n_history_expectations)
       
       expectation_to_add[t, d + 1] <- sum(point_forecasts_temp*inds_nowc, na.rm = TRUE)
@@ -144,15 +216,15 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+", pathog
   
   # generate actual nowcast in standard format:
   mu <- expectation_to_add[nrow(expectation_to_add), ]
-  forecast_date <- as.Date(tail(observed$date, 1))
   quantile_levels <- c(0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975)
   df_all <- NULL
   
   # run through horizons:
   for(d in min_horizon:max_horizon){
-    # by how mch do we need to shift quantiles upwards?
+    # by how much do we need to shift quantiles upwards?
     already_observed <- sum(matr_observed[nrow(matr_observed) - (d), ], na.rm = TRUE)
     
+    # NEED TO HANDLE DATES CORRECTLY
     # data frame for expecations:
     df_mean <- data.frame(location = location,
                           age_group = age_group,
@@ -192,7 +264,10 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+", pathog
   }
   
   # return
-  return(df_all)
+  return(list(result = df_all,
+              mu = mu, size_params = size_params,
+              expectation_to_add_already_observed = expectation_to_add_already_observed,
+              to_add_already_observed = to_add_already_observed))
 }
 
 
