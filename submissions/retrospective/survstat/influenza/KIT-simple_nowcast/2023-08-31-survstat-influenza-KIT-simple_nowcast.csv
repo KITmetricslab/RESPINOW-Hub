@@ -1,49 +1,49 @@
-"location","age_group","forecast_date","target_end_date","target","type","quantile","value","pathogen"
-"DE","00+",2023-08-31,2023-09-03,"1 week ahead inc case","mean",NA,68,"influenza"
-"DE","00+",2023-08-31,2023-09-03,"1 week ahead inc case","quantile",0.025,45,"influenza"
-"DE","00+",2023-08-31,2023-09-03,"1 week ahead inc case","quantile",0.1,50,"influenza"
-"DE","00+",2023-08-31,2023-09-03,"1 week ahead inc case","quantile",0.25,57,"influenza"
-"DE","00+",2023-08-31,2023-09-03,"1 week ahead inc case","quantile",0.5,66,"influenza"
-"DE","00+",2023-08-31,2023-09-03,"1 week ahead inc case","quantile",0.75,77,"influenza"
-"DE","00+",2023-08-31,2023-09-03,"1 week ahead inc case","quantile",0.9,89,"influenza"
-"DE","00+",2023-08-31,2023-09-03,"1 week ahead inc case","quantile",0.975,105,"influenza"
-"DE","00+",2023-08-31,2023-08-27,"0 week ahead inc case","mean",NA,82,"influenza"
-"DE","00+",2023-08-31,2023-08-27,"0 week ahead inc case","quantile",0.025,81,"influenza"
-"DE","00+",2023-08-31,2023-08-27,"0 week ahead inc case","quantile",0.1,81,"influenza"
-"DE","00+",2023-08-31,2023-08-27,"0 week ahead inc case","quantile",0.25,81,"influenza"
-"DE","00+",2023-08-31,2023-08-27,"0 week ahead inc case","quantile",0.5,82,"influenza"
-"DE","00+",2023-08-31,2023-08-27,"0 week ahead inc case","quantile",0.75,83,"influenza"
-"DE","00+",2023-08-31,2023-08-27,"0 week ahead inc case","quantile",0.9,84,"influenza"
-"DE","00+",2023-08-31,2023-08-27,"0 week ahead inc case","quantile",0.975,85,"influenza"
-"DE","00+",2023-08-31,2023-08-20,"-1 week ahead inc case","mean",NA,56,"influenza"
-"DE","00+",2023-08-31,2023-08-20,"-1 week ahead inc case","quantile",0.025,55,"influenza"
-"DE","00+",2023-08-31,2023-08-20,"-1 week ahead inc case","quantile",0.1,55,"influenza"
-"DE","00+",2023-08-31,2023-08-20,"-1 week ahead inc case","quantile",0.25,55,"influenza"
-"DE","00+",2023-08-31,2023-08-20,"-1 week ahead inc case","quantile",0.5,55,"influenza"
-"DE","00+",2023-08-31,2023-08-20,"-1 week ahead inc case","quantile",0.75,56,"influenza"
-"DE","00+",2023-08-31,2023-08-20,"-1 week ahead inc case","quantile",0.9,57,"influenza"
-"DE","00+",2023-08-31,2023-08-20,"-1 week ahead inc case","quantile",0.975,58,"influenza"
-"DE","00+",2023-08-31,2023-08-13,"-2 week ahead inc case","mean",NA,61,"influenza"
-"DE","00+",2023-08-31,2023-08-13,"-2 week ahead inc case","quantile",0.025,61,"influenza"
-"DE","00+",2023-08-31,2023-08-13,"-2 week ahead inc case","quantile",0.1,61,"influenza"
-"DE","00+",2023-08-31,2023-08-13,"-2 week ahead inc case","quantile",0.25,61,"influenza"
-"DE","00+",2023-08-31,2023-08-13,"-2 week ahead inc case","quantile",0.5,61,"influenza"
-"DE","00+",2023-08-31,2023-08-13,"-2 week ahead inc case","quantile",0.75,62,"influenza"
-"DE","00+",2023-08-31,2023-08-13,"-2 week ahead inc case","quantile",0.9,62,"influenza"
-"DE","00+",2023-08-31,2023-08-13,"-2 week ahead inc case","quantile",0.975,63,"influenza"
-"DE","00+",2023-08-31,2023-08-06,"-3 week ahead inc case","mean",NA,40,"influenza"
-"DE","00+",2023-08-31,2023-08-06,"-3 week ahead inc case","quantile",0.025,40,"influenza"
-"DE","00+",2023-08-31,2023-08-06,"-3 week ahead inc case","quantile",0.1,40,"influenza"
-"DE","00+",2023-08-31,2023-08-06,"-3 week ahead inc case","quantile",0.25,40,"influenza"
-"DE","00+",2023-08-31,2023-08-06,"-3 week ahead inc case","quantile",0.5,40,"influenza"
-"DE","00+",2023-08-31,2023-08-06,"-3 week ahead inc case","quantile",0.75,40,"influenza"
-"DE","00+",2023-08-31,2023-08-06,"-3 week ahead inc case","quantile",0.9,40,"influenza"
-"DE","00+",2023-08-31,2023-08-06,"-3 week ahead inc case","quantile",0.975,41,"influenza"
-"DE","00+",2023-08-31,2023-07-30,"-4 week ahead inc case","mean",NA,43,"influenza"
-"DE","00+",2023-08-31,2023-07-30,"-4 week ahead inc case","quantile",0.025,43,"influenza"
-"DE","00+",2023-08-31,2023-07-30,"-4 week ahead inc case","quantile",0.1,43,"influenza"
-"DE","00+",2023-08-31,2023-07-30,"-4 week ahead inc case","quantile",0.25,43,"influenza"
-"DE","00+",2023-08-31,2023-07-30,"-4 week ahead inc case","quantile",0.5,43,"influenza"
-"DE","00+",2023-08-31,2023-07-30,"-4 week ahead inc case","quantile",0.75,43,"influenza"
-"DE","00+",2023-08-31,2023-07-30,"-4 week ahead inc case","quantile",0.9,43,"influenza"
-"DE","00+",2023-08-31,2023-07-30,"-4 week ahead inc case","quantile",0.975,43,"influenza"
+"location","age_group","forecast_date","target_end_date","horizon","type","quantile","value"
+"DE","00+","2023-08-31","2023-09-03",1,"mean",NA,68
+"DE","00+","2023-08-31","2023-09-03",1,"quantile",0.025,45
+"DE","00+","2023-08-31","2023-09-03",1,"quantile",0.1,50
+"DE","00+","2023-08-31","2023-09-03",1,"quantile",0.25,57
+"DE","00+","2023-08-31","2023-09-03",1,"quantile",0.5,66
+"DE","00+","2023-08-31","2023-09-03",1,"quantile",0.75,77
+"DE","00+","2023-08-31","2023-09-03",1,"quantile",0.9,89
+"DE","00+","2023-08-31","2023-09-03",1,"quantile",0.975,105
+"DE","00+","2023-08-31","2023-08-27",0,"mean",NA,82
+"DE","00+","2023-08-31","2023-08-27",0,"quantile",0.025,81
+"DE","00+","2023-08-31","2023-08-27",0,"quantile",0.1,81
+"DE","00+","2023-08-31","2023-08-27",0,"quantile",0.25,81
+"DE","00+","2023-08-31","2023-08-27",0,"quantile",0.5,82
+"DE","00+","2023-08-31","2023-08-27",0,"quantile",0.75,83
+"DE","00+","2023-08-31","2023-08-27",0,"quantile",0.9,84
+"DE","00+","2023-08-31","2023-08-27",0,"quantile",0.975,85
+"DE","00+","2023-08-31","2023-08-20",-1,"mean",NA,56
+"DE","00+","2023-08-31","2023-08-20",-1,"quantile",0.025,55
+"DE","00+","2023-08-31","2023-08-20",-1,"quantile",0.1,55
+"DE","00+","2023-08-31","2023-08-20",-1,"quantile",0.25,55
+"DE","00+","2023-08-31","2023-08-20",-1,"quantile",0.5,55
+"DE","00+","2023-08-31","2023-08-20",-1,"quantile",0.75,56
+"DE","00+","2023-08-31","2023-08-20",-1,"quantile",0.9,57
+"DE","00+","2023-08-31","2023-08-20",-1,"quantile",0.975,58
+"DE","00+","2023-08-31","2023-08-13",-2,"mean",NA,61
+"DE","00+","2023-08-31","2023-08-13",-2,"quantile",0.025,61
+"DE","00+","2023-08-31","2023-08-13",-2,"quantile",0.1,61
+"DE","00+","2023-08-31","2023-08-13",-2,"quantile",0.25,61
+"DE","00+","2023-08-31","2023-08-13",-2,"quantile",0.5,61
+"DE","00+","2023-08-31","2023-08-13",-2,"quantile",0.75,62
+"DE","00+","2023-08-31","2023-08-13",-2,"quantile",0.9,62
+"DE","00+","2023-08-31","2023-08-13",-2,"quantile",0.975,63
+"DE","00+","2023-08-31","2023-08-06",-3,"mean",NA,40
+"DE","00+","2023-08-31","2023-08-06",-3,"quantile",0.025,40
+"DE","00+","2023-08-31","2023-08-06",-3,"quantile",0.1,40
+"DE","00+","2023-08-31","2023-08-06",-3,"quantile",0.25,40
+"DE","00+","2023-08-31","2023-08-06",-3,"quantile",0.5,40
+"DE","00+","2023-08-31","2023-08-06",-3,"quantile",0.75,40
+"DE","00+","2023-08-31","2023-08-06",-3,"quantile",0.9,40
+"DE","00+","2023-08-31","2023-08-06",-3,"quantile",0.975,41
+"DE","00+","2023-08-31","2023-07-30",-4,"mean",NA,43
+"DE","00+","2023-08-31","2023-07-30",-4,"quantile",0.025,43
+"DE","00+","2023-08-31","2023-07-30",-4,"quantile",0.1,43
+"DE","00+","2023-08-31","2023-07-30",-4,"quantile",0.25,43
+"DE","00+","2023-08-31","2023-07-30",-4,"quantile",0.5,43
+"DE","00+","2023-08-31","2023-07-30",-4,"quantile",0.75,43
+"DE","00+","2023-08-31","2023-07-30",-4,"quantile",0.9,43
+"DE","00+","2023-08-31","2023-07-30",-4,"quantile",0.975,43
