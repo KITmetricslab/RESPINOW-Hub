@@ -1,10 +1,15 @@
 # generate plot data by date and pathogen
-# setwd("/home/johannes/Documents/RESPINOW/RESPINOW-Hub/")
+
+# set working directory
+current_path = rstudioapi::getActiveDocumentContext()$path # get path of this file
+setwd(dirname(current_path))
+setwd("..")
+
 source("respinow_viz/functions.R")
 
 # get data versions:
 rep_tri <- read.csv("data/survstat/influenza/reporting_triangle-survstat-influenza-preprocessed.csv")
-all_data_versions <- unique(rep_tri$date)
+all_data_versions <- as.Date(unique(rep_tri$date)) - 3
 df_data_versions <- data.frame(date = all_data_versions)
 write.csv(df_data_versions, file = "respinow_viz/plot_data/other/list_data_versions.csv",
           row.names = FALSE, quote = FALSE)
@@ -22,11 +27,11 @@ for(ds in data_sources){
     all_diseases <- c(all_diseases, di)
     all_data_sources <- c(all_data_sources, ds)
     
-    models <- list.dirs(paste0("submissions/retrospective/", ds, "/", di), full.names = FALSE, recursive = FALSE)
+    models <- list.dirs(paste0("submissions/", ds, "/", di), full.names = FALSE, recursive = FALSE)
     all_models <- c(all_models, models)
     
     for (mod in models) {
-      files <- list.files(paste0("submissions/retrospective/", ds, "/", di, "/", mod), full.names = FALSE, recursive = FALSE)
+      files <- list.files(paste0("submissions/", ds, "/", di, "/", mod), full.names = FALSE, recursive = FALSE)
       files <- files[grepl(".csv", files)]
       forecast_dates <- date_from_filename(files)
       all_forecast_dates <- c(all_forecast_dates, forecast_dates[!forecast_dates %in% all_forecast_dates])
@@ -60,7 +65,7 @@ for(i in seq_along(all_forecast_dates)){
     ds <- df_targets$data_source[j]
     di <- df_targets$disease[j]
     for (mod in all_models) {
-      fl <- paste0("submissions/retrospective/", ds, "/", di, "/", mod, "/", 
+      fl <- paste0("submissions/", ds, "/", di, "/", mod, "/", 
                    forecast_date, "-", ds, "-", di, "-", mod, ".csv")
       if(file.exists(fl)){
         forecasts_temp <- read.csv(fl)
@@ -74,7 +79,7 @@ for(i in seq_along(all_forecast_dates)){
         forecasts_temp$pathogen <- NULL
         # bring to wide format
         forecasts_temp <- reshape(forecasts_temp, direction = "wide", timevar = "quantile",
-                                  idvar = c("location", "age_group", "forecast_date", "target", "target_end_date"))
+                                  idvar = c("location", "age_group", "forecast_date", "horizon", "target_end_date"))
         # handle colnames (mean separately)
         colnames(forecasts_temp) <- gsub("value.999", "mean", colnames(forecasts_temp))
         colnames(forecasts_temp) <- gsub("value.", "q", colnames(forecasts_temp))
@@ -82,13 +87,11 @@ for(i in seq_along(all_forecast_dates)){
         forecasts_temp$model <- mod
         # additional columns:
         forecasts_temp$target_type <- sapply(strsplit(forecasts_temp$target, split = "ahead "), FUN = function(x) x[2])
-        forecasts_temp$retrospective <- FALSE
         forecasts_temp$pathogen <- paste0(ds, "-", di)
         # re-order:
         forecasts_temp <- forecasts_temp[, c("model", "target_type", "forecast_date", "target_end_date",
                                              "location", "age_group", "pathogen",
-                                             "mean", "q0.025", "q0.25", "q0.5", "q0.75", "q0.975",
-                                             "retrospective")]
+                                             "mean", "q0.025", "q0.25", "q0.5", "q0.75", "q0.975")]
         # append:
         if(is.null(all_forecasts)){
           all_forecasts <- forecasts_temp
