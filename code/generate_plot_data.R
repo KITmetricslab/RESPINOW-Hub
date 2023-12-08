@@ -38,6 +38,7 @@ for(ds in data_sources){
     }
   }
 }
+all_forecast_dates <- sort(all_forecast_dates)
 
 # write out data sources + targets:
 # this is created manually now:

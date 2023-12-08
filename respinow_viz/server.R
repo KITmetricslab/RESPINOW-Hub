@@ -108,7 +108,7 @@ current_date <- as.Date("1970-01-01")
 for (disease in diseases) {
   reporting_triangles[[disease]] <- read.csv(paste0(path_truth, "reporting_triangle-", disease,
                                                     "-preprocessed.csv"),
-                                             colClasses = c(date = "Date"))
+                                             colClasses = c(date = "Date"), check.names = FALSE)
   reporting_triangles[[disease]] <- reporting_triangles[[disease]][order(reporting_triangles[[disease]]$date), ]
   current_date <- max(c(current_date, reporting_triangles[[disease]]$date), na.rm = TRUE)
   
@@ -168,8 +168,9 @@ shinyServer(function(input, output, session) {
     isolate({
       if(!is.null(input$select_date) & length(input$select_date) > 0 & input$skip_backward > 0){
         new_date <- as.Date(input$select_date) - 7
+        print(new_date)
+        print(available_data_versions)
         if(new_date %in% available_data_versions){
-          
           updateSelectInput(session = session, inputId = "select_date",
                             selected = new_date)
         }
@@ -227,6 +228,7 @@ shinyServer(function(input, output, session) {
   # prepare data for plotting:
   plot_data <- reactiveValues()
   observe({
+    # browser()
     # scaling factor for population:
     pop_factor <-
       if(input$select_scale == "per 100.000"){
@@ -392,10 +394,10 @@ shinyServer(function(input, output, session) {
                            model == mod &
                            location == input$select_state &
                            pathogen == input$select_pathogen)
-          # remove retrospective if requested:
-          if(!input$show_retrospective_nowcasts){
-            subs <- subset(subs, !retrospective)
-          }
+          # # remove retrospective if requested:
+          # if(!input$show_retrospective_nowcasts){
+          #   subs <- subset(subs, !retrospective)
+          # }
           
           # if any relevant data found:
           if(nrow(subs) > 0){
@@ -840,207 +842,207 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  # create overview plot:
-  output$overview_plot <- renderPlot({
-    # run these codes only if plot is displayed:
-    if(input$select_plot_type == "overview"){
-      # the nowcast data to be displayed:
-      nowcast_to_show_all <- subset(forecast_data[[as.character(input$select_date)]],
-                                    model == input$select_model &
-                                      pathogen == input$select_pathogen)
-      if(input$select_stratification == "state"){
-        nowcast_to_show_all <- subset(nowcast_to_show_all, age_group == "00+")
-      }
-      if(input$select_stratification == "age"){
-        nowcast_to_show_all <- subset(nowcast_to_show_all, location == "DE")
-      }
-      if(!input$show_retrospective_nowcasts){
-        nowcast_to_show_all <- subset(nowcast_to_show_all, !retrospective)
-      }
-      
-      # add population data:
-      nowcast_to_show_all <- merge(nowcast_to_show_all, pop, by = c("location", "age_group"))
-      nowcast_to_show_all$pop_factor <- 1
-      if(input$select_scale == "per 100.000"){
-        nowcast_to_show_all$pop_factor <- 100000/nowcast_to_show_all$population
-      }
-      cols_quantiles <- c("mean", "q0.025", "q0.25", "q0.5", "q0.75", "q0.975")
-      nowcast_to_show_all[, cols_quantiles] <- nowcast_to_show_all$pop_factor*nowcast_to_show_all[, cols_quantiles]
-      
-      # the most recent nowcast data (will be added as fine line)
-      current_nowcast_all <- forecast_data[[as.character(max(available_nowcast_dates))]]
-      
-      # determine whether states or age groups are to be plotted:
-      if(input$select_stratification == "state"){
-        locs_to_show <- sort(unique(nowcast_to_show_all$location))
-        ags_to_show <- "00+"
-      }else{
-        locs_to_show <- "DE"
-        ags_to_show <- sort(unique(nowcast_to_show_all$age_group))
-        if("00+" %in% ags_to_show) ags_to_show <- c("00+", ags_to_show[ags_to_show != "00+"])
-      }
-      
-      # start plotting:
-      par(mfrow = c(6, 3), las = 1)
-      
-      for(loc in locs_to_show){
-        for(ag in ags_to_show){
-          # scaling factor for population:
-          pop_factor <-
-            if(input$select_scale == "per 100.000"){
-              # handle RSV manually: only Saxony available
-              if(input$select_pathogen == "rsv_infection_survstat"){
-                100000/subset(pop, location == "DE-SN" & age_group == ag)$population
-              }else{
-                100000/subset(pop, location == loc & age_group == ag)$population
-              }
-            }else{
-              1
-            }
-          
-          # determine max_lag:
-          max_lag <- NULL
-          if(input$select_max_lag == "4"){
-            max_lag <- 4
-          }
-          
-          # current truth data:
-          current_truth <- truth_as_of(reporting_triangles[[input$select_pathogen]], age_group = ag,
-                                       location = loc,
-                                       date = current_date,
-                                       max_lag = max_lag)
-          current_truth$value <- pop_factor*current_truth$value
-          # truth data at time of nowcast:
-          old_truth <- truth_as_of(reporting_triangles[[input$select_pathogen]], age_group = ag,
-                                   location = loc,
-                                   date = input$select_date,
-                                   max_lag = max_lag)
-          old_truth$value <- pop_factor*old_truth$value
-          
-          # the nowcasts to display:
-          nowcast_to_show <- subset(nowcast_to_show_all,
-                                    location == loc &
-                                      age_group == ag &
-                                      model == input$select_model)
-          nowcast_to_show <- nowcast_to_show[order(nowcast_to_show$target_end_date), ]
-          
-          # most recent nowcast
-          current_nowcast <- subset(current_nowcast_all,
-                                    location == loc &
-                                      age_group == ag &
-                                      model == input$select_model &
-                                      pathogen == input$select_pathogen)
-          current_nowcast[, cols_quantiles] <- pop_factor*current_nowcast[, cols_quantiles]
-          
-          # determine ylim:
-          if(input$use_same_ylim){
-            ylim <- c(ifelse(input$select_log == "log scale", 0.5, 0), 1.2*max(c(nowcast_to_show_all$q0.975, nowcast_to_show_all$q0.5), na.rm = TRUE))
-          }else{
-            ylim <- c(ifelse(input$select_log == "log scale", 0.5, 0), 1.2*max(c(nowcast_to_show$q0.975, nowcast_to_show$q0.5), na.rm = TRUE))
-          }
-          
-          # plot:
-          plot(nowcast_to_show$target_end_date, nowcast_to_show$q0.5,
-               xlab = "Meldedatum", ylab = "",
-               xlim = c(input$select_date - 60, input$select_date + 10),
-               ylim = ylim,
-               type = "l", log = ifelse(input$select_log == "log scale", "y", ""))
-          # plot title
-          main <- ifelse(input$select_stratification == "state",
-                         names(locations)[locations == loc],
-                         ag)
-          title(main)
-          
-          # uncertainty intervals
-          polygon(c(nowcast_to_show$target_end_date, rev(nowcast_to_show$target_end_date)),
-                  c(nowcast_to_show$q0.025, rev(nowcast_to_show$q0.975)), border = "lightgrey", col = "lightgrey")
-          polygon(c(nowcast_to_show$target_end_date, rev(nowcast_to_show$target_end_date)),
-                  c(nowcast_to_show$q0.25, rev(nowcast_to_show$q0.75)), border = NA, col = "deepskyblue3")
-          # point nowcast
-          if(input$select_point_estimate == "median"){
-            lines(nowcast_to_show$target_end_date, nowcast_to_show$q0.5, col = "deepskyblue4", lwd = 3)
-          }else{
-            lines(nowcast_to_show$target_end_date, nowcast_to_show$mean, col = "deepskyblue4", lwd = 3)
-          }
-          
-          # vertical line at date when nowcast was made:
-          abline(v = input$select_date, lty = "dashed")
-          
-          # most recent point nowcast for comparison
-          if(input$select_point_estimate == "median"){
-            lines(current_nowcast$target_end_date, current_nowcast$q0.5, lty = "dotted", col = "darkred")
-          }else{
-            lines(current_nowcast$target_end_date, current_nowcast$mean, lty = "dotted", col = "darkred")
-          }
-          
-          # old truth data as of when nowcast was made
-          lines(old_truth$date, old_truth$value, lwd = 2, col = "darkgrey")
-          
-          # current truth data
-          lines(current_truth$date, current_truth$value, lwd = 2)
-          
-          # add truth by reporting date if requested
-          if(input$show_truth_by_reporting){
-            truth_by_rep <- truth_by_reporting(dat_truth = reporting_triangles[[input$select_pathogen]],
-                                               age_group = ag,
-                                               location = loc)
-            truth_by_rep$value <- pop_factor*truth_by_rep$value
-            lines(truth_by_rep$date, truth_by_rep$value, lty = "dashed")
-          }
-          
-          # add frozen truth values if requested
-          if(input$show_truth_frozen){
-            truth_fr <- truth_frozen(dat_truth = reporting_triangles[[input$select_pathogen]],
-                                     age_group = ag,
-                                     location = loc)
-            truth_fr$value <- pop_factor*truth_fr$value
-            lines(truth_fr$date, truth_fr$value, lty = "dotted")
-          }
-        }
-      }
-      
-      # separate plot panel with legend
-      plot(NULL, xlim = 0:1, ylim = 0:1, xlab = "", ylab = "", axes = FALSE)
-      # legend for explanation of uncertainty intervals
-      legend_text1 <- if(input$select_language == "DE"){
-        c("50% Unsicherheitsintervall",
-          "95% Unsicherheitsintervall")
-      }else{
-        c("50% uncertainty interval",
-          "95% uncertainty interval")
-      }
-      
-      legend("topright", legend = legend_text1,
-             col = c("lightgrey", "deepskyblue3"), pch = 15, bty = "n")
-      
-      # legend explaining the different curves:
-      legend_text2 <- if(input$select_language == "DE"){
-        c(
-          paste0("Datenstand ", c(input$select_date, current_date)),
-          paste("Nowcast vom", current_date),
-          if(input$show_truth_frozen) "Eingefrorene Werte",
-          if(input$show_truth_by_reporting) "Nach Erscheinen in RKI-Daten"
-        )
-      }else{
-        c(
-          paste0("Data as of ", c(input$select_date, current_date)),
-          paste("Nowcast as of", current_date),
-          if(input$show_truth_frozen) "Frozen values",
-          if(input$show_truth_by_reporting) "By appearance in RKI data"
-        )
-      }
-      cols2 <- c("darkgrey", "black", "darkred",
-                 if(input$show_truth_frozen) "black",
-                 if(input$show_truth_by_reporting) "black")
-      lty2 <- c("solid", "solid", "dotted",
-                if(input$show_truth_frozen) "dotted",
-                if(input$show_truth_by_reporting) "dashed")
-      lwd2 <- c(2, 2, 1, 2, 2)
-      legend("bottomright", legend = legend_text2,
-             col = cols2, lty = lty2, bty = "n")
-      
-    }
-  })
+  # # create overview plot:
+  # output$overview_plot <- renderPlot({
+  #   # run these codes only if plot is displayed:
+  #   if(input$select_plot_type == "overview"){
+  #     # the nowcast data to be displayed:
+  #     nowcast_to_show_all <- subset(forecast_data[[as.character(input$select_date)]],
+  #                                   model == input$select_model &
+  #                                     pathogen == input$select_pathogen)
+  #     if(input$select_stratification == "state"){
+  #       nowcast_to_show_all <- subset(nowcast_to_show_all, age_group == "00+")
+  #     }
+  #     if(input$select_stratification == "age"){
+  #       nowcast_to_show_all <- subset(nowcast_to_show_all, location == "DE")
+  #     }
+  #     if(!input$show_retrospective_nowcasts){
+  #       nowcast_to_show_all <- subset(nowcast_to_show_all, !retrospective)
+  #     }
+  #     
+  #     # add population data:
+  #     nowcast_to_show_all <- merge(nowcast_to_show_all, pop, by = c("location", "age_group"))
+  #     nowcast_to_show_all$pop_factor <- 1
+  #     if(input$select_scale == "per 100.000"){
+  #       nowcast_to_show_all$pop_factor <- 100000/nowcast_to_show_all$population
+  #     }
+  #     cols_quantiles <- c("mean", "q0.025", "q0.25", "q0.5", "q0.75", "q0.975")
+  #     nowcast_to_show_all[, cols_quantiles] <- nowcast_to_show_all$pop_factor*nowcast_to_show_all[, cols_quantiles]
+  #     
+  #     # the most recent nowcast data (will be added as fine line)
+  #     current_nowcast_all <- forecast_data[[as.character(max(available_nowcast_dates))]]
+  #     
+  #     # determine whether states or age groups are to be plotted:
+  #     if(input$select_stratification == "state"){
+  #       locs_to_show <- sort(unique(nowcast_to_show_all$location))
+  #       ags_to_show <- "00+"
+  #     }else{
+  #       locs_to_show <- "DE"
+  #       ags_to_show <- sort(unique(nowcast_to_show_all$age_group))
+  #       if("00+" %in% ags_to_show) ags_to_show <- c("00+", ags_to_show[ags_to_show != "00+"])
+  #     }
+  #     
+  #     # start plotting:
+  #     par(mfrow = c(6, 3), las = 1)
+  #     
+  #     for(loc in locs_to_show){
+  #       for(ag in ags_to_show){
+  #         # scaling factor for population:
+  #         pop_factor <-
+  #           if(input$select_scale == "per 100.000"){
+  #             # handle RSV manually: only Saxony available
+  #             if(input$select_pathogen == "rsv_infection_survstat"){
+  #               100000/subset(pop, location == "DE-SN" & age_group == ag)$population
+  #             }else{
+  #               100000/subset(pop, location == loc & age_group == ag)$population
+  #             }
+  #           }else{
+  #             1
+  #           }
+  #         
+  #         # determine max_lag:
+  #         max_lag <- NULL
+  #         if(input$select_max_lag == "4"){
+  #           max_lag <- 4
+  #         }
+  #         
+  #         # current truth data:
+  #         current_truth <- truth_as_of(reporting_triangles[[input$select_pathogen]], age_group = ag,
+  #                                      location = loc,
+  #                                      date = current_date,
+  #                                      max_lag = max_lag)
+  #         current_truth$value <- pop_factor*current_truth$value
+  #         # truth data at time of nowcast:
+  #         old_truth <- truth_as_of(reporting_triangles[[input$select_pathogen]], age_group = ag,
+  #                                  location = loc,
+  #                                  date = input$select_date,
+  #                                  max_lag = max_lag)
+  #         old_truth$value <- pop_factor*old_truth$value
+  #         
+  #         # the nowcasts to display:
+  #         nowcast_to_show <- subset(nowcast_to_show_all,
+  #                                   location == loc &
+  #                                     age_group == ag &
+  #                                     model == input$select_model)
+  #         nowcast_to_show <- nowcast_to_show[order(nowcast_to_show$target_end_date), ]
+  #         
+  #         # most recent nowcast
+  #         current_nowcast <- subset(current_nowcast_all,
+  #                                   location == loc &
+  #                                     age_group == ag &
+  #                                     model == input$select_model &
+  #                                     pathogen == input$select_pathogen)
+  #         current_nowcast[, cols_quantiles] <- pop_factor*current_nowcast[, cols_quantiles]
+  #         
+  #         # determine ylim:
+  #         if(input$use_same_ylim){
+  #           ylim <- c(ifelse(input$select_log == "log scale", 0.5, 0), 1.2*max(c(nowcast_to_show_all$q0.975, nowcast_to_show_all$q0.5), na.rm = TRUE))
+  #         }else{
+  #           ylim <- c(ifelse(input$select_log == "log scale", 0.5, 0), 1.2*max(c(nowcast_to_show$q0.975, nowcast_to_show$q0.5), na.rm = TRUE))
+  #         }
+  #         
+  #         # plot:
+  #         plot(nowcast_to_show$target_end_date, nowcast_to_show$q0.5,
+  #              xlab = "Meldedatum", ylab = "",
+  #              xlim = c(input$select_date - 60, input$select_date + 10),
+  #              ylim = ylim,
+  #              type = "l", log = ifelse(input$select_log == "log scale", "y", ""))
+  #         # plot title
+  #         main <- ifelse(input$select_stratification == "state",
+  #                        names(locations)[locations == loc],
+  #                        ag)
+  #         title(main)
+  #         
+  #         # uncertainty intervals
+  #         polygon(c(nowcast_to_show$target_end_date, rev(nowcast_to_show$target_end_date)),
+  #                 c(nowcast_to_show$q0.025, rev(nowcast_to_show$q0.975)), border = "lightgrey", col = "lightgrey")
+  #         polygon(c(nowcast_to_show$target_end_date, rev(nowcast_to_show$target_end_date)),
+  #                 c(nowcast_to_show$q0.25, rev(nowcast_to_show$q0.75)), border = NA, col = "deepskyblue3")
+  #         # point nowcast
+  #         if(input$select_point_estimate == "median"){
+  #           lines(nowcast_to_show$target_end_date, nowcast_to_show$q0.5, col = "deepskyblue4", lwd = 3)
+  #         }else{
+  #           lines(nowcast_to_show$target_end_date, nowcast_to_show$mean, col = "deepskyblue4", lwd = 3)
+  #         }
+  #         
+  #         # vertical line at date when nowcast was made:
+  #         abline(v = input$select_date, lty = "dashed")
+  #         
+  #         # most recent point nowcast for comparison
+  #         if(input$select_point_estimate == "median"){
+  #           lines(current_nowcast$target_end_date, current_nowcast$q0.5, lty = "dotted", col = "darkred")
+  #         }else{
+  #           lines(current_nowcast$target_end_date, current_nowcast$mean, lty = "dotted", col = "darkred")
+  #         }
+  #         
+  #         # old truth data as of when nowcast was made
+  #         lines(old_truth$date, old_truth$value, lwd = 2, col = "darkgrey")
+  #         
+  #         # current truth data
+  #         lines(current_truth$date, current_truth$value, lwd = 2)
+  #         
+  #         # add truth by reporting date if requested
+  #         if(input$show_truth_by_reporting){
+  #           truth_by_rep <- truth_by_reporting(dat_truth = reporting_triangles[[input$select_pathogen]],
+  #                                              age_group = ag,
+  #                                              location = loc)
+  #           truth_by_rep$value <- pop_factor*truth_by_rep$value
+  #           lines(truth_by_rep$date, truth_by_rep$value, lty = "dashed")
+  #         }
+  #         
+  #         # add frozen truth values if requested
+  #         if(input$show_truth_frozen){
+  #           truth_fr <- truth_frozen(dat_truth = reporting_triangles[[input$select_pathogen]],
+  #                                    age_group = ag,
+  #                                    location = loc)
+  #           truth_fr$value <- pop_factor*truth_fr$value
+  #           lines(truth_fr$date, truth_fr$value, lty = "dotted")
+  #         }
+  #       }
+  #     }
+  #     
+  #     # separate plot panel with legend
+  #     plot(NULL, xlim = 0:1, ylim = 0:1, xlab = "", ylab = "", axes = FALSE)
+  #     # legend for explanation of uncertainty intervals
+  #     legend_text1 <- if(input$select_language == "DE"){
+  #       c("50% Unsicherheitsintervall",
+  #         "95% Unsicherheitsintervall")
+  #     }else{
+  #       c("50% uncertainty interval",
+  #         "95% uncertainty interval")
+  #     }
+  #     
+  #     legend("topright", legend = legend_text1,
+  #            col = c("lightgrey", "deepskyblue3"), pch = 15, bty = "n")
+  #     
+  #     # legend explaining the different curves:
+  #     legend_text2 <- if(input$select_language == "DE"){
+  #       c(
+  #         paste0("Datenstand ", c(input$select_date, current_date)),
+  #         paste("Nowcast vom", current_date),
+  #         if(input$show_truth_frozen) "Eingefrorene Werte",
+  #         if(input$show_truth_by_reporting) "Nach Erscheinen in RKI-Daten"
+  #       )
+  #     }else{
+  #       c(
+  #         paste0("Data as of ", c(input$select_date, current_date)),
+  #         paste("Nowcast as of", current_date),
+  #         if(input$show_truth_frozen) "Frozen values",
+  #         if(input$show_truth_by_reporting) "By appearance in RKI data"
+  #       )
+  #     }
+  #     cols2 <- c("darkgrey", "black", "darkred",
+  #                if(input$show_truth_frozen) "black",
+  #                if(input$show_truth_by_reporting) "black")
+  #     lty2 <- c("solid", "solid", "dotted",
+  #               if(input$show_truth_frozen) "dotted",
+  #               if(input$show_truth_by_reporting) "dashed")
+  #     lwd2 <- c(2, 2, 1, 2, 2)
+  #     legend("bottomright", legend = legend_text2,
+  #            col = cols2, lty = lty2, bty = "n")
+  #     
+  #   }
+  # })
   
   # update calendar input for target_end_date:
   observe({
@@ -1095,6 +1097,21 @@ shinyServer(function(input, output, session) {
       }
       selected <- input$select_point_estimate
       updateRadioButtons(session, "select_point_estimate",
+                         label = label,
+                         choices = choices,
+                         selected = selected,
+                         inline = TRUE
+      )
+      
+      # Maximum delay
+      label <- ifelse(input$select_language == "DE", "Maximaler Meldeverzug", "Maximum reporting delay")
+      choices <- if(input$select_language == "DE"){
+        c("4 Wochen" = "4", "beliebig" = "any")
+      }else{
+        c("4 weeks" = "4", "any" = "any")
+      }
+      selected <- input$select_max_lag
+      updateRadioButtons(session, "select_max_lag",
                          label = label,
                          choices = choices,
                          selected = selected,
@@ -1186,34 +1203,36 @@ shinyServer(function(input, output, session) {
       )
       
       # Show two most recent days
-      label <- ifelse(input$select_language == "DE",
-                      "Krankheit / Indikator",
-                      "Disease / indicator")
+      label <- NULL # ifelse(input$select_language == "DE",
+                    #  "Krankheit / Indikator",
+                    #  "Disease / indicator")
       choices <- c("SARI (ICOSARI)" = "icosari-sari",
                    "Saisonale Influenza (SurvStat)" = "survstat-influenza",
                    "RSV (SurvStat)" = "survstat-rsv",
-                   "Pneumokokken (SurvStat)" = "survstat-pneumococcal",
+                   "Invasive Pneumokokken (SurvStat)" = "survstat-pneumococcal",
+                   "ARE (AGI)" = "agi-are",
                    "Saisonale Influenza (NRZ)" = "nrz-influenza",
                    # "Saisonale Influenza Tests (NRZ)" = "nrz-influenza-tests",
                    "RSV (NRZ)" = "nrz-rsv",
                    "Saisonale Influenza (CVN)" = "cvn-influenza",
                    "RSV (CVN)" = "cvn-rsv",
-                   "Pneumokokken (CVN)" = "cvn-pneumococcal",
+                   "Invasive Pneumokokken (CVN)" = "cvn-pneumococcal"
                    # "RSV Tests (NRZ)" = "nrz-rsv-tests",
-                   "ARE (AGI)" = "agi-are")
+                   )
       if(input$select_language == "EN"){
-        names(choices) <- c("SARI (ICOSARI)" = "icosari-sari",
-                            "Seasonal influenza (SurvStat)",
-                            "RSV (SurvStat)",
-                            "Pneumococcal disease (SurvStat)",
-                            "Seasonal influenza (NRZ)" = "nrz-influenza",
-                            # "Seasonal Influenza tests (NRZ)" = "nrz-influenza-tests",
-                            "RSV (NRZ)" = "nrz-rsv",
-                            # "RSV tests (NRZ)" = "nrz-rsv-tests",
-                            "Seasonal influenza (CVN)" = "cvn-influenza",
-                            "RSV (CVN)" = "cvn-rsv",
-                            "Pneumococcal disease (CVN)" = "cvn-pneumococcal",
-                            "ARI (AGI)" = "agi-are")
+        choices <- c("SARI (ICOSARI)" = "icosari-sari",
+                     "Seasonal influenza (SurvStat)" = "survstat-influenza",
+                     "RSV (SurvStat)" = "survstat-rsv",
+                     "Pneumococcal disease (SurvStat)" = "survstat-pneumococcal",
+                     "ARI (AGI)" = "agi-are",
+                     "Seasonal influenza (NRZ)" = "nrz-influenza",
+                     # "Seasonal Influenza tests (NRZ)" = "nrz-influenza-tests",
+                     "RSV (NRZ)" = "nrz-rsv",
+                     # "RSV tests (NRZ)" = "nrz-rsv-tests",
+                     "Seasonal influenza (CVN)" = "cvn-influenza",
+                     "RSV (CVN)" = "cvn-rsv",
+                     "Pneumococcal disease (CVN)" = "cvn-pneumococcal"
+                     )
       }
       selected <- input$select_pathogen
       updateSelectInput(session, "select_pathogen",
@@ -1242,15 +1261,15 @@ shinyServer(function(input, output, session) {
                           value = selected
       )
       
-      # Show summary table
-      label <- ifelse(input$select_language == "DE",
-                      "Zeige Übersichtstabelle",
-                      "Show summary table")
-      selected <- input$show_table
-      updateCheckboxInput(session, "show_table",
-                          label = label,
-                          value = selected
-      )
+      # # Show summary table
+      # label <- ifelse(input$select_language == "DE",
+      #                 "Zeige Übersichtstabelle",
+      #                 "Show summary table")
+      # selected <- input$show_table
+      # updateCheckboxInput(session, "show_table",
+      #                     label = label,
+      #                     value = selected
+      # )
       
       # Select model:
       label <- ifelse(input$select_language == "DE",
@@ -1262,24 +1281,24 @@ shinyServer(function(input, output, session) {
                           value = selected
       )
       
-      # Graphical display:
-      label <- ifelse(input$select_language == "DE",
-                      "Grafische Darstellung:",
-                      "Graphical display")
-      choices <- if(input$select_language == "DE"){
-        c("Interaktiv, mehrere Modelle" = "interactive",
-          "Detailliert, ein Modell" = "overview")
-      }else{
-        c("Interactive for several models" = "interactive",
-          "Overview for one model" = "overview")
-      }
-      selected <- input$select_plot_type
-      updateRadioButtons(session, "select_plot_type",
-                         label = label,
-                         choices = choices,
-                         selected = selected,
-                         inline = TRUE
-      )
+      # # Graphical display:
+      # label <- ifelse(input$select_language == "DE",
+      #                 "Grafische Darstellung:",
+      #                 "Graphical display")
+      # choices <- if(input$select_language == "DE"){
+      #   c("Interaktiv, mehrere Modelle" = "interactive",
+      #     "Detailliert, ein Modell" = "overview")
+      # }else{
+      #   c("Interactive for several models" = "interactive",
+      #     "Overview for one model" = "overview")
+      # }
+      # selected <- input$select_plot_type
+      # updateRadioButtons(session, "select_plot_type",
+      #                    label = label,
+      #                    choices = choices,
+      #                    selected = selected,
+      #                    inline = TRUE
+      # )
       
       
       

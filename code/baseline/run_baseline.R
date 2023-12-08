@@ -20,16 +20,16 @@ if(run_individually){
 }
 
 # define data source:
-data_source <- "survstat"
+data_source <- "icosari"
 
 # the diseases present in the data source:
 diseases <- list.dirs(paste0(path_repo, "/data/", data_source), recursive = FALSE, full.names = FALSE)
 # diseases <- "sari"
-diseases <- "pneumococcal"
+diseases <- "sari"
 
 # dates for which to produce nowcasts:
-forecast_dates <- seq(from = as.Date("2023-08-03"),
-                      to = as.Date("2023-11-23"),
+forecast_dates <- seq(from = as.Date("2023-12-07"),
+                      to = as.Date("2023-12-07"),
                       by = 7)
 
 # set the sizes of training data sets
@@ -151,8 +151,7 @@ for(i in seq_along(forecast_dates)){
                             min_horizon = 0,
                             max_horizon = max_horizon,
                             max_delay = max_delay,
-                            pathogen = disease,
-                            target_type = "inc case")
+                            pathogen = disease)
       nc <- nc$result
       
       # generate a plot if desired:
@@ -160,7 +159,7 @@ for(i in seq_along(forecast_dates)){
         # undebug(plot_forecast)
         plot_forecast(forecasts = nc,
                       location = loc, age_group = "00+",
-                      truth = plot_data_back_in_time, target_type = paste("inc case"),
+                      truth = plot_data_back_in_time,
                       levels_coverage = c(0.5, 0.95),
                       start = as.Date(forecast_date) - 135,
                       end = as.Date(forecast_date) + 28,
@@ -180,7 +179,7 @@ for(i in seq_along(forecast_dates)){
     }
     
     # write out:
-    write.csv(all_nc, file = paste0(path_repo, "/submissions/retrospective/", data_source, "/", disease, "/KIT-simple_nowcast/",
+    write.csv(all_nc, file = paste0(path_repo, "/submissions/", data_source, "/", disease, "/KIT-simple_nowcast/",
                                     forecast_date, "-", data_source, "-", disease, "-KIT-simple_nowcast.csv"), row.names = FALSE)
   }
 }

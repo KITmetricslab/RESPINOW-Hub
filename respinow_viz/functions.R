@@ -3,24 +3,36 @@ date_from_filename <- function(files){
   as.Date(gsub("_forecast_data.csv", "", files))
 }
 
-# function to compute truth data as of a certain time:
+# function to compute truth data as of a certain time.
+# important: we assume data are updated on Thursdays
 truth_as_of <- function(dat_truth, age_group = "00+", location = "DE", date, max_lag = NULL){
+  if(!weekdays(date) == "Thursday") warning("date is usually expected to be a Thursday.")
   if(is.null(date)){
     date <- max(dat_truth$date)
   }
   date <- as.Date(date)
+  
+  # if a column for delay -1 is contained: keep one more data point
+  to_add <- ifelse("value_-1w" %in% colnames(dat_truth), 7, 0)
   subs <- dat_truth[dat_truth$age_group == age_group &
                       dat_truth$location == location &
-                      dat_truth$date <= date, ]
+                      dat_truth$date <= date + to_add, ]
   matr <- subs[, grepl("value_", colnames(subs))]
+  lags_numeric <- as.numeric(gsub("w", "", 
+                                  gsub("value_", "", 
+                                       gsub(">", "", colnames(matr)))))
+  
   if(!is.null(max_lag)){
-    matr <- matr[, paste0("value_", 0:max_lag, "w")]
+    lags_numeric <- lags_numeric[lags_numeric <= max_lag]
+    matr <- matr[, paste0("value_", lags_numeric, "w")]
   }
   matr_dates <- matrix(subs$date, nrow = nrow(matr), ncol = ncol(matr))
-  matr_delays <- 7*matrix((1:ncol(matr_dates)) - 1, byrow = TRUE,
-                        nrow = nrow(matr), ncol = ncol(matr))
+  matr_delays <- 7*matrix(lags_numeric, byrow = TRUE,
+                        nrow = nrow(matr), ncol = ncol(matr)) + 4 # plus 4 as data are used as on Thursday
+  
   matr_reporting_date <- matr_dates + matr_delays
   matr[matr_reporting_date > date] <- 0
+  
   data.frame(date = subs$date,
              value = rowSums(matr, na.rm = TRUE))
 }
@@ -103,7 +115,7 @@ create_table <- function(forecasts, dat_truth, population, model,
                          forecast_date, target_end_date, current_date,
                          by = "state",
                          median_or_mean = "median", interval_level = "95%",
-                         scale = "absolute", pathogen = "COVID-19", target_type = "hosp"){
+                         scale = "absolute", pathogen = "COVID-19"){
   
   # mapping between state codes and human-readable names
   bundeslaender <- c("DE" = "Alle (Deutschland)",
@@ -127,8 +139,7 @@ create_table <- function(forecasts, dat_truth, population, model,
   # subset to relevant rows of forecast data:
   sub <- forecasts[forecasts$target_end_date == target_end_date &
                      forecasts$model == model &
-                     forecasts$pathogen == "COVID-19" &
-                     forecasts$target_type == target_type, ]
+                     forecasts$pathogen == "COVID-19", ]
   # depending on whether by state or age group:
   if(by == "state"){
     sub <- subset(sub, age_group == "00+")
@@ -144,7 +155,7 @@ create_table <- function(forecasts, dat_truth, population, model,
   }
   
   # remove columns not needed:
-  sub$target_type <- sub$pathogen <- sub$model <- NULL
+  sub$pathogen <- sub$model <- NULL
   
   # choose point nowcast (median or mean):
   sub$point <- if(median_or_mean == "median"){
@@ -229,8 +240,7 @@ create_table <- function(forecasts, dat_truth, population, model,
   # get nowcasts from seven days ago:
   sub_7days_ago <- forecasts[forecasts$target_end_date == target_end_date - 7 &
                                forecasts$model == model &
-                               forecasts$pathogen == "COVID-19" &
-                               forecasts$target_type == target_type, ]
+                               forecasts$pathogen == "COVID-19", ]
   if(by == "state"){
     sub_7days_ago <- subset(sub_7days_ago, age_group == "00+")
   }
