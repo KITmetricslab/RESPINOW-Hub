@@ -104,13 +104,13 @@ path_truth <- ifelse(local,
 
 reporting_triangles <- reporting_triangles_tests <- list()
 # to read out the most recent date in the truth data:
-current_date <- as.Date("1970-01-01")
+current_date <- max(available_data_versions)
 for (disease in diseases) {
   reporting_triangles[[disease]] <- read.csv(paste0(path_truth, "reporting_triangle-", disease,
                                                     "-preprocessed.csv"),
                                              colClasses = c(date = "Date"), check.names = FALSE)
   reporting_triangles[[disease]] <- reporting_triangles[[disease]][order(reporting_triangles[[disease]]$date), ]
-  current_date <- max(c(current_date, reporting_triangles[[disease]]$date), na.rm = TRUE)
+  # current_date <- max(c(current_date, reporting_triangles[[disease]]$date), na.rm = TRUE)
   
   # load reporting triangles one tests where available:
   if(tests_available[disease]){
@@ -765,7 +765,7 @@ shinyServer(function(input, output, session) {
       plotlyProxyInvoke(myPlotProxy, "restyle",
                         list(name = ifelse(input$select_language == "DE",
                                            paste("Datenstand", current_date),
-                                           paste("data as of", input$select_date))),
+                                           paste("data as of", current_date))),
                         list(plot_data$mapping[["current_truth"]]))
     })
     
