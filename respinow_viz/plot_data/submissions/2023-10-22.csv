@@ -1,0 +1,9 @@
+model,target_type,forecast_date,target_end_date,location,age_group,pathogen,mean,q0.025,q0.25,q0.5,q0.75,q0.975
+KIT-epinowcast,NA,2023-10-22,2023-10-01,DE,00+,survstat-pneumococcal,90,90,90,90,90,90
+KIT-epinowcast,NA,2023-10-22,2023-10-08,DE,00+,survstat-pneumococcal,81.265,81,81,81,81,83
+KIT-epinowcast,NA,2023-10-22,2023-10-15,DE,00+,survstat-pneumococcal,141.703,140,141,141,142,145
+KIT-epinowcast,NA,2023-10-22,2023-10-22,DE,00+,survstat-pneumococcal,124.837,115,120,124,129,140
+KIT-epinowcast,NA,2023-10-22,2023-10-01,DE,00+,survstat-rsv,30,30,30,30,30,30
+KIT-epinowcast,NA,2023-10-22,2023-10-08,DE,00+,survstat-rsv,26.015,26,26,26,26,26
+KIT-epinowcast,NA,2023-10-22,2023-10-15,DE,00+,survstat-rsv,37.208,37,37,37,37,39
+KIT-epinowcast,NA,2023-10-22,2023-10-22,DE,00+,survstat-rsv,34.115,30,32,34,35.25,42
