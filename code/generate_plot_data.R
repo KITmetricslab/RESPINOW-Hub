@@ -40,6 +40,7 @@ for(ds in data_sources){
 }
 all_forecast_dates <- sort(all_forecast_dates)
 
+
 # write out data sources + targets:
 # this is created manually now:
 df_targets <- data.frame(data_source = all_data_sources,
@@ -84,6 +85,10 @@ for(i in seq_along(all_forecast_dates)){
         # handle colnames (mean separately)
         colnames(forecasts_temp) <- gsub("value.999", "mean", colnames(forecasts_temp))
         colnames(forecasts_temp) <- gsub("value.", "q", colnames(forecasts_temp))
+        # fill in median for mean if no mean has been submitted:
+        if(!"mean" %in% colnames(forecasts_temp)){
+          forecasts_temp$mean <- forecasts_temp$q0.5
+        }
         # add column for model:
         forecasts_temp$model <- mod
         # additional columns:
