@@ -12,7 +12,7 @@ if(run_individually){
   # library used for rolling sums:
   library(zoo)
   # get functions:
-  source(paste0(path_repo, "/code/baseline/functions_new.R"))
+  source(paste0(path_repo, "/code/baseline/functions.R"))
   source(paste0(path_repo, "/respinow_viz/functions.R"))
   
   # should nowcasts be plotted for all strata?
@@ -20,16 +20,16 @@ if(run_individually){
 }
 
 # define data source:
-data_source <- "icosari"
+data_source <- "survstat"
 
 # the diseases present in the data source:
 diseases <- list.dirs(paste0(path_repo, "/data/", data_source), recursive = FALSE, full.names = FALSE)
 # diseases <- "sari"
-diseases <- "sari"
+diseases <- "influenza"
 
 # dates for which to produce nowcasts:
-forecast_dates <- seq(from = as.Date("2023-12-07"),
-                      to = as.Date("2023-12-07"),
+forecast_dates <- seq(from = as.Date("2024-01-04"),
+                      to = as.Date("2024-01-11"),
                       by = 7)
 
 # set the sizes of training data sets
