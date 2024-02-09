@@ -2,4 +2,5 @@ model
 KIT-epinowcast
 KIT-simple_nowcast
 MPIDS-simple_phasespace
+RIVM-GAM
 HZI-ODEmodel
