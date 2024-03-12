@@ -45,9 +45,9 @@ shinyUI(fluidPage(
   
   # Application title
   conditionalPanel("input.select_language == 'DE'", 
-                   titlePanel("RespiHub: Nowcasting respiratorischer Erreger in Deutschland (Beta)")),
+                   titlePanel("RESPINOW-Hub: Nowcasting respiratorischer Erreger in Deutschland (Beta)")),
   conditionalPanel("input.select_language == 'EN'", 
-                   titlePanel("RespiHub: Nowcasting of respiratory pathogens in Germany (Beta)")),
+                   titlePanel("RESPINOW-Hub: Nowcasting of respiratory pathogens in Germany (Beta)")),
   
   br(),
   
@@ -76,12 +76,13 @@ shinyUI(fluidPage(
                               size = "m")),
       selectizeInput("select_pathogen",
                      label = NULL,
-                     choices = c("SARI (ICOSARI)" = "icosari-sari",
+                     choices = c(
+                       "SARI (ICOSARI)" = "icosari-sari",
                                  "Saisonale Influenza (SurvStat)" = "survstat-influenza",
                                  "RSV (SurvStat)" = "survstat-rsv",
                                  "Invasive Pneumokokken (SurvStat)" = "survstat-pneumococcal",
                                  "ARE (AGI)" = "agi-are",
-                                 "Saisonale Influenza (NRZ)" = "nrz-influenza",
+                       "Saisonale Influenza (NRZ)" = "nrz-influenza",
                                  # "Saisonale Influenza Tests (NRZ)" = "nrz-influenza-tests",
                                  "RSV (NRZ)" = "nrz-rsv",
                                  # "RSV Tests (NRZ)" = "nrz-rsv-tests",
