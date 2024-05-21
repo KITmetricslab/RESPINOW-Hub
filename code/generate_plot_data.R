@@ -1,9 +1,9 @@
 # generate plot data by date and pathogen
 
 # set working directory
-current_path = rstudioapi::getActiveDocumentContext()$path # get path of this file
-setwd(dirname(current_path))
-setwd("..")
+# current_path = rstudioapi::getActiveDocumentContext()$path # get path of this file
+# setwd(dirname(current_path))
+# setwd("..")
 
 source("respinow_viz/functions.R")
 
