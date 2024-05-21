@@ -1,6 +1,7 @@
 model
 KIT-epinowcast
+KIT-hhh4
 KIT-simple_nowcast
-MPIDS-simple_phasespace
 RIVM-GAM
+RKI-Pilot_01
 HZI-ODEmodel
