@@ -7,7 +7,7 @@ if(run_individually){
   Sys.setlocale(category = "LC_TIME", locale = "en_US.UTF8")
 
   # path of the repo:
-  path_repo <- "/home/johannes/Documents/RESPINOW/RESPINOW-Hub"
+  path_repo <- "."
 
   # library used for rolling sums:
   library(zoo)
