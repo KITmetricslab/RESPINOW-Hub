@@ -41,9 +41,12 @@ if(data_source %in% c("survstat")){
 exclusion_period <- seq(from = as.Date("2019-06-30"), to = as.Date("2023-07-03"), by = 1)
 
 # dates for which to produce nowcasts:
-forecast_dates <- seq(from = as.Date("2023-10-05"),
-                      to = as.Date("2024-03-07"),
-                      by = 7)
+# forecast_dates <- seq(from = as.Date("2024-05-16"),
+#                       to = as.Date("2024-05-16"),
+#                       by = 7)
+# Select most recent Thursday as forecast_date:
+forecast_dates0 <- Sys.Date() - 1:6
+forecast_dates <- forecast_dates0[weekdays(forecast_dates0) == "Thursday"]
 
 # set the sizes of training data sets
 # limited by number of observations (in the early part, not relevant anymore)
