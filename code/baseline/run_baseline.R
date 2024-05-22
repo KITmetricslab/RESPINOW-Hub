@@ -164,20 +164,20 @@ for (data_source in data_sources) {
         nc <- nc$result
         
         # generate a plot if desired:
-        if(plot_all | loc == "DE"){
-          # undebug(plot_forecast)
-          plot_forecast(forecasts = nc,
-                        location = loc, age_group = "00+",
-                        truth = plot_data_back_in_time,
-                        levels_coverage = c(0.5, 0.95),
-                        start = as.Date(forecast_date) - 135,
-                        end = as.Date(forecast_date) + 28,
-                        forecast_date = forecast_date,
-                        ylim = c(0, 2*max(tail(plot_data_back_in_time$value, 10)))
-          )
-          lines(plot_data_current$date, plot_data_current$value, col = "red", lty  ="solid")
-          title(paste0(disease, ",", loc, ", ", forecast_date))
-        }
+        # if(plot_all | loc == "DE"){
+        #   # undebug(plot_forecast)
+        #   plot_forecast(forecasts = nc,
+        #                 location = loc, age_group = "00+",
+        #                 truth = plot_data_back_in_time,
+        #                 levels_coverage = c(0.5, 0.95),
+        #                 start = as.Date(forecast_date) - 135,
+        #                 end = as.Date(forecast_date) + 28,
+        #                 forecast_date = forecast_date,
+        #                 ylim = c(0, 2*max(tail(plot_data_back_in_time$value, 10)))
+        #   )
+        #   lines(plot_data_current$date, plot_data_current$value, col = "red", lty  ="solid")
+        #   title(paste0(disease, ",", loc, ", ", forecast_date))
+        # }
         
         # store in all_nc
         if(is.null(all_nc)){
