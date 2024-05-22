@@ -1,7 +1,8 @@
 # Apply the KIT-simple_nowcast baseline model to SurvStat data.
 # Author: Johannes Bracher, johannes.bracher@kit.edu
 
-install.packages(c("surveillance", "hhh4addon"))
+install.packages("surveillance")
+install_github("jbracher/hhh4addon", build_vignettes = TRUE)
                  
 library(surveillance)
 library(hhh4addon)
