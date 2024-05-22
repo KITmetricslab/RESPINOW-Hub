@@ -1,6 +1,8 @@
 # Apply the KIT-simple_nowcast baseline model to SurvStat data.
 # Author: Johannes Bracher, johannes.bracher@kit.edu
 
+install.packages(c("surveillance", "hhh4addon")
+                 
 library(surveillance)
 library(hhh4addon)
 
@@ -10,7 +12,7 @@ if(run_individually){
   Sys.setlocale(category = "LC_TIME", locale = "en_US.UTF8")
 
   # path of the repo:
-  path_repo <- "/home/johannes/Documents/RESPINOW/RESPINOW-Hub"
+  path_repo <- "."
 
   # library used for rolling sums:
   library(zoo)
@@ -210,23 +212,23 @@ for(i in seq_along(forecast_dates)){
       }
 
       # generate a plot if desired:
-      if(plot_all | loc == "DE"){
-        plot_forecast(forecasts = fc,
-                      location = loc, age_group = "00+",
-                      truth = plot_data_back_in_time,
-                      levels_coverage = c(0.5, 0.95),
-                      start = as.Date("2023-08-31"),
-                      # end = as.Date("2024-02-28"),
-                      forecast_date = forecast_date, 
-                      # ylim = c(0, 2*max(tail(plot_data_back_in_time$value, 10)))
-                      ylim = c(0,50000)
-        )
-        # lines(dates_forecast, pred_means, col = "blue")
-        # lines(dates_forecast, quantile_matrix[, 2], col = "blue", lty = 2)
-        # lines(dates_forecast, quantile_matrix[, 6], col = "blue", lty = 2)
-        lines(plot_data_current$date, plot_data_current$value, col = "red", lty  ="solid")
-        title(paste0(disease, ",", loc, ", ", forecast_date))
-      }
+      # if(plot_all | loc == "DE"){
+      #   plot_forecast(forecasts = fc,
+      #                 location = loc, age_group = "00+",
+      #                 truth = plot_data_back_in_time,
+      #                 levels_coverage = c(0.5, 0.95),
+      #                 start = as.Date("2023-08-31"),
+      #                 # end = as.Date("2024-02-28"),
+      #                 forecast_date = forecast_date, 
+      #                 # ylim = c(0, 2*max(tail(plot_data_back_in_time$value, 10)))
+      #                 ylim = c(0,50000)
+      #   )
+      #   # lines(dates_forecast, pred_means, col = "blue")
+      #   # lines(dates_forecast, quantile_matrix[, 2], col = "blue", lty = 2)
+      #   # lines(dates_forecast, quantile_matrix[, 6], col = "blue", lty = 2)
+      #   lines(plot_data_current$date, plot_data_current$value, col = "red", lty  ="solid")
+      #   title(paste0(disease, ",", loc, ", ", forecast_date))
+      # }
 
       # store in all_fc
       if(is.null(all_fc)){
