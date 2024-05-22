@@ -1,6 +1,8 @@
 # Apply the KIT-simple_nowcast baseline model to SurvStat data.
 # Author: Johannes Bracher, johannes.bracher@kit.edu
 
+install.packages("zoo")
+
 # Some code which is only needed when running this file individually
 run_individually <- TRUE
 if(run_individually){
