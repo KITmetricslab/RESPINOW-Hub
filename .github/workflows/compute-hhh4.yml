@@ -1,0 +1,38 @@
+name: "compute-hhh4"
+on:
+  workflow_dispatch:
+  # schedule:
+  # - cron: "30 11,12,13,14 * * *"
+  
+jobs:
+  compute-hhh4:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+        
+    - name: Setup R
+      uses: r-lib/actions/setup-r@v2 
+      with:
+        r-version: '4.2.3'
+      
+    - name: Compute hhh4
+      run: |
+        Rscript ./code/hhh4/hhh4.R
+    
+    - name: Create Pull Request
+      id: cpr
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.PAT_DW }}
+        commit-message: Update hhh4
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        branch: compute-baseline
+        delete-branch: true
+        title: 'Compute hhh4'
+        body: |
+          Compute hhh4
+        labels: |
+          automated pr
