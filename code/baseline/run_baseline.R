@@ -18,7 +18,7 @@ if(run_individually){
   source(paste0(path_repo, "/respinow_viz/functions.R"))
 
   # should nowcasts be plotted for all strata?
-  plot_all <- TRUE
+  plot_all <- FALSE
 }
 
 # define data source:
