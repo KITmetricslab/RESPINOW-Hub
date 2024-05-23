@@ -2,9 +2,11 @@
 # Author: Johannes Bracher, johannes.bracher@kit.edu
 
 install.packages("surveillance")
-install.packages("devtools", dependencies = TRUE)
-library("devtools")
-install_github("jbracher/hhh4addon", build_vignettes = TRUE)
+# install.packages("devtools", dependencies = TRUE)
+# library("devtools")
+
+install.packages("remotes")
+remotes::install_github("jbracher/hhh4addon", build_vignettes = TRUE)
                  
 library(surveillance)
 library(hhh4addon)
