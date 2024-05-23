@@ -6,7 +6,7 @@ install.packages("surveillance")
 # library("devtools")
 
 install.packages("remotes")
-remotes::install_github("jbracher/hhh4addon", build_vignettes = TRUE)
+remotes::install_github("jbracher/hhh4addon")
                  
 library(surveillance)
 library(hhh4addon)
