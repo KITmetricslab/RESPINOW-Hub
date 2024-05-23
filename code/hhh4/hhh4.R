@@ -1,7 +1,7 @@
 # Apply the KIT-simple_nowcast baseline model to SurvStat data.
 # Author: Johannes Bracher, johannes.bracher@kit.edu
 
-install.packages("surveillance")
+install.packages(c("zoo", "surveillance"))
 # install.packages("devtools", dependencies = TRUE)
 # library("devtools")
 
