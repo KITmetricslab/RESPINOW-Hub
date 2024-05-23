@@ -17,6 +17,8 @@ jobs:
         r-version: '4.2.3'
       
     - name: Compute hhh4
+      env:
+        PAT_DW: ${{secrets.PAT_DW}}
       run: |
         Rscript ./code/hhh4/hhh4.R
     
