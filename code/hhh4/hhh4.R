@@ -6,7 +6,7 @@ install.packages("surveillance")
 # library("devtools")
 
 install.packages("remotes")
-remotes::install_github("jbracher/hhh4addon")
+remotes::install_github("jbracher/hhh4addon", auth_token=gitcreds::gitcreds_get())
                  
 library(surveillance)
 library(hhh4addon)
