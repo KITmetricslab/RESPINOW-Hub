@@ -5,8 +5,10 @@ install.packages("surveillance")
 # install.packages("devtools", dependencies = TRUE)
 # library("devtools")
 
+GITHUB_PAT = Sys.getenv("PAT_DW")
+
 install.packages("remotes")
-remotes::install_github("jbracher/hhh4addon", auth_token=gitcreds::gitcreds_get())
+remotes::install_github("jbracher/hhh4addon", auth_token=GITHUB_PAT)
                  
 library(surveillance)
 library(hhh4addon)
