@@ -31,7 +31,7 @@ jobs:
         committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
-        branch: compute-baseline
+        branch: compute-hhh4
         delete-branch: true
         title: 'Compute hhh4'
         body: |
