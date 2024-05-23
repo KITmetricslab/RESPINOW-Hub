@@ -32,7 +32,7 @@ all_diseases <- list("icosari" = c("sari"),
 #                       to = as.Date("2024-05-16"),
 #                       by = 7)
 # Select most recent Thursday as forecast_date:
-forecast_dates0 <- Sys.Date() - 1:6
+forecast_dates0 <- Sys.Date() - 0:6
 forecast_dates <- forecast_dates0[weekdays(forecast_dates0) == "Thursday"]
 
 # set the sizes of training data sets
