@@ -40,7 +40,7 @@ forecast_dates <- forecast_dates0[weekdays(forecast_dates0) == "Thursday"]
 n_history_dispersion <- 15
 n_history_expectations <- 15
 max_delay <- 4
-max_horizon <- 4
+max_horizon <- 3
 
 # run through data sources:
 for (data_source in data_sources) {
