@@ -139,22 +139,9 @@ fit_nb <- function(x, mu){
 #' @param location the location for which to generate nowcasts
 #' @param age_group the age group for which to generate nowcasts
 #' @param min_horizon the minimum horizon for which to generate a nowcast (e.g., 2 for up to 2 days before the current date)
-# 
-# observed <- triangles[[disease]]
-# location <- loc
-# age_group <- "00+"
-# forecast_date <- forecast_date
-# n_history_expectations <- n_history_expectations
-# n_history_dispersion <- n_history_dispersion
-# min_horizon <- 0
-# max_horizon <- max_horizon
-# max_delay <- max_delay
-# pathogen <- disease
-# target_type <- "inc case"
-# weekday_data_updates <- "Thursday"
 
 
-compute_nowcast <- function(observed, location = "DE", age_group = "00+", forecast_date = NA, pathogen = NA,
+compute_nowcast <- function(observed, location = "DE", age_group = "00+", forecast_date = NA,
                             min_horizon = 0, max_horizon = 4, weekday_end_of_week = "Sunday", weekday_data_updates = "Thursday",
                             max_delay = 4, n_history_expectations = 15, n_history_dispersion = 15){
   
@@ -275,8 +262,7 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+", foreca
                           horizon = -h,
                           type = "mean",
                           quantile = NA,
-                          value = round(mu[d] + already_observed),
-                          pathogen = pathogen)
+                          value = round(mu[d] + already_observed))
     
     # obtain quantiles:
     qtls0 <- qnbinom(quantile_levels, 
@@ -291,8 +277,7 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+", foreca
                           horizon = -h,
                           type = "quantile",
                           quantile = quantile_levels,
-                          value = qtls,
-                          pathogen = pathogen)
+                          value = qtls)
     
     # join:
     df <- rbind(df_mean, df_qtls)
