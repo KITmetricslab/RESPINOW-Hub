@@ -133,7 +133,6 @@ for(i in seq_along(forecast_dates)){
                             min_horizon = 0,
                             max_horizon = 4, # horizons go "back" in this function
                             max_delay = max_delay,
-                            pathogen = disease,
                             quantile_levels = quantile_levels_nowcast)
       nc <- nc$result
 
@@ -202,8 +201,7 @@ for(i in seq_along(forecast_dates)){
                                       horizon = rep(h, each = n_quantile_levels),
                                       type = "quantile",
                                       quantile = quantile_levels,
-                                      value = quantile_matrix[h, ],
-                                      pathogen = disease)
+                                      value = quantile_matrix[h, ])
         mean_formatted <- quantiles_formatted[1, ]
         mean_formatted$type <- "mean"
         mean_formatted$quantile <- NA
