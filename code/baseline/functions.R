@@ -143,7 +143,7 @@ fit_nb <- function(x, mu){
 
 compute_nowcast <- function(observed, location = "DE", age_group = "00+", forecast_date = NA,
                             min_horizon = 0, max_horizon = 4, weekday_end_of_week = "Sunday", weekday_data_updates = "Thursday",
-                            max_delay = 4, n_history_expectations = 15, n_history_dispersion = 15){
+                            max_delay = 4, n_history_expectations = 15, n_history_dispersion = 15, quantile_levels = c(0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975)){
   
   if(any(observed$date >= forecast_date)){
     message("Reporting triangle contains dates later than forecast_date. ", 
@@ -242,7 +242,6 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+", foreca
   
   # generate actual nowcast in standard format:
   mu <- expectation_to_add[nrow(expectation_to_add), ]
-  quantile_levels <- c(0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975)
   df_all <- NULL
   
   # run through horizons:
