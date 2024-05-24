@@ -73,7 +73,7 @@ pretend_daily_reptri <- function(data, max_d, earliest_date = NULL){
 }
 
 # function to re-format output to our standard format:
-reformat_nowcast_to_weekly <- function(nowcast, forecast_date, earliest_date, pathogen = "", data_source = "",
+reformat_nowcast_to_weekly <- function(nowcast, forecast_date, earliest_date, data_source = "",
                                        probs = c(0.025,0.1,0.25,0.75,0.9,0.975), max_horizon = 4){
   # get quantiles at relevant levels and format outcome:
   nowcast <- nowcast |> summary(type = "nowcast", probs = probs) |> 
@@ -92,11 +92,10 @@ reformat_nowcast_to_weekly <- function(nowcast, forecast_date, earliest_date, pa
   suppressWarnings(nowcast$quantile <- as.numeric(as.character(nowcast$type)))
   nowcast$type <- ifelse(is.na(nowcast$quantile),"mean","quantile")
   nowcast$horizon <- -1 * as.numeric(nowcast$target)
-  nowcast$pathogen <- pathogen
   nowcast$data_source <- data_source
   # re-order columns:
   nowcast <- nowcast[, c("location", "age_group", "forecast_date", "target_end_date", "horizon",
-                         "type", "quantile", "value", "pathogen")]
+                         "type", "quantile", "value")]
   
   return(nowcast)
 }
