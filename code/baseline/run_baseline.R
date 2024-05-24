@@ -99,7 +99,6 @@ for (data_source in data_sources) {
       #                         min_horizon = 0,
       #                         max_horizon = max_horizon,
       #                         max_delay = max_delay,
-      #                         pathogen = disease,
       #                         target_type = "inc case")
       #   nc <- nc$result
       #
@@ -159,8 +158,7 @@ for (data_source in data_sources) {
                               n_history_dispersion = n_history_dispersion,
                               min_horizon = 0,
                               max_horizon = max_horizon,
-                              max_delay = max_delay,
-                              pathogen = disease)
+                              max_delay = max_delay)
         nc <- nc$result
         
         # generate a plot if desired:
