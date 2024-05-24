@@ -7,7 +7,7 @@ on:
    branches:
     - main
    paths:
-    - respinow_viz/plot_data/submissions/
+    - respinow_viz/plot_data/submissions/*.csv
    
 
 jobs:
