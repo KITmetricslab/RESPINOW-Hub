@@ -22,7 +22,7 @@ jobs:
     
     - name: Commit files
       env:
-        AUTH: ${{ secrets.GITHUB_TOKEN }}
+        AUTH: ${{ secrets.PAT_DW }}
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
