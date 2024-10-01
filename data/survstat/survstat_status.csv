@@ -966,3 +966,4 @@ date_request,time_request,date_last_rki_update,time_last_rki_update,already_upda
 2024-09-30,13:10:03,2024-09-29,08:26:34,False
 2024-09-30,18:10:03,2024-09-30,08:30:51,True
 2024-09-30,23:10:03,2024-09-30,08:30:51,True
+2024-10-01,08:10:03,2024-09-30,08:30:51,False
