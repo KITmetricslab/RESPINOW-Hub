@@ -8,7 +8,7 @@
 source("respinow_viz/functions.R")
 
 # get data versions:
-rep_tri <- read.csv("data/survstat/influenza/reporting_triangle-survstat-influenza-preprocessed.csv")
+rep_tri <- read.csv("data/survstat/influenza/reporting_triangle-survstat-influenza.csv")
 all_data_versions <- as.Date(unique(rep_tri$date)) - 3
 df_data_versions <- data.frame(date = all_data_versions)
 write.csv(df_data_versions, file = "respinow_viz/plot_data/other/list_data_versions.csv",
@@ -124,7 +124,7 @@ for(i in 1:nrow(df_targets)){
   ds <- df_targets$data_source[i]
   di <- df_targets$disease[i]
   
-  fl_triangle <- paste0("reporting_triangle-", ds, "-", di, "-preprocessed.csv")
+  fl_triangle <- paste0("reporting_triangle-", ds, "-", di, ".csv")
   file.copy(from = paste0("data/", ds, "/", di, "/", fl_triangle),
             to = paste0("respinow_viz/plot_data/truth/", fl_triangle), overwrite = TRUE)
   
@@ -133,7 +133,7 @@ for(i in 1:nrow(df_targets)){
             to = paste0("respinow_viz/plot_data/truth/", fl_latest), overwrite = TRUE)
   
   # try to copy triangle for number of tests:
-  fl_triangle_test <- paste0("reporting_triangle-", ds, "-", di, "-tests-preprocessed.csv")
+  fl_triangle_test <- paste0("reporting_triangle-", ds, "-", di, "-tests.csv")
   file.copy(from = paste0("data/", ds, "/", di, "/", fl_triangle_test),
             to = paste0("respinow_viz/plot_data/truth/", fl_triangle_test), overwrite = TRUE)
   
