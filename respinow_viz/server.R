@@ -107,7 +107,7 @@ reporting_triangles <- reporting_triangles_tests <- list()
 current_date <- max(available_data_versions)
 for (disease in diseases) {
   reporting_triangles[[disease]] <- read.csv(paste0(path_truth, "reporting_triangle-", disease,
-                                                    "-preprocessed.csv"),
+                                                    ".csv"),
                                              colClasses = c(date = "Date"), check.names = FALSE)
   reporting_triangles[[disease]] <- reporting_triangles[[disease]][order(reporting_triangles[[disease]]$date), ]
   # current_date <- max(c(current_date, reporting_triangles[[disease]]$date), na.rm = TRUE)
@@ -115,7 +115,7 @@ for (disease in diseases) {
   # load reporting triangles one tests where available:
   if(tests_available[disease]){
     reporting_triangles_tests[[disease]] <- read.csv(paste0(path_truth, "reporting_triangle-", disease,
-                                                            "-tests-preprocessed.csv"),
+                                                            "-tests.csv"),
                                                      colClasses = c(date = "Date"))
     reporting_triangles_tests[[disease]] <- reporting_triangles_tests[[disease]][order(reporting_triangles_tests[[disease]]$date), ]
   }
@@ -126,7 +126,7 @@ previous_truth <- previous_tests <- list()
 for (disease in diseases) {
   previous_truth[[disease]] <- read.csv(paste0(path_truth, "latest_data-", disease, ".csv"),
                                         colClasses = c(date = "Date"))
-  previous_truth[[disease]] <- subset(previous_truth[[disease]], date <= min(reporting_triangles[[disease]]$date))
+  # previous_truth[[disease]] <- subset(previous_truth[[disease]], date <= min(reporting_triangles[[disease]]$date))
   # make sure rows are ordered by date:
   previous_truth[[disease]] <- previous_truth[[disease]][order(previous_truth[[disease]]$date), ]
   
@@ -260,12 +260,6 @@ shinyServer(function(input, output, session) {
     for(i in seq_along(models)) temp[[models[i]]] <- 2*i + l_temp - 1:0 # layers for models
     plot_data$mapping <- temp
     
-    # truth data form before time-stamped versions are available:
-    previous_truth_temp <- subset(previous_truth[[input$select_pathogen]],
-                                  location == input$select_state &
-                                    age_group == input$select_age)
-    previous_truth_temp <- previous_truth_temp[, c("date", "value")]
-    
     # determine max_lag:
     max_lag <- NULL
     if(input$select_max_lag == "4"){
@@ -278,6 +272,14 @@ shinyServer(function(input, output, session) {
                              location = input$select_state,
                              date = input$select_date,
                              max_lag = max_lag)
+    
+    # truth data form before time-stamped versions are available:
+    previous_truth_temp <- subset(previous_truth[[input$select_pathogen]],
+                                  location == input$select_state &
+                                    age_group == input$select_age &
+                                    date < min(old_truth$date))
+    previous_truth_temp <- previous_truth_temp[, c("date", "value")]
+    
     # add previous data:
     old_truth <- rbind(previous_truth_temp, old_truth)
     
