@@ -99,7 +99,7 @@ for (data_source in data_sources) {
                               observed2 = triangles[[disease]],
                               location2 = "DE",
                               age_group2 = "00+",
-                              borrow_delays = TRUE, borrow_dispersion = TRUE,
+                              borrow_delays = FALSE, borrow_dispersion = FALSE,
                               n_history_expectations = n_history_expectations,
                               n_history_dispersion = n_history_dispersion,
                               max_delay = max_delay)
@@ -159,6 +159,8 @@ for (data_source in data_sources) {
                               observed2 = triangles[[disease]],
                               location2 = "DE",
                               age_group2 = "00+",
+                              borrow_delays = TRUE,
+                              borrow_dispersion = TRUE,
                               forecast_date = forecast_date,
                               n_history_expectations = n_history_expectations,
                               n_history_dispersion = n_history_dispersion,
