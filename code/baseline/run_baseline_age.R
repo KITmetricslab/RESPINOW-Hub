@@ -2,7 +2,7 @@
 # Author: Johannes Bracher, johannes.bracher@kit.edu
 
 # setwd("/home/johannes/Documents/RESPINOW/RESPINOW-Hub")
-install.packages("zoo")
+# install.packages("zoo")
 
 # Some code which is only needed when running this file individually
 run_individually <- TRUE
@@ -19,11 +19,11 @@ if(run_individually){
   source(paste0(path_repo, "/respinow_viz/functions.R"))
   
   # should nowcasts be plotted for all strata?
-  plot_all <- TRUE
+  plot_all <- FALSE
 }
 
 # define data source:
-data_sources <- c("icosari") #, "survstat")
+data_sources <- c("icosari", "survstat")
 
 all_diseases <- list("icosari" = c("sari"),
                      "survstat" = c("influenza"))
@@ -46,8 +46,6 @@ max_horizon <- 3
 
 # run through data sources:
 for (data_source in data_sources) {
-  data_source <- "icosari"
-  
   # get diseases:
   diseases <- all_diseases[[data_source]]
   
@@ -68,7 +66,6 @@ for (data_source in data_sources) {
     
     # run over diseases:
     for (disease in diseases) {
-      disease <- "sari"
       
       # a place holder for a data frame in which nowcasts will be stored
       all_nc <- NULL
@@ -135,7 +132,7 @@ for (data_source in data_sources) {
       
       # generate nowcasts for federal states (currently only doing Germany):
       # identify locations:
-      locations <- "DE" # sort(unique(triangles[[disease]]$location))
+      locations <- sort(unique(triangles[[disease]]$location))
       
       # run through locations:
       for(loc in locations){
@@ -156,10 +153,12 @@ for (data_source in data_sources) {
                                                         na.rm = TRUE))
         
         # compute nowcast:
-        # undebug(compute_nowcast)
         nc <- compute_nowcast(observed = triangles[[disease]],
                               location = loc,
                               age_group = "00+",
+                              observed2 = triangles[[disease]],
+                              location2 = "DE",
+                              age_group2 = "00+",
                               forecast_date = forecast_date,
                               n_history_expectations = n_history_expectations,
                               n_history_dispersion = n_history_dispersion,
@@ -191,8 +190,8 @@ for (data_source in data_sources) {
       }
       
       # write out:
-      # write.csv(all_nc, file = paste0(path_repo, "/submissions/", data_source, "/", disease, "/KIT-simple_nowcast/",
-      #                               forecast_date, "-", data_source, "-", disease, "-KIT-simple_nowcast.csv"), row.names = FALSE)
+      write.csv(all_nc, file = paste0(path_repo, "/submissions/", data_source, "/", disease, "/KIT-simple_nowcast/",
+                                    forecast_date, "-", data_source, "-", disease, "-KIT-simple_nowcast.csv"), row.names = FALSE)
     }
   }
 }

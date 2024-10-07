@@ -430,7 +430,7 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+",
                            weekday_data_updates = weekday_data_updates)
   
   # bring actual nowcast into standard format:
-  mu <- rev(rowSums(point_forecast, na.rm = TRUE))[1:max_delay] # re-order expecations
+  mu <- rev(rowSums(point_forecast, na.rm = TRUE))[1:n_horizons] # re-order expecations
   # set up data frame to store:
   df_all <- NULL
   

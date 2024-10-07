@@ -173,7 +173,10 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+", foreca
   # determine dates
   all_forecast_dates <- seq(from = forecast_date - 7*(n_history_dispersion), by = 7, to = forecast_date)
   # set up matrices to sore results:
-  expectation_to_add <- # full expectations
+  # rows are forecast dates, columns are horizons (rather than delays)
+  # e.g., the cell in row r and column c refers to c-week back nowcasts
+  # issued at time r
+  expectation_to_add <- # full expectations (of yet missing counts)
     expectation_to_add_already_observed <- # expectations of the sum over already observable quantities
     to_add_already_observed <- # sums over the respective observed quantities
     matrix(NA, nrow = length(all_forecast_dates), ncol = ncol(matr_observed),
