@@ -99,7 +99,7 @@ for (data_source in data_sources) {
                               observed2 = triangles[[disease]],
                               location2 = "DE",
                               age_group2 = "00+",
-                              borrow_delays = FALSE, borrow_dispersion = FALSE,
+                              borrow_delays = TRUE, borrow_dispersion = TRUE,
                               n_history_expectations = n_history_expectations,
                               n_history_dispersion = n_history_dispersion,
                               max_delay = max_delay)
@@ -169,7 +169,6 @@ for (data_source in data_sources) {
         
         # generate a plot if desired:
         if(plot_all | loc == "DE"){
-          # undebug(plot_forecast)
           plot_forecast(forecasts = nc,
                         location = loc, age_group = "00+",
                         truth = plot_data_back_in_time,
