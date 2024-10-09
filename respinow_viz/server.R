@@ -465,7 +465,7 @@ shinyServer(function(input, output, session) {
       }
       # y axis limit
       plot_data$range_grey <- c(0, 1.2*max(c(plot_data$current_truth$y, max_vals), na.rm = TRUE))
-      plot_data$ylim <- c(0, 1.1*max(c(head(plot_data$current_truth$y, 10), max_vals), na.rm = TRUE))
+      plot_data$ylim <- c(0, 1.3*max(c(head(plot_data$current_truth$y, 104)), na.rm = TRUE))
       print(plot_data$ylim)
     }
   })
@@ -477,9 +477,9 @@ shinyServer(function(input, output, session) {
     isolate({
       
       # compute default zoom (for some reason on millisecond scale):
-      min_Date <- Sys.Date() - 150
+      min_Date <- Sys.Date() - 7*104
       min_Date_ms <- as.numeric(difftime(min_Date, "1970-01-01")) * (24*60*60*1000)
-      max_Date <- Sys.Date() + 5
+      max_Date <- Sys.Date() + 7*5
       max_Date_ms <- as.numeric(difftime(max_Date, "1970-01-01")) * (24*60*60*1000)
       
       # print(plot_data$old_tests)
