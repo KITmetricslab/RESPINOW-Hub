@@ -12,7 +12,7 @@ if(run_individually){
   path_repo <- "."
   
   # get functions:
-  source(paste0(path_repo, "/code/baseline/functions_general.R"))
+  source(paste0(path_repo, "/code/baseline/functions.R"))
   source(paste0(path_repo, "/respinow_viz/functions.R"))
   
   # should nowcasts be plotted for all strata?
