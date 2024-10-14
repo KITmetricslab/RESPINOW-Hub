@@ -1,6 +1,7 @@
 model
 KIT-epinowcast
 KIT-hhh4
+KIT-LightGBM
 KIT-simple_nowcast
 RIVM-GAM
 RKI-Pilot_01
