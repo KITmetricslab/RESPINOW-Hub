@@ -1,3 +1,5 @@
+
+
 # Compute the point forecast:
 # Arguments:
 #' @param observed: the observations / reporting triangle matrix for which to produce nowcasts

@@ -1,4 +1,4 @@
-# Apply the KIT-simple_nowcast baseline model to SurvStat data.
+# Apply the KIT-simple_nowcast baseline model to age-stratified data.
 # Author: Johannes Bracher, johannes.bracher@kit.edu
 
 # setwd("/home/johannes/Documents/RESPINOW/RESPINOW-Hub")
@@ -15,27 +15,45 @@ if(run_individually){
   # library used for rolling sums:
   library(zoo)
   # get functions:
-  source(paste0(path_repo, "/code/baseline/functions_age.R"))
+  source(paste0(path_repo, "/code/baseline/functions_general.R"))
   source(paste0(path_repo, "/respinow_viz/functions.R"))
   
   # should nowcasts be plotted for all strata?
   plot_all <- FALSE
 }
 
-# define data source:
-data_sources <- c("icosari", "survstat")
+# define data sources:
+data_sources <- c(# "icosari", 
+                  "survstat", "agi")
 
+# diseases per data source.
 all_diseases <- list("icosari" = c("sari"),
-                     "survstat" = c("influenza"))
+                     "survstat" = c("influenza"),
+                     "agi" = c("are"))
+
+# the type of nowcast correction which is necessary:
+types <- list("icosari" = "additions",
+              "survstat" = "additions",
+              "agi" = "revise_average")
+
+# how borrowing of delays is done:
+borrow_delays <- list("icosari" = TRUE,
+                      "survstat" = TRUE,
+                      "agi" = TRUE)
+
+# how borrowing of dispersion parameters is done
+borrow_dispersion <- list("icosari" = TRUE,
+                          "survstat" = TRUE,
+                          "agi" = FALSE)
+# size parameters can be shared well, sd not.
 
 # dates for which to produce nowcasts:
-forecast_dates <- seq(from = as.Date("2023-11-16"),
-                      to = as.Date("2024-09-19"),
+forecast_dates <- seq(from = as.Date("2023-12-07"),
+                      to = as.Date("2024-10-03"),
                       by = 7)
 # Select most recent Thursday as forecast_date:
 # forecast_dates0 <- Sys.Date() - 0:6
 # forecast_dates <- forecast_dates0[weekdays(forecast_dates0) == "Thursday"]
-# forecast_dates <- as.Date("2024-09-19")
 
 # set the sizes of training data sets
 # limited by number of observations (in the early part, not relevant anymore)
@@ -53,9 +71,10 @@ for (data_source in data_sources) {
   triangles <- list()
   for (disease in diseases) {
     triangles[[disease]] <- read.csv(paste0(path_repo, "/data/", data_source, "/", disease, "/",
-                                            "reporting_triangle-", data_source, "-", disease, "-preprocessed.csv"),
+                                            "reporting_triangle-", data_source, "-", disease, ".csv"),
                                      colClasses = c("date" = "Date"), check.names = FALSE)
   }
+  # note: we load raw RTs, preprocessing takes place inside compute_nowcast
   
   
   # run over forecast dates to generate nowcasts:
@@ -91,7 +110,7 @@ for (data_source in data_sources) {
                                         value = rowSums(observed_current[, grepl("value_", colnames(observed_current))],
                                                         na.rm = TRUE))
         
-        # compute nowcast:
+        # compute nowcast. Note: pre-processing of RT takes place inside
         nc <- compute_nowcast(observed = triangles[[disease]],
                               location = "DE",
                               age_group = ag,
@@ -99,7 +118,9 @@ for (data_source in data_sources) {
                               observed2 = triangles[[disease]],
                               location2 = "DE",
                               age_group2 = "00+",
-                              borrow_delays = TRUE, borrow_dispersion = TRUE,
+                              type = types[[data_source]],
+                              borrow_delays = borrow_delays[[data_source]],
+                              borrow_dispersion = borrow_dispersion[[data_source]],
                               n_history_expectations = n_history_expectations,
                               n_history_dispersion = n_history_dispersion,
                               max_delay = max_delay)
@@ -159,8 +180,9 @@ for (data_source in data_sources) {
                               observed2 = triangles[[disease]],
                               location2 = "DE",
                               age_group2 = "00+",
-                              borrow_delays = TRUE,
-                              borrow_dispersion = TRUE,
+                              borrow_delays = borrow_delays[[data_source]],
+                              borrow_dispersion = borrow_dispersion[[data_source]],
+                              type = types[[data_source]],
                               forecast_date = forecast_date,
                               n_history_expectations = n_history_expectations,
                               n_history_dispersion = n_history_dispersion,

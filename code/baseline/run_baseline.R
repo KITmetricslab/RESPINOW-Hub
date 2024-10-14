@@ -43,8 +43,8 @@ max_delay <- 4
 max_horizon <- 3
 
 # run through data sources:
-for (data_source in data_sources) {
-  
+# for (data_source in data_sources) {
+  data_source <- "icosari"
   # get diseases:
   diseases <- all_diseases[[data_source]]
   
@@ -58,14 +58,15 @@ for (data_source in data_sources) {
   
   
   # run over forecast dates to generate nowcasts:
-  for(i in seq_along(forecast_dates)){
+  # for(i in seq_along(forecast_dates)){
+  i <- 1
     forecast_date <- forecast_dates[i]
     cat(as.character(forecast_dates[i]), "\n")
     
     
     # run over diseases:
-    for (disease in diseases) {
-      
+    # for (disease in diseases) {
+    disease <- "sari"  
       # a place holder for a data frame in which nowcasts will be stored
       all_nc <- NULL
       
@@ -132,7 +133,8 @@ for (data_source in data_sources) {
       locations <- "DE" # sort(unique(triangles[[disease]]$location))
       
       # run through locations:
-      for(loc in locations){
+      # for(loc in locations){
+      loc <- locations[1]
         
         # prepare for plotting:
         # truth data as of forecast_date, subset to relevant stratum
@@ -150,6 +152,7 @@ for (data_source in data_sources) {
                                                         na.rm = TRUE))
         
         # compute nowcast:
+        debug(compute_nowcast)
         nc <- compute_nowcast(observed = triangles[[disease]],
                               location = loc,
                               age_group = "00+",
