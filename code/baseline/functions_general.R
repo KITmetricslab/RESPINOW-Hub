@@ -1,4 +1,46 @@
-
+#' Pre-process reporting triangle
+#' An R implementation of the pre-processing done in the repo (there in Python)
+#' Arguments:
+#' @param df the reporting triangle as a data.frame
+preprocess_reporting_triangle <- function(df, max_delay = 4) {
+  
+  # restrict to first 5 columns.
+  col_4w <- which(colnames(df) == paste0("value_", max_delay, "w"))
+  df <- df[, 1:col_4w]
+  
+  # columns containing values:
+  value_cols <- which(grepl("value", names(df)))
+  
+  # Loop over each row
+  for (i in 1:nrow(df)) {
+    to_subtract <- 0
+    row <- df[i, ]
+    
+    # Loop over the columns starting from the last column back to column 5
+    for (j in rev(value_cols)) {
+      value <- row[[j]]
+      
+      if (!is.na(value)) {
+        value <- value + to_subtract
+        
+        if (value < 0) {
+          to_subtract <- value
+          df[i, j] <- 0
+        } else {
+          df[i, j] <- value
+          to_subtract <- 0
+        }
+      }
+    }
+  }
+  
+  # Convert 'value' columns to integer type
+  for (col in value_cols) {
+    df[[col]] <- as.integer(df[[col]])
+  }
+  
+  return(df)
+}
 
 # Compute the point forecast:
 # Arguments:
@@ -85,14 +127,17 @@ pad_matr <- function(matr_observed, n_history){
   return(matr_observed)
 }
 
-#' Fit size parameters of a negative binomial based on historical point nowcasts and observations
+#' Fit dispersion parameters:
+#' - either size of a negative binomial 
+#' - or sd of a normal
+#' this is based on historical point nowcasts and observations
 #' See compute_nowcast for documentation of arguments.
-fit_sizes <- function(observed, location, age_group,
-                      observed2 = NULL, location2 = NULL, age_group2 = NULL,
-                      forecast_date, max_delay,
-                      borrow_delays = FALSE, borrow_dispersion = FALSE,
-                      n_history_expectations, n_history_dispersion,
-                      weekday_data_updates = "Thursday"){
+fit_dispersion <- function(observed, location, age_group,
+                           observed2 = NULL, location2 = NULL, age_group2 = NULL,
+                           type = "size", forecast_date, max_delay,
+                           borrow_delays = FALSE, borrow_dispersion = FALSE,
+                           n_history_expectations, n_history_dispersion,
+                           weekday_data_updates = "Thursday"){
   
   if(borrow_delays){
     # catch missing observed2
@@ -100,6 +145,10 @@ fit_sizes <- function(observed, location, age_group,
   }else{
     if(!is.null(observed2)) warning("observed2 is not used as borrow_delays == FALSE")
     observed2 <- observed
+  }
+  
+  if(!type %in% c("size", "sd")){
+    stop("type needs to be either size or sd.")
   }
   
   # if no observed2 is provided: use observed
@@ -129,8 +178,16 @@ fit_sizes <- function(observed, location, age_group,
   # generate point forecasts for n_history_dispersion preceding weeks
   # these are necessary to estimate dispersion parameters
   # determine dates
-  all_forecast_dates <- seq(from = forecast_date - 7*(n_history_dispersion), by = 7,
-                            to = forecast_date - 7) # exclude actual forecast date
+  if(type == "size"){
+    # for size parameters there is a smart way of using partial observations
+    all_forecast_dates <- seq(from = forecast_date - 7*(n_history_dispersion), by = 7,
+                              to = forecast_date - 7) # exclude actual forecast date
+  }else{
+    # for sds incomplete observations need to be excluded
+    all_forecast_dates <- seq(from = forecast_date - 7*(n_history_dispersion), by = 7,
+                              to = forecast_date - (max_delay - 1)*7)
+  }
+  
   
   # set up matrices to store results.
   # each of these contains the forecast dates in the rows and horizons in the columns
@@ -195,7 +252,7 @@ fit_sizes <- function(observed, location, age_group,
   }
   
   # estimate dispersion
-  size_params <- numeric(ncol(expectation_to_add))
+  disp_params <- numeric(ncol(expectation_to_add))
   # remove rows with zero initial reports (Christmas etc)
   to_keep <- expectation_to_add_already_observed[, 1] > 0
   to_add_already_observed <- to_add_already_observed[to_keep, ]
@@ -208,12 +265,17 @@ fit_sizes <- function(observed, location, age_group,
   # run through horizons
   for(i in 1:n_horizons){
     obs_temp <- to_add_already_observed[, i]
-    mu_temp <- expectation_to_add_already_observed[, i] + 0.1 
-    # plus 0.1 to avoid ill-defined negative binomial
-    size_params[i] <- fit_nb(x = obs_temp, mu = mu_temp)
+    mu_temp <- expectation_to_add_already_observed[, i]
+    if(type == "size"){
+      mu_temp <- mu_temp + 0.1
+      # plus 0.1 to avoid ill-defined negative binomial
+      disp_params[i] <- fit_nb(x = obs_temp, mu = mu_temp)
+    }else{
+      disp_params[i] <- sd(obs_temp - mu_temp)
+    }
   }
   
-  return(size_params)
+  return(disp_params)
 }
 
 
@@ -308,7 +370,9 @@ data_as_of <- function(dat_truth, age_group = "00+", location = "DE", date,
     rownames(matr) <- subs$date[inds_to_keep]
     return(matr)
   }else{
-    return(data.frame(date = subs$date[inds_to_keep], matr))
+    return(data.frame(subs[inds_to_keep,
+                           c("location", "age_group", "year", "week", "date")],
+                      matr))
   }
 }
 
@@ -358,7 +422,7 @@ fit_nb <- function(x, mu){
 #' @param n_history_dispersion the number of re-computed nowcasts used to estimate the error variance
 #' @param quantile_levels the predictive quantile levels to return
 compute_nowcast <- function(observed, location = "DE", age_group = "00+",
-                            forecast_date,
+                            forecast_date, type = "additions",
                             borrow_delays = FALSE, borrow_dispersion = FALSE,
                             observed2 = NULL, location2 = NULL, age_group2 = NULL,
                             weekday_data_updates = "Thursday",
@@ -382,6 +446,20 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+",
   # Can only use observed2 for dispersion if also used for delay distribution:
   if(borrow_dispersion & !borrow_delays){
     stop("borrow_dispersion == TRUE is only allowed of borrow_delays == TRUE")
+  }
+  
+  # Check type is allowed
+  if(!type %in% c("additions", "revise_average")){
+    stop("type needs to be either 'additions' or 'revise_average'.")
+  }
+  
+  # pre-process reporting triangle.
+  # note: only done for type == "additions" where nowcasting methods assume positive increments.
+  if(type == "additions"){
+    observed <- preprocess_reporting_triangle(observed)
+    if(!is.null(observed2)){
+      observed2 <- preprocess_reporting_triangle(observed2)
+    }
   }
   
   # which horizons need to be considered?
@@ -417,12 +495,14 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+",
                                          n_history = n_history_expectations, 
                                          borrow_delays = borrow_delays)
   # estimate size parameters for negative binomial:
-  size_params <- fit_sizes(observed = if(borrow_dispersion) observed2 else observed,
+  disp_params <- fit_dispersion(observed = if(borrow_dispersion) observed2 else observed,
                            location = if(borrow_dispersion) location2 else location,
                            age_group = if(borrow_dispersion) age_group2 else age_group,
                            observed2 = observed2,
                            location2 = location2,
                            age_group2 = age_group2,
+                           type = switch(type, "additions" = "size",
+                                         "revise_average" = "sd"),
                            forecast_date = forecast_date,
                            max_delay = max_delay,
                            borrow_delays = borrow_delays,
@@ -456,8 +536,14 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+",
                           value = round(mu[d] + already_observed))
     
     # obtain quantiles:
-    qtls0 <- qnbinom(quantile_levels, 
-                     size = size_params[d], mu = mu[d])
+    if(type == "additions"){
+      qtls0 <- qnbinom(quantile_levels, 
+                       size = disp_params[d], mu = mu[d])
+    }else{
+      qtls0 <- qnorm(quantile_levels, 
+                       sd = disp_params[d], mean = mu[d])
+    }
+    
     # shift them up by already oberved values
     qtls <- qtls0 + already_observed
     # data.frame for quantiles:
@@ -483,9 +569,9 @@ compute_nowcast <- function(observed, location = "DE", age_group = "00+",
   
   # return
   return(list(result = df_all,
-              mu = mu, size_params = size_params))# ,
-              # expectation_to_add_already_observed = expectation_to_add_already_observed,
-              # to_add_already_observed = to_add_already_observed))
+              mu = mu, size_params = disp_params))# ,
+  # expectation_to_add_already_observed = expectation_to_add_already_observed,
+  # to_add_already_observed = to_add_already_observed))
 }
 
 

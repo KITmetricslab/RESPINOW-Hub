@@ -2,7 +2,6 @@
 # Author: Johannes Bracher, johannes.bracher@kit.edu
 
 # setwd("/home/johannes/Documents/RESPINOW/RESPINOW-Hub")
-# install.packages("zoo")
 
 # Some code which is only needed when running this file individually
 run_individually <- TRUE
@@ -12,8 +11,6 @@ if(run_individually){
   # path of the repo:
   path_repo <- "."
   
-  # library used for rolling sums:
-  library(zoo)
   # get functions:
   source(paste0(path_repo, "/code/baseline/functions_general.R"))
   source(paste0(path_repo, "/respinow_viz/functions.R"))
@@ -23,8 +20,7 @@ if(run_individually){
 }
 
 # define data sources:
-data_sources <- c(# "icosari", 
-                  "survstat", "agi")
+data_sources <- c("icosari", "survstat", "agi")
 
 # diseases per data source.
 all_diseases <- list("icosari" = c("sari"),
@@ -45,15 +41,16 @@ borrow_delays <- list("icosari" = TRUE,
 borrow_dispersion <- list("icosari" = TRUE,
                           "survstat" = TRUE,
                           "agi" = FALSE)
-# size parameters can be shared well, sd not.
+# size parameters can be shared well, for sd this does not make sense.
 
 # dates for which to produce nowcasts:
-forecast_dates <- seq(from = as.Date("2023-12-07"),
-                      to = as.Date("2024-10-03"),
-                      by = 7)
+# for retrospective generation:
+# forecast_dates <- seq(from = as.Date("2023-12-07"),
+#                       to = as.Date("2024-10-03"),
+#                       by = 7)
 # Select most recent Thursday as forecast_date:
-# forecast_dates0 <- Sys.Date() - 0:6
-# forecast_dates <- forecast_dates0[weekdays(forecast_dates0) == "Thursday"]
+forecast_dates0 <- Sys.Date() - 0:6
+forecast_dates <- forecast_dates0[weekdays(forecast_dates0) == "Thursday"]
 
 # set the sizes of training data sets
 # limited by number of observations (in the early part, not relevant anymore)
@@ -67,21 +64,19 @@ for (data_source in data_sources) {
   # get diseases:
   diseases <- all_diseases[[data_source]]
   
-  # read in data:
+  # read in reporting triangles:
   triangles <- list()
   for (disease in diseases) {
     triangles[[disease]] <- read.csv(paste0(path_repo, "/data/", data_source, "/", disease, "/",
                                             "reporting_triangle-", data_source, "-", disease, ".csv"),
                                      colClasses = c("date" = "Date"), check.names = FALSE)
   }
-  # note: we load raw RTs, preprocessing takes place inside compute_nowcast
-  
+  # note: we load raw RTs, preprocessing takes place inside compute_nowcast where appropriate
   
   # run over forecast dates to generate nowcasts:
   for(i in seq_along(forecast_dates)){
     forecast_date <- forecast_dates[i]
     cat(as.character(forecast_dates[i]), "\n")
-    
     
     # run over diseases:
     for (disease in diseases) {
@@ -110,7 +105,8 @@ for (data_source in data_sources) {
                                         value = rowSums(observed_current[, grepl("value_", colnames(observed_current))],
                                                         na.rm = TRUE))
         
-        # compute nowcast. Note: pre-processing of RT takes place inside
+        # compute nowcast.
+        # note: pre-processing and subsetting of RT takes place inside
         nc <- compute_nowcast(observed = triangles[[disease]],
                               location = "DE",
                               age_group = ag,
@@ -150,8 +146,7 @@ for (data_source in data_sources) {
         }
       }
       
-      
-      # generate nowcasts for federal states (currently only doing Germany):
+      # generate nowcasts for different locations (DE and if available, regions):
       # identify locations:
       locations <- sort(unique(triangles[[disease]]$location))
       
@@ -174,6 +169,7 @@ for (data_source in data_sources) {
                                                         na.rm = TRUE))
         
         # compute nowcast:
+        # note: pre-processing and subsetting of RT takes place inside
         nc <- compute_nowcast(observed = triangles[[disease]],
                               location = loc,
                               age_group = "00+",
@@ -214,12 +210,7 @@ for (data_source in data_sources) {
       
       # write out:
       write.csv(all_nc, file = paste0(path_repo, "/submissions/", data_source, "/", disease, "/KIT-simple_nowcast/",
-                                    forecast_date, "-", data_source, "-", disease, "-KIT-simple_nowcast.csv"), row.names = FALSE)
+                                     forecast_date, "-", data_source, "-", disease, "-KIT-simple_nowcast.csv"), row.names = FALSE)
     }
   }
 }
-
-
-
-
-
