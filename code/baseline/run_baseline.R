@@ -20,7 +20,7 @@ if(run_individually){
 }
 
 # define data sources:
-data_sources <- c("icosari", "survstat", "agi")
+data_sources <- c("icosari") # , "survstat", "agi")
 
 # diseases per data source.
 all_diseases <- list("icosari" = c("sari"),
@@ -45,9 +45,9 @@ borrow_dispersion <- list("icosari" = TRUE,
 
 # dates for which to produce nowcasts:
 # for retrospective generation:
-# forecast_dates <- seq(from = as.Date("2023-12-07"),
-#                       to = as.Date("2024-10-03"),
-#                       by = 7)
+# forecast_dates <- seq(from = as.Date("2024-07-04"),
+#                      to = as.Date("2024-10-03"),
+#                      by = 7)
 # Select most recent Thursday as forecast_date:
 forecast_dates0 <- Sys.Date() - 0:6
 forecast_dates <- forecast_dates0[weekdays(forecast_dates0) == "Thursday"]
