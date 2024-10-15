@@ -26,7 +26,7 @@ if(run_individually){
   # library used for rolling sums:
   library(zoo)
   # get functions:
-  source(paste0(path_repo, "/code/baseline/functions_general.R"))
+  source(paste0(path_repo, "/code/baseline/functions.R"))
   source(paste0(path_repo, "/respinow_viz/functions.R"))
   
   # should nowcasts be plotted for all strata?
@@ -64,17 +64,13 @@ exclusion_period <- seq(from = as.Date("2019-06-30"), to = as.Date("2023-07-03")
 
 
 # dates for which to produce nowcasts:
-# forecast_dates <- seq(from = as.Date("2024-05-16"),
-#                       to = as.Date("2024-05-16"),
-#                       by = 7)
 # Select most recent Thursday as forecast_date:
-forecast_dates0 <- Sys.Date() - 0:6
-forecast_dates <- forecast_dates0[weekdays(forecast_dates0) == "Thursday"]
+# forecast_dates0 <- Sys.Date() - 0:6
+# forecast_dates <- forecast_dates0[weekdays(forecast_dates0) == "Thursday"]
 
-# forecast_dates <- seq(from = as.Date("2023-10-26"),
-#                       to = as.Date("2024-10-03"),
-#                       by = 7)
-# forecast_dates <- tail(forecast_dates, 1)
+forecast_dates <- seq(from = as.Date("2024-07-04"),
+                      to = as.Date("2024-10-03"),
+                      by = 7)
 
 
 # set the sizes of training data sets
