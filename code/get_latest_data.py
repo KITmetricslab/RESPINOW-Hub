@@ -51,12 +51,22 @@ path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/
 
 file_dict = {
     'latest_data-SARI-sari.csv' : 'latest_data-icosari-sari.csv',
+    'latest_data-SARI-sari_covid19.csv' : 'latest_data-icosari-sari_covid19.csv',
+    'latest_data-SARI-sari_influenza.csv' : 'latest_data-icosari-sari_influenza.csv',
+    'latest_data-SARI-sari_rsv.csv' : 'latest_data-icosari-sari_rsv.csv'
 }
 
 for i in file_dict.keys():
     print(i)
-    target_path = '../data/icosari/sari/'
-    
+    if 'sari_covid19' in i:
+        target_path = '../data/icosari/sari_covid19/'
+    elif 'sari_influenza' in i:
+        target_path = '../data/icosari/sari_influenza/'
+    elif 'sari_rsv' in i:
+        target_path = '../data/icosari/sari_rsv/'
+    else:
+        target_path = '../data/icosari/sari/'
+        
     df = pd.read_csv(path + i)
     df.to_csv(target_path + file_dict[i], index = False)
 
