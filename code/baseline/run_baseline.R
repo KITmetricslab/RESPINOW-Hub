@@ -20,11 +20,11 @@ if(run_individually){
 }
 
 # define data sources:
-data_sources <- c("icosari") # , "survstat", "agi")
+data_sources <- c("icosari", "survstat",  "agi")
 
 # diseases per data source.
 all_diseases <- list("icosari" = c("sari"),
-                     "survstat" = c("influenza"),
+                     "survstat" = c("influenza", "rsv"),
                      "agi" = c("are"))
 
 # the type of nowcast correction which is necessary:
@@ -45,8 +45,8 @@ borrow_dispersion <- list("icosari" = TRUE,
 
 # dates for which to produce nowcasts:
 # for retrospective generation:
-# forecast_dates <- seq(from = as.Date("2024-07-04"),
-#                      to = as.Date("2024-10-03"),
+# forecast_dates <- seq(from = as.Date("2024-10-03"),
+#                      to = as.Date("2024-10-10"),
 #                      by = 7)
 # Select most recent Thursday as forecast_date:
 forecast_dates0 <- Sys.Date() - 0:6
@@ -97,6 +97,18 @@ for (data_source in data_sources) {
         plot_data_back_in_time <- data.frame(date = as.Date(observed_back_in_time$date),
                                              value = rowSums(observed_back_in_time[, grepl("value_", colnames(observed_back_in_time))],
                                                              na.rm = TRUE))
+        # catch case where reporitng triangle is too short
+        n_snapshots <- nrow(observed_back_in_time)
+        if(n_snapshots < n_history_dispersion + n_history_expectations + 1){
+          warning(paste0("Reporting triangle too short for", data_source, ",", disease, 
+                         "- reducing n_history_dispersion and n_history_expectations."))
+          n_history_dispersion_ <- floor((n_snapshots - 1)/2)
+          n_history_expectations_ <- floor((n_snapshots - 1)/2)
+        }else{
+          n_history_dispersion_ <- n_history_dispersion
+          n_history_expectations_ <- n_history_expectations
+        }
+        
         
         # current version of truth data, subset to relevant stratum
         observed_current <- data_as_of(dat_truth = triangles[[disease]], date = Sys.Date(),
@@ -117,8 +129,10 @@ for (data_source in data_sources) {
                               type = types[[data_source]],
                               borrow_delays = borrow_delays[[data_source]],
                               borrow_dispersion = borrow_dispersion[[data_source]],
-                              n_history_expectations = n_history_expectations,
-                              n_history_dispersion = n_history_dispersion,
+                              # note using n_history_expectations_, n_history_dispersion_,
+                              # which may be reduced to fit shorter triangle.
+                              n_history_expectations = n_history_expectations_,
+                              n_history_dispersion = n_history_dispersion_,
                               max_delay = max_delay)
         nc <- nc$result
         
@@ -161,6 +175,18 @@ for (data_source in data_sources) {
                                              value = rowSums(observed_back_in_time[, grepl("value_", colnames(observed_back_in_time))],
                                                              na.rm = TRUE))
         
+        # catch case where reporitng triangle is too short
+        n_snapshots <- nrow(observed_back_in_time)
+        if(n_snapshots < n_history_dispersion + n_history_expectations + 1){
+          warning(paste0("Reporting triangle too short for", data_source, ",", disease, 
+                         "- reducing n_history_dispersion and n_history_expectations."))
+          n_history_dispersion_ <- floor((n_snapshots - 1)/2)
+          n_history_expectations_ <- floor((n_snapshots - 1)/2)
+        }else{
+          n_history_dispersion_ <- n_history_dispersion
+          n_history_expectations_ <- n_history_expectations
+        }
+        
         # current version of truth data, subset to relevant stratum
         observed_current <- data_as_of(dat_truth = triangles[[disease]], date = Sys.Date(),
                                        location = loc, age_group = "00+", max_lag = max_delay)
@@ -180,8 +206,10 @@ for (data_source in data_sources) {
                               borrow_dispersion = borrow_dispersion[[data_source]],
                               type = types[[data_source]],
                               forecast_date = forecast_date,
-                              n_history_expectations = n_history_expectations,
-                              n_history_dispersion = n_history_dispersion,
+                              # note using n_history_expectations_, n_history_dispersion_,
+                              # which may be reduced to fit shorter triangle.
+                              n_history_expectations = n_history_expectations_,
+                              n_history_dispersion = n_history_dispersion_,
                               max_delay = max_delay)
         nc <- nc$result
         
