@@ -61,15 +61,15 @@ path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/
 
 files = [
     'reporting_triangle-icosari-sari.csv',
-    'reporting_triangle-icosari-sari-preprocessed.csv'
+    'reporting_triangle-icosari-sari-preprocessed.csv',
     
-    'reporting_triangle-icosari-sari_covid19.csv'
-    'reporting_triangle-icosari-sari_covid19-preprocessed.csv'
+    'reporting_triangle-icosari-sari_covid19.csv',
+    'reporting_triangle-icosari-sari_covid19-preprocessed.csv',
 
-    'reporting_triangle-icosari-sari_influenza.csv'
-    'reporting_triangle-icosari-sari_influenza-preprocessed.csv'
+    'reporting_triangle-icosari-sari_influenza.csv',
+    'reporting_triangle-icosari-sari_influenza-preprocessed.csv',
 
-    'reporting_triangle-icosari-sari_rsv.csv'
+    'reporting_triangle-icosari-sari_rsv.csv',
     'reporting_triangle-icosari-sari_rsv-preprocessed.csv'
 ]
 
