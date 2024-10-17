@@ -8,8 +8,8 @@
 source("respinow_viz/functions.R")
 
 # get data versions:
-rep_tri <- read.csv("data/survstat/influenza/reporting_triangle-survstat-influenza.csv")
-all_data_versions <- as.Date(unique(rep_tri$date)) - 3
+rep_tri <- read.csv("data/icosari/sari/reporting_triangle-icosari-sari.csv")
+all_data_versions <- as.Date(unique(rep_tri$date)) + 4
 df_data_versions <- data.frame(date = all_data_versions)
 write.csv(df_data_versions, file = "respinow_viz/plot_data/other/list_data_versions.csv",
           row.names = FALSE, quote = FALSE)
@@ -142,4 +142,5 @@ for(i in 1:nrow(df_targets)){
             to = paste0("respinow_viz/plot_data/truth/", fl_latest_test), overwrite = TRUE)
   
 }
+
 

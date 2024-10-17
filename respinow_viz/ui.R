@@ -60,7 +60,7 @@ shinyUI(fluidPage(
       conditionalPanel("input.select_language == 'EN'", strong("Data version")),
       div(style="display: inline-block;vertical-align:top;", actionButton("skip_backward", "<")),
       div(style="display: inline-block;vertical-align:top;width:200px", 
-          dateInput("select_date", label = NULL, value = max(available_nowcast_dates),
+          dateInput("select_date", label = NULL, value = max(available_data_versions),
                     min = min(available_data_versions), max = max(available_data_versions),
                     daysofweekdisabled = c(1, 2, 3, 5, 6, 7))), # only Sundays can be selected
       div(style="display: inline-block;vertical-align:top;", actionButton("skip_forward", ">")),
