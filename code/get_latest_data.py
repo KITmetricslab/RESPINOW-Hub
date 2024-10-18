@@ -7,7 +7,8 @@ path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/
 file_dict = {
     'latest_data-Survstat-influenza.csv' : 'latest_data-survstat-influenza.csv',
     'latest_data-Survstat-rsv.csv': 'latest_data-survstat-rsv.csv',
-    'latest_data-Survstat-pneumococcal.csv': 'latest_data-survstat-pneumococcal.csv'
+    'latest_data-Survstat-pneumococcal.csv': 'latest_data-survstat-pneumococcal.csv',
+    'latest_data-Survstat-covid19.csv':  'latest_data-survstat-covid19.csv'
 }
 
 for i in file_dict.keys():
@@ -18,6 +19,8 @@ for i in file_dict.keys():
         target_path = '../data/survstat/rsv/'
     elif 'influenza' in i:
         target_path = '../data/survstat/influenza/'
+    elif 'covid19' in i:
+        target_path = '../data/survstat/covid19/'
     
     df = pd.read_csv(path + i)
     df.to_csv(target_path + file_dict[i], index = False)
