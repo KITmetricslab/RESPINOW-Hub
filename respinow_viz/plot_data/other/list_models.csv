@@ -1,6 +1,7 @@
 model
 KIT-hhh4
 KIT-simple_nowcast
+MPIDS-PS_embedding
 KIT-epinowcast
 KIT-LightGBM
 KIT-TSMixer
