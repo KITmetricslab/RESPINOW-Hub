@@ -12,7 +12,10 @@ files = [
     'reporting_triangle-survstat-rsv-preprocessed.csv',
 
     'reporting_triangle-survstat-influenza.csv',
-    'reporting_triangle-survstat-influenza-preprocessed.csv'
+    'reporting_triangle-survstat-influenza-preprocessed.csv',
+
+    'reporting_triangle-survstat-covid19.csv',
+    'reporting_triangle-survstat-covid19-preprocessed.csv'
 ]
 
 for f in files:
@@ -23,7 +26,9 @@ for f in files:
         target_path = '../data/survstat/rsv/'
     elif 'influenza' in f:
         target_path = '../data/survstat/influenza/'
-    
+    elif 'covid19' in f:
+        target_path = '../data/survstat/covid19/'
+        
     df = pd.read_csv(path + f)
     df.to_csv(target_path + f, index = False)
 
