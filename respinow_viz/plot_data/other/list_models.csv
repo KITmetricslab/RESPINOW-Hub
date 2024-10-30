@@ -4,6 +4,7 @@ KIT-simple_nowcast
 MPIDS-PS_embedding
 KIT-epinowcast
 KIT-LightGBM
+KIT-MeanEnsemble
 KIT-TSMixer
 RIVM-GAM
 RKI-Pilot_01
