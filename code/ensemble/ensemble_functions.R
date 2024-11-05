@@ -1,5 +1,9 @@
-install.packages(c("tidyverse"), dependencies = TRUE)
-library(tidyverse)
+install.packages(c("dplyr", "readr", "purrr", "stringr"), dependencies = TRUE)
+
+library(dplyr)
+library(readr)
+library(purrr)
+library(stringr)
 
 path_submissions <- 'submissions/icosari/sari/'
 
