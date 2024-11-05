@@ -1,3 +1,4 @@
+install.packages("tidyverse")
 library(tidyverse)
 
 path_submissions <- 'submissions/icosari/sari/'
