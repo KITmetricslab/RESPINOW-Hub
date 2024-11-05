@@ -5,7 +5,7 @@ on:
   # - cron: "30 11,12,13,14 * * *"
   
 jobs:
-  compute-baseline:
+  compute-ensemble:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -16,7 +16,7 @@ jobs:
       with:
         r-version: '4.2.3'
       
-    - name: Compute baseline
+    - name: Compute ensemble
       run: |
         Rscript ./code/ensemble/compute_ensemble.R
     
