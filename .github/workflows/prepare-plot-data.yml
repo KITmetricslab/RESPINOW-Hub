@@ -10,6 +10,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@main
+      with:
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
         
     - name: Setup R
       uses: r-lib/actions/setup-r@v2 
