@@ -1110,3 +1110,4 @@ date_request,time_request,date_last_rki_update,time_last_rki_update,already_upda
 2024-11-05,13:10:04,2024-11-04,08:27:02,False
 2024-11-05,18:10:04,2024-11-05,08:48:30,True
 2024-11-05,23:10:03,2024-11-05,08:48:30,True
+2024-11-06,08:10:04,2024-11-05,08:48:30,False
