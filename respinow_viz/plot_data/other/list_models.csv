@@ -1,9 +1,9 @@
 model
 KIT-hhh4
+KIT-LightGBM
 KIT-simple_nowcast
 MPIDS-PS_embedding
 KIT-epinowcast
-KIT-LightGBM
 KIT-MeanEnsemble
 KIT-TSMixer
 RIVM-GAM
