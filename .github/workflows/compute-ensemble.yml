@@ -18,8 +18,11 @@ jobs:
       with:
         r-version: '4.2.3'
         
-    # - name: Install Packages
-    #   run: Rscript -e 'install.packages(c("tidyverse"))'
+    - name: Cache R packages 
+      uses: actions/cache@v4 
+      with: 
+        path: ${{ env.R_LIBS_USER }} 
+        key: r-${{ hashFiles('DESCRIPTION') }}
       
     - name: Compute ensemble
       run: |
