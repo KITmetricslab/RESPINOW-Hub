@@ -254,7 +254,7 @@ fit_dispersion <- function(observed, location, age_group,
   # estimate dispersion
   disp_params <- numeric(ncol(expectation_to_add))
   # remove rows with zero initial reports (Christmas etc)
-  to_keep <- expectation_to_add_already_observed[, 1] > 0
+  to_keep <- abs(expectation_to_add_already_observed[, 1]) >= 0.1
   to_add_already_observed <- to_add_already_observed[to_keep, ]
   expectation_to_add_already_observed <- expectation_to_add_already_observed[to_keep, ]
   
