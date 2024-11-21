@@ -45,9 +45,9 @@ shinyUI(fluidPage(
   
   # Application title
   conditionalPanel("input.select_language == 'DE'", 
-                   titlePanel("RESPINOW-Hub: Nowcasting respiratorischer Erreger in Deutschland (Beta)")),
+                   titlePanel("RESPINOW-Hub: Nowcasting respiratorischer Erreger in Deutschland")),
   conditionalPanel("input.select_language == 'EN'", 
-                   titlePanel("RESPINOW-Hub: Nowcasting of respiratory pathogens in Germany (Beta)")),
+                   titlePanel("RESPINOW-Hub: Nowcasting of respiratory pathogens in Germany")),
   
   br(),
   
@@ -184,7 +184,7 @@ shinyUI(fluidPage(
                        # p("Bei Unregelmäßigkeiten im Meldeprozess durch z.B. starke Belastung des Gesundheitssystems oder Feiertage kann die Verlässlichkeit der Nowcasts beeinträchtigt werden.")
       ),
       conditionalPanel("input.select_language == 'EN'",
-                       p(strong("This website is currently in a pilot phase and serves purely for scientific exchange. The analyses are not yet updated regularly. Not all displayed results were computed in real time.")),
+                       p(strong("This website and the displayed models are under continuing development. Results prior to 17 October 2024 were mainly computed retrospectively, most results after were computed in real time.")),
                        # p("This platform unites nowcasts of selected epidemiological indicators on respiratory diseases in Germany, with the goal of providing reliable assessments of recent trends. We aim to provide results from multiple independently run models, but at the current stage only one is already operational. This project is part of the consortium", a('RespiNow', href="https://respinow.de/"), "within the", a("MONID Network", href = "https://webszh.uk-halle.de/monid/"), "."),
                        # p("Data sources are indicated at the bottom of the page."),
                        # p("If there are irregularities in the reporting process due to, for example, high burdens on the health care system or holidays, the nowcasts may be less reliable.")

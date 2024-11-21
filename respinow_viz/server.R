@@ -116,7 +116,7 @@ for (disease in diseases) {
   if(tests_available[disease]){
     reporting_triangles_tests[[disease]] <- read.csv(paste0(path_truth, "reporting_triangle-", disease,
                                                             "-tests.csv"),
-                                                     colClasses = c(date = "Date"))
+                                                     colClasses = c(date = "Date"), check.names = FALSE)
     reporting_triangles_tests[[disease]] <- reporting_triangles_tests[[disease]][order(reporting_triangles_tests[[disease]]$date), ]
   }
 }
@@ -329,6 +329,7 @@ shinyServer(function(input, output, session) {
     ####################################
     
     if(!is.null(input$select_pathogen) & tests_available[input$select_pathogen]){
+      # browser()
       # tests data form before time-stamped versions are available:
       previous_tests_temp <- subset(previous_tests[[input$select_pathogen]],
                                     location == input$select_state &
