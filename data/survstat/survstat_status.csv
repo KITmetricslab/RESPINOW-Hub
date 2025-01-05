@@ -1352,3 +1352,4 @@ date_request,time_request,date_last_rki_update,time_last_rki_update,already_upda
 2025-01-05,08:10:03,2025-01-04,08:32:39,False
 2025-01-05,13:10:03,2025-01-04,08:32:39,False
 2025-01-05,18:10:03,2025-01-05,08:33:43,True
+2025-01-05,23:10:02,2025-01-05,08:33:43,True
