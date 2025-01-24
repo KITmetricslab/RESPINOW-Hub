@@ -82,6 +82,7 @@ compute_expectations <- function(observed, observed2 = NULL, borrow_delays = FAL
   # restrict to last n_history observations
   observed <- tail(observed, n_history)
   observed2 <- tail(observed2, n_history)
+  
   nr <- nrow(observed)
   nc <- ncol(observed)
   
@@ -92,8 +93,14 @@ compute_expectations <- function(observed, observed2 = NULL, borrow_delays = FAL
     # using observed2 to compute multiplication factors:
     block_top_left <- observed2[1:(nr - co + 1), 1:(co - 1), drop = FALSE]
     block_top <- observed2[1:(nr - co + 1), co, drop = FALSE]
+    
+    # keep only entries where innitial report was not zero to catch Christmas weeks etc
+    to_keep <- rowSums(block_top_left) > 0
+    block_top_left <- block_top_left[to_keep, ]
+    block_top <- block_top[to_keep, ]
+    
     factor <- sum(block_top)/max(sum(block_top_left), 1)
-    # but of course apply to expectation
+    # now of course apply to expectation (i.e., observed)
     block_left <- expectation[(nr - co + 2):nr, 1:(co - 1), drop = FALSE]
     expectation[(nr - co + 2):nr, co] <- factor*rowSums(block_left)
   }
