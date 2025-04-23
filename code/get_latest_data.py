@@ -102,10 +102,10 @@ for i in file_dict.keys():
 
 # AGI
 
-path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/AGI/'
+path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/AGI_abs/'
 
 file_dict = {
-    'latest_data-AGI-are.csv' : 'latest_data-agi-are.csv',
+    'latest_data-AGI_abs-are.csv' : 'latest_data-agi-are.csv',
 }
 
 for i in file_dict.keys():
