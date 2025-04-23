@@ -132,11 +132,11 @@ for f in files:
 
 # AGI
 
-path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/AGI/'
+path = 'https://raw.githubusercontent.com/KITmetricslab/RESPINOW-Data/main/data/AGI_abs/'
 
 files = [
-    'reporting_triangle-agi-are.csv',
-    'reporting_triangle-agi-are-preprocessed.csv'
+    'reporting_triangle-agi_abs-are.csv',
+    'reporting_triangle-agi_abs-are-preprocessed.csv'
 ]
 
 for f in files:
@@ -144,4 +144,4 @@ for f in files:
     target_path = '../data/agi/are/'
     
     df = pd.read_csv(path + f)
-    df.to_csv(target_path + f, index = False)
+    df.to_csv(target_path + f.replace("_abs", ""), index = False)
