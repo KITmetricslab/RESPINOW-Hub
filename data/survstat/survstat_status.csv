@@ -1937,3 +1937,4 @@ date_request,time_request,date_last_rki_update,time_last_rki_update,already_upda
 2025-06-01,13:10:02,2025-05-31,08:11:37,False
 2025-06-01,18:10:03,2025-06-01,08:14:08,True
 2025-06-01,23:10:03,2025-06-01,08:14:08,True
+2025-06-02,08:10:03,2025-06-01,08:14:08,False
