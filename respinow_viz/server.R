@@ -397,10 +397,10 @@ shinyServer(function(input, output, session) {
                            model == mod &
                            location == input$select_state &
                            pathogen == input$select_pathogen)
-          # # remove retrospective if requested:
-          # if(!input$show_retrospective_nowcasts){
-          #   subs <- subset(subs, !retrospective)
-          # }
+          # remove retrospective if requested:
+          if(!input$show_retrospective_nowcasts){
+             subs <- subset(subs, !retrospective)
+          }
           
           # if any relevant data found:
           if(nrow(subs) > 0){
