@@ -14,6 +14,10 @@ df_data_versions <- data.frame(date = all_data_versions)
 write.csv(df_data_versions, file = "respinow_viz/plot_data/other/list_data_versions.csv",
           row.names = FALSE, quote = FALSE)
 
+# get information on commit dates:
+commit_dates <- read.csv("respinow_viz/plot_data/other/list_commit_dates.csv",
+                         colClasses = c("first_commit" = "Date", "latest_commit" = "Date", "retrospective" = "logical"))
+
 # prepare summaries of available data sources, diseases and models:
 data_sources <- list.dirs("data/", full.names = FALSE, recursive = FALSE)
 all_data_sources <- all_diseases <- all_models <- character(0)
@@ -91,13 +95,18 @@ for(i in seq_along(all_forecast_dates)){
         }
         # add column for model:
         forecasts_temp$model <- mod
+        # add column on whether submitted retrospectively:
+        is_retrospective <- commit_dates$retrospective[commit_dates$filename == basename(fl)][1]
+        forecasts_temp$retrospective <- is_retrospective
+        
         # additional columns:
         forecasts_temp$target_type <- sapply(strsplit(forecasts_temp$target, split = "ahead "), FUN = function(x) x[2])
         forecasts_temp$pathogen <- paste0(ds, "-", di)
         # re-order:
         forecasts_temp <- forecasts_temp[, c("model", "target_type", "forecast_date", "target_end_date",
                                              "location", "age_group", "pathogen",
-                                             "mean", "q0.025", "q0.25", "q0.5", "q0.75", "q0.975")]
+                                             "mean", "q0.025", "q0.25", "q0.5", "q0.75", "q0.975",
+                                             "retrospective")]
         # append:
         if(is.null(all_forecasts)){
           all_forecasts <- forecasts_temp
