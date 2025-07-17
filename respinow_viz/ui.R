@@ -128,6 +128,8 @@ shinyUI(fluidPage(
       
       conditionalPanel("input.select_language == 'DE'", strong("Weitere Optionen")),
       conditionalPanel("input.select_language == 'EN'", strong("More options")),
+      checkboxInput("show_retrospective_nowcasts", label = "Nachträglich erstellte Nowcasts zeigen", 
+                    value = FALSE),
       strong(checkboxInput("show_additional_controls", label = "Öffne weitere Optionen", 
                            value = FALSE)),
       
@@ -157,8 +159,6 @@ shinyUI(fluidPage(
                                         checkboxInput("show_table", label = "Zeige Übersichtstabelle (noch nicht verfügbar)", 
                                                       value = FALSE),
                                         checkboxInput("show_truth_by_reporting", label = "Zeitreihe nach Erscheinen in RKI-Daten (noch nicht verfügbar)", 
-                                                      value = FALSE),
-                                        checkboxInput("show_retrospective_nowcasts", label = "Nachträglich erstellte Nowcasts zeigen", 
                                                       value = FALSE)
                        )
                        
@@ -178,13 +178,15 @@ shinyUI(fluidPage(
     mainPanel(
       add_busy_spinner(spin = "fading-circle"),
       conditionalPanel("input.select_language == 'DE'",
-                       p(strong("Diese Seite ist derzeit in einer Pilotphase und dient nur zum wissenschaftlichen Austausch. Die Analysen werden noch nicht regelmäßig aktualisiert. Nicht alle gezeigten Analysen wurden in Echtzeit erstellt.")),
+                       p(strong("Der RespiNow Hub ist derzeit in der Sommerpause. Das Dashboard wird nur während der Herbst- und Wintermonate regelmäßig aktualisiert (November - März).")),
+                       p(strong("Diese Seite und der gezeigten Modelle befinden sich weiterhin in der Entwicklung. Nicht alle gezeigten Analysen wurden in Echtzeit erstellt.")),
                        # p("Diese Plattform vereint Nowcasts für ausgewählte epidemiologische Indikatoren zu respiratorischen Erregern in Deutschland. Sie ist Teil des Projektes", a('RespiNow', href="https://respinow.de/"), " innerhalb des ", a("MONID Netzwerks", href = "https://webszh.uk-halle.de/monid/"), ". Künftig sollen verschiedene Verfahren zusammengeführt werden, derzeit ist jedoch erst ein Modell operationell."),
                        # p("Die Datenquellen sind am Ende der Seite angegeben."),
                        # p("Bei Unregelmäßigkeiten im Meldeprozess durch z.B. starke Belastung des Gesundheitssystems oder Feiertage kann die Verlässlichkeit der Nowcasts beeinträchtigt werden.")
       ),
       conditionalPanel("input.select_language == 'EN'",
-                       p(strong("This website and the displayed models are under continuing development. Results prior to 17 October 2024 were mainly computed retrospectively, most results after were computed in real time.")),
+                       p(strong("The RespiNow Hub is currently in its summer break. The dashboard is only updated regularly during the fall and winter months (November through March).")),
+                       p("This website and the displayed models are under continuing development. Results prior to 17 October 2024 were mainly computed retrospectively (tick 'show retrospective nowcasts' in the menu)."),
                        # p("This platform unites nowcasts of selected epidemiological indicators on respiratory diseases in Germany, with the goal of providing reliable assessments of recent trends. We aim to provide results from multiple independently run models, but at the current stage only one is already operational. This project is part of the consortium", a('RespiNow', href="https://respinow.de/"), "within the", a("MONID Network", href = "https://webszh.uk-halle.de/monid/"), "."),
                        # p("Data sources are indicated at the bottom of the page."),
                        # p("If there are irregularities in the reporting process due to, for example, high burdens on the health care system or holidays, the nowcasts may be less reliable.")
@@ -247,7 +249,7 @@ shinyUI(fluidPage(
       p(),
       conditionalPanel("input.select_language == 'DE'",
                        p(strong("Kurzerklärung:"), "Die schwarze Linie zeigt den Datenstand zum Zeitpunkt des letzten Updates dieser Webseite (meist Donnerstag / Freitag). Die jeweils letzten Werte dieser Daten sind
-                               meist unvollständig und werden noch nach oben korrigiert. Farbige Linien und Bänder zeigen eine Vorhersage dieser Korrektur sowie ggf. des weiteren Verlaufs.", style = style_explanation),
+                               meist unvollständig und werden noch nach oben korrigiert. Farbige Linien und Bänder zeigen eine Vorhersage dieser Korrektur sowie ggf. des weiteren Verlaufs. Bei der Betrachtung früherer Nowcasts / Vorhersagen zeigt eine graue Linie die damals verfügbare Datenversion.", style = style_explanation),
                        p(strong("Besonderheiten der gewählten Datenquelle:"), style = style_explanation)
                        # p("Kontakt: ", a("Lehrstuhl für Statistische Methoden und Ökonometrie", href = "https://statistik.econ.kit.edu/index.php"), 
                        #  ", Karlsruher Institut für Technologie. Email: johannes.bracher@kit.edu", style = style_explanation)
@@ -257,7 +259,7 @@ shinyUI(fluidPage(
       ),
       conditionalPanel("input.select_language == 'EN'",
                        p(strong("Brief explanation:"), "The black line shows the data as available at the time of last update of this website (usually Thursday / Friday). The most recent values of these data are
-                               typically incomplete and will still be corrected upwards. Coloured lines show the anticipated correction and, where applicable, the predicted future course.", style = style_explanation,
+                               typically incomplete and will still be corrected upwards. Coloured lines show the anticipated correction and, where applicable, the predicted future course. When looking at past nowcasts / forecasts, a grey line shows the data as available at the respective point in time.", style = style_explanation,
                          ),
                        p(strong("Particularities of the chosen data source:"), style = style_explanation)
                        # p("Contact: ", a("Chair of Statistical Methods and Econometrics", href = "https://statistik.econ.kit.edu/index.php"),
