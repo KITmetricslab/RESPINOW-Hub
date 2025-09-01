@@ -2295,3 +2295,4 @@ date_request,time_request,date_last_rki_update,time_last_rki_update,already_upda
 2025-08-31,23:10:03,2025-08-31,08:17:29,True
 2025-09-01,08:10:03,2025-08-31,08:17:29,False
 2025-09-01,13:10:03,2025-08-31,08:17:29,False
+2025-09-01,18:10:02,2025-09-01,08:21:01,True
