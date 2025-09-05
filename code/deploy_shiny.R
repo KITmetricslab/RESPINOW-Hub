@@ -18,6 +18,7 @@
 # library("DT")
 
 install.packages(c("rsconnect"), dependencies = NA)
+library("rsconnect")
 
 SHINYAPPS_NAME = Sys.getenv("SHINYAPPS_NAME")
 SHINYAPPS_TOKEN = Sys.getenv("SHINYAPPS_TOKEN")
