@@ -13,6 +13,8 @@ on:
 jobs:
   deploy-shiny:
     runs-on: macOS-14
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@main
     
