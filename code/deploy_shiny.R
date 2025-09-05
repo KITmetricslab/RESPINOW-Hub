@@ -1,5 +1,5 @@
 install.packages(c("rsconnect", "shiny", "shinyhelper", "remotes", "plotly", "zoo", "httr", "magrittr",
-                   "shinybusy"), dependencies = TRUE)
+                   "shinybusy"), dependencies = NA)
 
 #library("remotes")
 #remotes::install_version("rsconnect", "0.8.29")
