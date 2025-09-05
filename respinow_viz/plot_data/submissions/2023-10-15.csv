@@ -1,5 +1,5 @@
-model,target_type,forecast_date,target_end_date,location,age_group,pathogen,mean,q0.025,q0.25,q0.5,q0.75,q0.975
-KIT-epinowcast,NA,2023-10-15,2023-09-24,DE,00+,survstat-rsv,36,36,36,36,36,36
-KIT-epinowcast,NA,2023-10-15,2023-10-01,DE,00+,survstat-rsv,30.023,30,30,30,30,30
-KIT-epinowcast,NA,2023-10-15,2023-10-08,DE,00+,survstat-rsv,26.227,26,26,26,26,28
-KIT-epinowcast,NA,2023-10-15,2023-10-15,DE,00+,survstat-rsv,39.857,35,37,39,41.25,48
+model,target_type,forecast_date,target_end_date,location,age_group,pathogen,mean,q0.025,q0.25,q0.5,q0.75,q0.975,retrospective
+KIT-epinowcast,NA,2023-10-15,2023-09-24,DE,00+,survstat-rsv,36,36,36,36,36,36,TRUE
+KIT-epinowcast,NA,2023-10-15,2023-10-01,DE,00+,survstat-rsv,30.023,30,30,30,30,30,TRUE
+KIT-epinowcast,NA,2023-10-15,2023-10-08,DE,00+,survstat-rsv,26.227,26,26,26,26,28,TRUE
+KIT-epinowcast,NA,2023-10-15,2023-10-15,DE,00+,survstat-rsv,39.857,35,37,39,41.25,48,TRUE
