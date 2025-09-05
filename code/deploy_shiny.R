@@ -1,11 +1,11 @@
-install.packages(c("shiny", "shinyhelper", "remotes", "plotly", "zoo", "httr", "magrittr",
+install.packages(c("rsconnect", "shiny", "shinyhelper", "remotes", "plotly", "zoo", "httr", "magrittr",
                    "shinybusy", "DT"), dependencies = TRUE)
 
 #library("remotes")
 #remotes::install_version("rsconnect", "0.8.29")
 
-install.packages("devtools")
-devtools::install_github("rstudio/rsconnect")
+# install.packages("devtools")
+# devtools::install_github("rstudio/rsconnect")
 
 library("shiny")
 library("shinyhelper")
