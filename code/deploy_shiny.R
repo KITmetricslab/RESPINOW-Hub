@@ -15,7 +15,7 @@ library("zoo")
 library("httr")
 library("magrittr")
 library("shinybusy")
-library("DT")
+# library("DT")
 
 
 SHINYAPPS_NAME = Sys.getenv("SHINYAPPS_NAME")
