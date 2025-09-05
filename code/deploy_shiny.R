@@ -15,7 +15,7 @@ library("plotly")
 library("httr")
 library("magrittr")
 library("shinybusy")
-library("DT")
+#library("DT")
 
 # install.packages(c("rsconnect"), dependencies = NA)
 # library("rsconnect")
