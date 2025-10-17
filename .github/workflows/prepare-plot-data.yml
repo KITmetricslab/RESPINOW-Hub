@@ -7,7 +7,8 @@ on:
    branches:
     - main
    paths:
-    - submissions/icosari/sari/KIT-MeanEnsemble/*.csv
+    # - submissions/icosari/sari/KIT-MeanEnsemble/*.csv
+    - 'submissions/icosari/sari/**/*.csv'
   
 jobs:
   get-commit-dates:
