@@ -487,6 +487,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2025-03-13-icosari-sari-KIT-simple_nowcast.csv,2025-03-14,2025-03-14,2025-03-13,icosari,sari,KIT-simple_nowcast,1 days,False
 2025-03-20-icosari-sari-KIT-simple_nowcast.csv,2025-03-20,2025-03-20,2025-03-20,icosari,sari,KIT-simple_nowcast,0 days,False
 2025-03-27-icosari-sari-KIT-simple_nowcast.csv,2025-03-28,2025-03-28,2025-03-27,icosari,sari,KIT-simple_nowcast,1 days,False
+2025-10-23-icosari-sari-KIT-simple_nowcast.csv,2025-10-24,2025-10-24,2025-10-23,icosari,sari,KIT-simple_nowcast,1 days,False
 2024-10-17-icosari-sari-MPIDS-PS_embedding.csv,2024-10-18,2024-10-18,2024-10-17,icosari,sari,MPIDS-PS_embedding,1 days,False
 2024-10-24-icosari-sari-MPIDS-PS_embedding.csv,2024-11-05,2024-11-05,2024-10-24,icosari,sari,MPIDS-PS_embedding,12 days,True
 2024-10-31-icosari-sari-MPIDS-PS_embedding.csv,2024-11-04,2024-11-05,2024-10-31,icosari,sari,MPIDS-PS_embedding,5 days,True
