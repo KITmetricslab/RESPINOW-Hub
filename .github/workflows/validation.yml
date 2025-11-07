@@ -28,11 +28,11 @@ jobs:
       env:
         GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
             
-    - name: Wait for mergeable state
-      run: sleep 60
+    # - name: Wait for mergeable state
+    #   run: sleep 60
       
-    - name: Automerge check
-      uses: "pascalgn/automerge-action@v0.16.4"
+    # - name: Automerge check
+    #   uses: "pascalgn/automerge-action@v0.16.4"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         MERGE_LABELS: "automerge,data-submission,!other-files-updated,!metadata-change,!forecast-updated,!forecast-deleted,!viz,!code"
