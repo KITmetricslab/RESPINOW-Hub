@@ -18,4 +18,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_LABELS: "automerge,data-submission" #,!other-files-updated,!metadata-change,!forecast-updated,!forecast-deleted,!viz,!code"
+          BASE_BRANCHES: "main"
           LOG: "TRACE"
