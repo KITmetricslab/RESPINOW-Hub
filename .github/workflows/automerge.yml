@@ -2,10 +2,10 @@ name: automerge
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["validation"]   # Name of validation workflow file without .yml
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["validation"]   # Name of validation workflow file without .yml
+  #   types:
+  #     - completed
 
 jobs:
   automerge:
