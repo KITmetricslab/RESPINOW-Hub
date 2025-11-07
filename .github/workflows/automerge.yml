@@ -1,8 +1,10 @@
 name: automerge
 
 on:
-  check_suite:
-    types: [completed]
+  workflow_run:
+    workflows: ["validation"]   # Name of validation workflow file without .yml
+    types:
+      - completed
 
 jobs:
   automerge:
