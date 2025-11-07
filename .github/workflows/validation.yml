@@ -34,6 +34,6 @@ jobs:
     - name: Automerge check
       uses: "pascalgn/automerge-action@v0.16.4"
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PAT_DW }}
         MERGE_LABELS: "automerge,data-submission,!other-files-updated,!metadata-change,!forecast-updated,!forecast-deleted,!viz,!code"
         LOG: "TRACE"
