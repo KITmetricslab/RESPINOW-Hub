@@ -362,6 +362,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2025-03-13-icosari-sari-KIT-hhh4.csv,2025-03-14,2025-03-14,2025-03-13,icosari,sari,KIT-hhh4,1 days,False
 2025-03-20-icosari-sari-KIT-hhh4.csv,2025-03-20,2025-03-20,2025-03-20,icosari,sari,KIT-hhh4,0 days,False
 2025-03-27-icosari-sari-KIT-hhh4.csv,2025-03-28,2025-03-28,2025-03-27,icosari,sari,KIT-hhh4,1 days,False
+2025-11-20-icosari-sari-KIT-hhh4.csv,2025-11-24,2025-11-24,2025-11-20,icosari,sari,KIT-hhh4,4 days,True
 2023-11-16-icosari-sari-KIT-persistence.csv,2024-12-13,2024-12-13,2023-11-16,icosari,sari,KIT-persistence,393 days,True
 2023-11-23-icosari-sari-KIT-persistence.csv,2024-12-13,2024-12-13,2023-11-23,icosari,sari,KIT-persistence,386 days,True
 2023-11-30-icosari-sari-KIT-persistence.csv,2024-12-13,2024-12-13,2023-11-30,icosari,sari,KIT-persistence,379 days,True
@@ -604,6 +605,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2025-10-30-icosari-sari-RIVM-GAM.csv,2025-10-31,2025-10-31,2025-10-30,icosari,sari,RIVM-GAM,1 days,False
 2025-11-06-icosari-sari-RIVM-GAM.csv,2025-11-07,2025-11-07,2025-11-06,icosari,sari,RIVM-GAM,1 days,False
 2025-11-13-icosari-sari-RIVM-GAM.csv,2025-11-14,2025-11-14,2025-11-13,icosari,sari,RIVM-GAM,1 days,False
+2025-11-20-icosari-sari-RIVM-GAM.csv,2025-11-21,2025-11-21,2025-11-20,icosari,sari,RIVM-GAM,1 days,False
 2024-04-25-icosari-sari-RKI-Pilot_01.csv,2024-05-07,2024-05-07,2024-04-25,icosari,sari,RKI-Pilot_01,12 days,True
 2024-05-02-icosari-sari-RKI-Pilot_01.csv,2024-05-07,2024-05-07,2024-05-02,icosari,sari,RKI-Pilot_01,5 days,True
 2024-10-17-icosari-sari-RKI-Pilot_01.csv,2025-06-04,2025-06-04,2024-10-17,icosari,sari,RKI-Pilot_01,230 days,True
@@ -909,6 +911,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2025-10-30-survstat-influenza-RIVM-GAM.csv,2025-10-31,2025-10-31,2025-10-30,survstat,influenza,RIVM-GAM,1 days,False
 2025-11-06-survstat-influenza-RIVM-GAM.csv,2025-11-07,2025-11-07,2025-11-06,survstat,influenza,RIVM-GAM,1 days,False
 2025-11-13-survstat-influenza-RIVM-GAM.csv,2025-11-14,2025-11-14,2025-11-13,survstat,influenza,RIVM-GAM,1 days,False
+2025-11-20-survstat-influenza-RIVM-GAM.csv,2025-11-21,2025-11-21,2025-11-20,survstat,influenza,RIVM-GAM,1 days,False
 2024-10-17-survstat-pneumococcal-MPIDS-PS_embedding.csv,2024-10-18,2024-10-18,2024-10-17,survstat,pneumococcal,MPIDS-PS_embedding,1 days,False
 2023-11-09-survstat-rsv-HZI-ODEmodel.csv,2023-12-08,2023-12-08,2023-11-09,survstat,rsv,HZI-ODEmodel,29 days,True
 2023-11-16-survstat-rsv-HZI-ODEmodel.csv,2023-12-08,2023-12-08,2023-11-16,survstat,rsv,HZI-ODEmodel,22 days,True
