@@ -83,6 +83,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2025-03-20-agi-are-KIT-hhh4.csv,2025-03-20,2025-06-10,2025-03-20,agi,are,KIT-hhh4,82 days,True
 2025-03-27-agi-are-KIT-hhh4.csv,2025-03-28,2025-06-10,2025-03-27,agi,are,KIT-hhh4,75 days,True
 2025-05-22-agi-are-KIT-hhh4.csv,2025-06-10,2025-06-10,2025-05-22,agi,are,KIT-hhh4,19 days,True
+2025-11-27-agi-are-KIT-hhh4.csv,2025-11-28,2025-11-28,2025-11-27,agi,are,KIT-hhh4,1 days,False
 2024-07-04-agi-are-KIT-simple_nowcast.csv,2024-10-15,2024-10-15,2024-07-04,agi,are,KIT-simple_nowcast,103 days,True
 2024-07-11-agi-are-KIT-simple_nowcast.csv,2024-10-15,2024-10-15,2024-07-11,agi,are,KIT-simple_nowcast,96 days,True
 2024-07-18-agi-are-KIT-simple_nowcast.csv,2024-10-15,2024-10-15,2024-07-18,agi,are,KIT-simple_nowcast,89 days,True
