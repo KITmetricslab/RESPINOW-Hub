@@ -97,6 +97,11 @@ for(i in seq_along(all_forecast_dates)){
         forecasts_temp$model <- mod
         # add column on whether submitted retrospectively:
         is_retrospective <- commit_dates$retrospective[commit_dates$filename == basename(fl)][1]
+        # catch occasional cases where for the latest week the commit dates are not available yet:
+        if(is.na(is_retrospective) & forecast_date > Sys.Date() - 7){
+          is_retrospective <- FALSE
+        }
+          
         forecasts_temp$retrospective <- is_retrospective
         
         # additional columns:
