@@ -45,9 +45,9 @@ shinyUI(fluidPage(
   
   # Application title
   conditionalPanel("input.select_language == 'DE'", 
-                   titlePanel("RESPINOW-Hub: Nowcasting respiratorischer Erreger in Deutschland")),
+                   titlePanel("RESPINOW-Hub: Nowcasting und Kurzzeitvorhersage respiratorischer Erreger in Deutschland")),
   conditionalPanel("input.select_language == 'EN'", 
-                   titlePanel("RESPINOW-Hub: Nowcasting of respiratory pathogens in Germany")),
+                   titlePanel("RESPINOW-Hub: Nowcasting and short-term forecasting of respiratory pathogens in Germany")),
   
   br(),
   
