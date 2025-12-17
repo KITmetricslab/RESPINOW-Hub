@@ -200,6 +200,9 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2025-03-13-icosari-sari-KIT-MeanEnsemble.csv,2025-04-30,2025-04-30,2025-03-13,icosari,sari,KIT-MeanEnsemble,48 days,True
 2025-03-20-icosari-sari-KIT-MeanEnsemble.csv,2025-04-22,2025-04-22,2025-03-20,icosari,sari,KIT-MeanEnsemble,33 days,True
 2025-03-27-icosari-sari-KIT-MeanEnsemble.csv,2025-04-22,2025-04-22,2025-03-27,icosari,sari,KIT-MeanEnsemble,26 days,True
+2025-11-20-icosari-sari-KIT-MeanEnsemble.csv,2025-12-17,2025-12-17,2025-11-20,icosari,sari,KIT-MeanEnsemble,27 days,True
+2025-11-27-icosari-sari-KIT-MeanEnsemble.csv,2025-12-17,2025-12-17,2025-11-27,icosari,sari,KIT-MeanEnsemble,20 days,True
+2025-12-11-icosari-sari-KIT-MeanEnsemble.csv,2025-12-17,2025-12-17,2025-12-11,icosari,sari,KIT-MeanEnsemble,6 days,True
 2024-10-10-icosari-sari-KIT-TSMixer.csv,2024-10-15,2024-10-15,2024-10-10,icosari,sari,KIT-TSMixer,5 days,True
 2024-10-17-icosari-sari-KIT-TSMixer.csv,2024-10-17,2024-10-17,2024-10-17,icosari,sari,KIT-TSMixer,0 days,False
 2024-10-24-icosari-sari-KIT-TSMixer.csv,2024-10-25,2024-10-25,2024-10-24,icosari,sari,KIT-TSMixer,1 days,False
