@@ -1,8 +1,8 @@
 name: "get-target"
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "10 9,16 * * 1,4,5"
+  # schedule:
+  #   - cron: "10 9,16 * * 1,4,5"
   
 
 jobs:
