@@ -18,12 +18,22 @@ jobs:
 
     - name: Install requirements
       run: |
-        pip install pandas
+        pip install pandas pathlib
              
     - name: Get reporting triangles
       run:  |
         cd ./code
         python ./get_reporting_triangles.py
+    
+    - name: Get latest data
+      run:  |
+        cd ./code
+        python ./get_latest_data.py
+
+    - name: Compute target
+      run:  |
+        cd ./code
+        python ./compute_target.py
         
     - name: Commit files
       env:
