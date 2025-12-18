@@ -1,10 +1,13 @@
 name: "compute-ensemble"
 on:
   workflow_dispatch:
+  push:
+   branches:
+    - main
+   paths:
+    - 'submissions/icosari/sari/KIT-TSMixer/*.csv'
   # schedule:
   # - cron: "30 11,12,13,14 * * *"
-# permissions:
-#   contents: write  
   
 jobs:
   compute-ensemble:
