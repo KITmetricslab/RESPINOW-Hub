@@ -6,6 +6,7 @@ on:
     - main
    paths:
     - 'submissions/icosari/sari/KIT-TSMixer/*.csv'
+    - 'submissions/agi/are/KIT-TSMixer/*.csv'
   # schedule:
   # - cron: "30 11,12,13,14 * * *"
   
