@@ -1,11 +1,11 @@
 model
 KIT-hhh4
 KIT-LightGBM
+KIT-MeanEnsemble
 KIT-simple_nowcast
 KIT-TSMixer
 MPIDS-PS_embedding
 KIT-epinowcast
-KIT-MeanEnsemble
 KIT-persistence
 RIVM-GAM
 RKI-Pilot_01
