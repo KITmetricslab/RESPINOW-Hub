@@ -8,7 +8,7 @@ on:
     - main
    paths:
     - submissions/icosari/sari/KIT-MeanEnsemble/*.csv
-    # - 'submissions/icosari/sari/KIT-TSMixer/*.csv'
+    - submissions/agi/are/KIT-MeanEnsemble/*.csv
   
 jobs:
   get-commit-dates:
