@@ -77,7 +77,7 @@ names(tests_available) <- diseases
 models <- sort(dat_models$model)
 
 # which models are to be shown by default?
-default_models <- "KIT-simple_nowcast"
+default_models <- c("KIT-simple_nowcast", "KIT-MeanEnsemble")
 
 # define a color palette for the models:
 cols <- c('rgb(31, 119, 180)',
@@ -588,6 +588,10 @@ shinyServer(function(input, output, session) {
                                showlegend = FALSE,
                                visible = ifelse(mod %in% default_models, TRUE, "legendonly"))
         # add point nowcasts:
+        visible <- FALSE
+        if(!is.null(plot_data[[mod]])){
+          visible <- ifelse(mod %in% default_models, TRUE, "legendonly")
+        }
         p <- p %>% add_trace(x = x, y = y,
                              name = mod,
                              type = "scatter",
@@ -598,7 +602,7 @@ shinyServer(function(input, output, session) {
                              text = text_interval,
                              hovertemplate = "<b>%{y}</b> %{text}",
                              legendgroup = mod,
-                             visible = ifelse(mod %in% default_models, TRUE, "legendonly"))
+                             visible = visible)
       }
       p
     })
@@ -819,7 +823,7 @@ shinyServer(function(input, output, session) {
                     "Datenstand am Tag des Nowcasts",
                     "Nowcast (Unsicherheitsintervall)",
                     "Korrekturfaktor",
-                    "% Veränderung zur Vorwoche"
+                    "% Ver??nderung zur Vorwoche"
           )
         }else{
           coln <- c(ifelse(input$select_stratification == "state", "Bundesland", "Age group"),
@@ -837,7 +841,7 @@ shinyServer(function(input, output, session) {
                     options = list(dom = 'tB', pageLength = 17, buttons = c('csv')))
         })
       }else{ # if no data available: show place holder
-        output$table <- DT::renderDT(data.frame("Error" = "Keine Nowcasts verfügbar für das gewählte Meldedatum."))
+        output$table <- DT::renderDT(data.frame("Error" = "Keine Nowcasts verf??gbar f??r das gew??hlte Meldedatum."))
       }
       
     }else{
@@ -1092,7 +1096,7 @@ shinyServer(function(input, output, session) {
       )
       
       # Type of point nowcast
-      label <- ifelse(input$select_language == "DE", "Punktschätzer", "Point estimate")
+      label <- ifelse(input$select_language == "DE", "Punktsch??tzer", "Point estimate")
       choices <- if(input$select_language == "DE"){
         c("Median" = "median", "Erwartungswert" = "mean")
       }else{
@@ -1156,7 +1160,7 @@ shinyServer(function(input, output, session) {
       # log scale
       label <- NULL
       choices <- if(input$select_language == "DE"){
-        c("natürliche Skala" = "natural scale",
+        c("nat??rliche Skala" = "natural scale",
           "log-Skala"  ="log scale")
       }else{
         c("natural scale" = "natural scale",
@@ -1246,7 +1250,7 @@ shinyServer(function(input, output, session) {
       
       # Show retrospective nowcasts
       label <- ifelse(input$select_language == "DE",
-                      "Nachträglich erstellte Nowcasts zeigen",
+                      "Nachtr??glich erstellte Nowcasts zeigen",
                       "Show retrospective nowcasts")
       selected <- input$show_retrospective_nowcasts
       updateCheckboxInput(session, "show_retrospective_nowcasts",
@@ -1256,7 +1260,7 @@ shinyServer(function(input, output, session) {
       
       # Use same ylim in overview
       label <- ifelse(input$select_language == "DE",
-                      "Einheitliche y-Achsenabschnitte in Übersicht",
+                      "Einheitliche y-Achsenabschnitte in ??bersicht",
                       "Uniform y-axis ranges in overview")
       selected <- input$use_same_ylim
       updateCheckboxInput(session, "use_same_ylim",
@@ -1266,7 +1270,7 @@ shinyServer(function(input, output, session) {
       
       # # Show summary table
       # label <- ifelse(input$select_language == "DE",
-      #                 "Zeige Übersichtstabelle",
+      #                 "Zeige ??bersichtstabelle",
       #                 "Show summary table")
       # selected <- input$show_table
       # updateCheckboxInput(session, "show_table",
