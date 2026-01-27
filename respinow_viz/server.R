@@ -738,10 +738,15 @@ shinyServer(function(input, output, session) {
                              hoverinfo = "none"),
                         list(plot_data$mapping[[mod]][1]))
       # point nowcasts:
+      visible <- FALSE
+      if(!is.null(plot_data[[mod]])){
+        visible <- ifelse(mod %in% default_models, TRUE, "legendonly")
+      }
       plotlyProxyInvoke(myPlotProxy, "restyle",
                         list(x = list(x),
                              y = list(y),
-                             text = list(text_interval)),
+                             text = list(text_interval),
+                             visible = visible),
                         list(plot_data$mapping[[mod]][2]))
     }
     
