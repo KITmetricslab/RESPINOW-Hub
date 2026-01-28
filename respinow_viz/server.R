@@ -588,10 +588,10 @@ shinyServer(function(input, output, session) {
                                showlegend = FALSE,
                                visible = ifelse(mod %in% default_models, TRUE, "legendonly"))
         # add point nowcasts:
-        visible <- FALSE
-        if(!is.null(plot_data[[mod]])){
+        # visible <- FALSE
+        # if(!is.null(plot_data[[mod]])){
           visible <- ifelse(mod %in% default_models, TRUE, "legendonly")
-        }
+        # }
         p <- p %>% add_trace(x = x, y = y,
                              name = mod,
                              type = "scatter",
@@ -738,15 +738,14 @@ shinyServer(function(input, output, session) {
                              hoverinfo = "none"),
                         list(plot_data$mapping[[mod]][1]))
       # point nowcasts:
-      visible <- FALSE
-      if(!is.null(plot_data[[mod]])){
-        visible <- ifelse(mod %in% default_models, TRUE, "legendonly")
-      }
+      # visible <- FALSE
+      # if(!is.null(plot_data[[mod]])){
+      # visible <- ifelse(mod %in% default_models, TRUE, "legendonly")
+      # }
       plotlyProxyInvoke(myPlotProxy, "restyle",
                         list(x = list(x),
                              y = list(y),
-                             text = list(text_interval),
-                             visible = visible),
+                             text = list(text_interval)),
                         list(plot_data$mapping[[mod]][2]))
     }
     
