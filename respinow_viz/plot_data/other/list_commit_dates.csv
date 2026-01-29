@@ -225,6 +225,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-01-08-icosari-sari-KIT-LightGBM.csv,2026-01-09,2026-01-09,2026-01-08,icosari,sari,KIT-LightGBM,1 days,False
 2026-01-15-icosari-sari-KIT-LightGBM.csv,2026-01-16,2026-01-16,2026-01-15,icosari,sari,KIT-LightGBM,1 days,False
 2026-01-22-icosari-sari-KIT-LightGBM.csv,2026-01-22,2026-01-22,2026-01-22,icosari,sari,KIT-LightGBM,0 days,False
+2026-01-29-icosari-sari-KIT-LightGBM.csv,2026-01-29,2026-01-29,2026-01-29,icosari,sari,KIT-LightGBM,0 days,False
 2024-10-10-icosari-sari-KIT-MeanEnsemble.csv,2024-10-30,2024-10-30,2024-10-10,icosari,sari,KIT-MeanEnsemble,20 days,True
 2024-10-17-icosari-sari-KIT-MeanEnsemble.csv,2024-10-30,2024-10-30,2024-10-17,icosari,sari,KIT-MeanEnsemble,13 days,True
 2024-10-24-icosari-sari-KIT-MeanEnsemble.csv,2024-10-30,2024-10-30,2024-10-24,icosari,sari,KIT-MeanEnsemble,6 days,True
@@ -255,6 +256,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-01-08-icosari-sari-KIT-MeanEnsemble.csv,2026-01-09,2026-01-09,2026-01-08,icosari,sari,KIT-MeanEnsemble,1 days,False
 2026-01-15-icosari-sari-KIT-MeanEnsemble.csv,2026-01-16,2026-01-16,2026-01-15,icosari,sari,KIT-MeanEnsemble,1 days,False
 2026-01-22-icosari-sari-KIT-MeanEnsemble.csv,2026-01-22,2026-01-22,2026-01-22,icosari,sari,KIT-MeanEnsemble,0 days,False
+2026-01-29-icosari-sari-KIT-MeanEnsemble.csv,2026-01-29,2026-01-29,2026-01-29,icosari,sari,KIT-MeanEnsemble,0 days,False
 2024-10-10-icosari-sari-KIT-TSMixer.csv,2024-10-15,2024-10-15,2024-10-10,icosari,sari,KIT-TSMixer,5 days,True
 2024-10-17-icosari-sari-KIT-TSMixer.csv,2024-10-17,2024-10-17,2024-10-17,icosari,sari,KIT-TSMixer,0 days,False
 2024-10-24-icosari-sari-KIT-TSMixer.csv,2024-10-25,2024-10-25,2024-10-24,icosari,sari,KIT-TSMixer,1 days,False
@@ -292,6 +294,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-01-08-icosari-sari-KIT-TSMixer.csv,2026-01-09,2026-01-09,2026-01-08,icosari,sari,KIT-TSMixer,1 days,False
 2026-01-15-icosari-sari-KIT-TSMixer.csv,2026-01-16,2026-01-16,2026-01-15,icosari,sari,KIT-TSMixer,1 days,False
 2026-01-22-icosari-sari-KIT-TSMixer.csv,2026-01-22,2026-01-22,2026-01-22,icosari,sari,KIT-TSMixer,0 days,False
+2026-01-29-icosari-sari-KIT-TSMixer.csv,2026-01-29,2026-01-29,2026-01-29,icosari,sari,KIT-TSMixer,0 days,False
 2023-10-05-icosari-sari-KIT-epinowcast.csv,2023-12-04,2023-12-04,2023-10-05,icosari,sari,KIT-epinowcast,60 days,True
 2023-10-12-icosari-sari-KIT-epinowcast.csv,2023-12-04,2023-12-04,2023-10-12,icosari,sari,KIT-epinowcast,53 days,True
 2023-10-19-icosari-sari-KIT-epinowcast.csv,2023-12-04,2023-12-04,2023-10-19,icosari,sari,KIT-epinowcast,46 days,True
@@ -436,6 +439,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-01-08-icosari-sari-KIT-hhh4.csv,2026-01-09,2026-01-09,2026-01-08,icosari,sari,KIT-hhh4,1 days,False
 2026-01-15-icosari-sari-KIT-hhh4.csv,2026-01-16,2026-01-16,2026-01-15,icosari,sari,KIT-hhh4,1 days,False
 2026-01-22-icosari-sari-KIT-hhh4.csv,2026-01-22,2026-01-22,2026-01-22,icosari,sari,KIT-hhh4,0 days,False
+2026-01-29-icosari-sari-KIT-hhh4.csv,2026-01-29,2026-01-29,2026-01-29,icosari,sari,KIT-hhh4,0 days,False
 2023-11-16-icosari-sari-KIT-persistence.csv,2024-12-13,2024-12-13,2023-11-16,icosari,sari,KIT-persistence,393 days,True
 2023-11-23-icosari-sari-KIT-persistence.csv,2024-12-13,2024-12-13,2023-11-23,icosari,sari,KIT-persistence,386 days,True
 2023-11-30-icosari-sari-KIT-persistence.csv,2024-12-13,2024-12-13,2023-11-30,icosari,sari,KIT-persistence,379 days,True
@@ -581,6 +585,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-01-08-icosari-sari-KIT-simple_nowcast.csv,2026-01-09,2026-01-09,2026-01-08,icosari,sari,KIT-simple_nowcast,1 days,False
 2026-01-15-icosari-sari-KIT-simple_nowcast.csv,2026-01-16,2026-01-16,2026-01-15,icosari,sari,KIT-simple_nowcast,1 days,False
 2026-01-22-icosari-sari-KIT-simple_nowcast.csv,2026-01-22,2026-01-22,2026-01-22,icosari,sari,KIT-simple_nowcast,0 days,False
+2026-01-29-icosari-sari-KIT-simple_nowcast.csv,2026-01-29,2026-01-29,2026-01-29,icosari,sari,KIT-simple_nowcast,0 days,False
 2024-10-17-icosari-sari-MPIDS-PS_embedding.csv,2024-10-18,2024-10-18,2024-10-17,icosari,sari,MPIDS-PS_embedding,1 days,False
 2024-10-24-icosari-sari-MPIDS-PS_embedding.csv,2024-11-05,2024-11-05,2024-10-24,icosari,sari,MPIDS-PS_embedding,12 days,True
 2024-10-31-icosari-sari-MPIDS-PS_embedding.csv,2024-11-04,2024-11-05,2024-10-31,icosari,sari,MPIDS-PS_embedding,5 days,True
