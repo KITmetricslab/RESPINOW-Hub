@@ -25,6 +25,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-01-08-agi-are-KIT-LightGBM.csv,2026-01-08,2026-01-08,2026-01-08,agi,are,KIT-LightGBM,0 days,False
 2026-01-15-agi-are-KIT-LightGBM.csv,2026-01-15,2026-01-15,2026-01-15,agi,are,KIT-LightGBM,0 days,False
 2026-01-22-agi-are-KIT-LightGBM.csv,2026-01-22,2026-01-22,2026-01-22,agi,are,KIT-LightGBM,0 days,False
+2026-01-29-agi-are-KIT-LightGBM.csv,2026-01-29,2026-01-29,2026-01-29,agi,are,KIT-LightGBM,0 days,False
 2024-10-17-agi-are-KIT-MeanEnsemble.csv,2026-01-14,2026-01-14,2024-10-17,agi,are,KIT-MeanEnsemble,454 days,True
 2024-10-24-agi-are-KIT-MeanEnsemble.csv,2026-01-14,2026-01-14,2024-10-24,agi,are,KIT-MeanEnsemble,447 days,True
 2024-10-31-agi-are-KIT-MeanEnsemble.csv,2026-01-14,2026-01-14,2024-10-31,agi,are,KIT-MeanEnsemble,440 days,True
@@ -51,6 +52,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-01-08-agi-are-KIT-MeanEnsemble.csv,2026-01-14,2026-01-14,2026-01-08,agi,are,KIT-MeanEnsemble,6 days,True
 2026-01-15-agi-are-KIT-MeanEnsemble.csv,2026-01-15,2026-01-15,2026-01-15,agi,are,KIT-MeanEnsemble,0 days,False
 2026-01-22-agi-are-KIT-MeanEnsemble.csv,2026-01-22,2026-01-22,2026-01-22,agi,are,KIT-MeanEnsemble,0 days,False
+2026-01-29-agi-are-KIT-MeanEnsemble.csv,2026-01-29,2026-01-29,2026-01-29,agi,are,KIT-MeanEnsemble,0 days,False
 2024-10-17-agi-are-KIT-TSMixer.csv,2025-04-28,2025-04-28,2024-10-17,agi,are,KIT-TSMixer,193 days,True
 2024-10-24-agi-are-KIT-TSMixer.csv,2025-04-28,2025-04-28,2024-10-24,agi,are,KIT-TSMixer,186 days,True
 2024-10-31-agi-are-KIT-TSMixer.csv,2025-04-28,2025-04-28,2024-10-31,agi,are,KIT-TSMixer,179 days,True
@@ -77,6 +79,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-01-08-agi-are-KIT-TSMixer.csv,2026-01-08,2026-01-08,2026-01-08,agi,are,KIT-TSMixer,0 days,False
 2026-01-15-agi-are-KIT-TSMixer.csv,2026-01-15,2026-01-15,2026-01-15,agi,are,KIT-TSMixer,0 days,False
 2026-01-22-agi-are-KIT-TSMixer.csv,2026-01-22,2026-01-22,2026-01-22,agi,are,KIT-TSMixer,0 days,False
+2026-01-29-agi-are-KIT-TSMixer.csv,2026-01-29,2026-01-29,2026-01-29,agi,are,KIT-TSMixer,0 days,False
 2024-07-04-agi-are-KIT-hhh4.csv,2024-10-15,2025-06-10,2024-07-04,agi,are,KIT-hhh4,341 days,True
 2024-07-11-agi-are-KIT-hhh4.csv,2024-10-15,2025-06-10,2024-07-11,agi,are,KIT-hhh4,334 days,True
 2024-07-18-agi-are-KIT-hhh4.csv,2024-10-15,2025-06-10,2024-07-18,agi,are,KIT-hhh4,327 days,True
@@ -123,6 +126,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-01-08-agi-are-KIT-hhh4.csv,2026-01-08,2026-01-08,2026-01-08,agi,are,KIT-hhh4,0 days,False
 2026-01-15-agi-are-KIT-hhh4.csv,2026-01-15,2026-01-15,2026-01-15,agi,are,KIT-hhh4,0 days,False
 2026-01-22-agi-are-KIT-hhh4.csv,2026-01-22,2026-01-22,2026-01-22,agi,are,KIT-hhh4,0 days,False
+2026-01-29-agi-are-KIT-hhh4.csv,2026-01-29,2026-01-29,2026-01-29,agi,are,KIT-hhh4,0 days,False
 2024-07-04-agi-are-KIT-simple_nowcast.csv,2024-10-15,2024-10-15,2024-07-04,agi,are,KIT-simple_nowcast,103 days,True
 2024-07-11-agi-are-KIT-simple_nowcast.csv,2024-10-15,2024-10-15,2024-07-11,agi,are,KIT-simple_nowcast,96 days,True
 2024-07-18-agi-are-KIT-simple_nowcast.csv,2024-10-15,2024-10-15,2024-07-18,agi,are,KIT-simple_nowcast,89 days,True
@@ -166,6 +170,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-01-08-agi-are-KIT-simple_nowcast.csv,2026-01-08,2026-01-08,2026-01-08,agi,are,KIT-simple_nowcast,0 days,False
 2026-01-15-agi-are-KIT-simple_nowcast.csv,2026-01-15,2026-01-15,2026-01-15,agi,are,KIT-simple_nowcast,0 days,False
 2026-01-22-agi-are-KIT-simple_nowcast.csv,2026-01-22,2026-01-22,2026-01-22,agi,are,KIT-simple_nowcast,0 days,False
+2026-01-29-agi-are-KIT-simple_nowcast.csv,2026-01-29,2026-01-29,2026-01-29,agi,are,KIT-simple_nowcast,0 days,False
 2024-10-17-agi-are-MPIDS-PS_embedding.csv,2024-10-18,2025-06-10,2024-10-17,agi,are,MPIDS-PS_embedding,236 days,True
 2024-10-24-agi-are-MPIDS-PS_embedding.csv,2024-11-05,2025-06-10,2024-10-24,agi,are,MPIDS-PS_embedding,229 days,True
 2024-10-31-agi-are-MPIDS-PS_embedding.csv,2024-11-04,2025-06-10,2024-10-31,agi,are,MPIDS-PS_embedding,222 days,True
