@@ -32,6 +32,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-03-05-agi-are-KIT-LightGBM.csv,2026-03-06,2026-03-06,2026-03-05,agi,are,KIT-LightGBM,1 days,False
 2026-03-12-agi-are-KIT-LightGBM.csv,2026-03-12,2026-03-12,2026-03-12,agi,are,KIT-LightGBM,0 days,False
 2026-03-19-agi-are-KIT-LightGBM.csv,2026-03-19,2026-03-19,2026-03-19,agi,are,KIT-LightGBM,0 days,False
+2026-03-26-agi-are-KIT-LightGBM.csv,2026-03-26,2026-03-26,2026-03-26,agi,are,KIT-LightGBM,0 days,False
 2024-10-17-agi-are-KIT-MeanEnsemble.csv,2026-01-14,2026-01-14,2024-10-17,agi,are,KIT-MeanEnsemble,454 days,True
 2024-10-24-agi-are-KIT-MeanEnsemble.csv,2026-01-14,2026-01-14,2024-10-24,agi,are,KIT-MeanEnsemble,447 days,True
 2024-10-31-agi-are-KIT-MeanEnsemble.csv,2026-01-14,2026-01-14,2024-10-31,agi,are,KIT-MeanEnsemble,440 days,True
@@ -64,6 +65,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-03-05-agi-are-KIT-MeanEnsemble.csv,2026-03-06,2026-03-06,2026-03-05,agi,are,KIT-MeanEnsemble,1 days,False
 2026-03-12-agi-are-KIT-MeanEnsemble.csv,2026-03-12,2026-03-12,2026-03-12,agi,are,KIT-MeanEnsemble,0 days,False
 2026-03-19-agi-are-KIT-MeanEnsemble.csv,2026-03-19,2026-03-19,2026-03-19,agi,are,KIT-MeanEnsemble,0 days,False
+2026-03-26-agi-are-KIT-MeanEnsemble.csv,2026-03-26,2026-03-26,2026-03-26,agi,are,KIT-MeanEnsemble,0 days,False
 2024-10-17-agi-are-KIT-TSMixer.csv,2025-04-28,2025-04-28,2024-10-17,agi,are,KIT-TSMixer,193 days,True
 2024-10-24-agi-are-KIT-TSMixer.csv,2025-04-28,2025-04-28,2024-10-24,agi,are,KIT-TSMixer,186 days,True
 2024-10-31-agi-are-KIT-TSMixer.csv,2025-04-28,2025-04-28,2024-10-31,agi,are,KIT-TSMixer,179 days,True
@@ -97,6 +99,7 @@ filename,first_commit,latest_commit,forecast_date,source,indicator,model,diff,re
 2026-03-05-agi-are-KIT-TSMixer.csv,2026-03-06,2026-03-06,2026-03-05,agi,are,KIT-TSMixer,1 days,False
 2026-03-12-agi-are-KIT-TSMixer.csv,2026-03-12,2026-03-12,2026-03-12,agi,are,KIT-TSMixer,0 days,False
 2026-03-19-agi-are-KIT-TSMixer.csv,2026-03-19,2026-03-19,2026-03-19,agi,are,KIT-TSMixer,0 days,False
+2026-03-26-agi-are-KIT-TSMixer.csv,2026-03-26,2026-03-26,2026-03-26,agi,are,KIT-TSMixer,0 days,False
 2024-07-04-agi-are-KIT-hhh4.csv,2024-10-15,2025-06-10,2024-07-04,agi,are,KIT-hhh4,341 days,True
 2024-07-11-agi-are-KIT-hhh4.csv,2024-10-15,2025-06-10,2024-07-11,agi,are,KIT-hhh4,334 days,True
 2024-07-18-agi-are-KIT-hhh4.csv,2024-10-15,2025-06-10,2024-07-18,agi,are,KIT-hhh4,327 days,True
