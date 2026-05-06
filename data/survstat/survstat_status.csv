@@ -3278,3 +3278,4 @@ date_request,time_request,date_last_rki_update,time_last_rki_update,already_upda
 2026-05-05,13:10:03,2026-05-04,08:15:34,False
 2026-05-05,18:10:03,2026-05-05,08:24:51,True
 2026-05-06,08:10:03,2026-05-05,08:24:51,False
+2026-05-06,13:10:03,2026-05-05,08:24:51,False
