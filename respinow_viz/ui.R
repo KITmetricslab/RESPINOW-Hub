@@ -129,7 +129,7 @@ shinyUI(fluidPage(
       conditionalPanel("input.select_language == 'DE'", strong("Weitere Optionen")),
       conditionalPanel("input.select_language == 'EN'", strong("More options")),
       checkboxInput("show_retrospective_nowcasts", label = "Nachträglich erstellte Nowcasts zeigen", 
-                    value = FALSE),
+                    value = TRUE),
       strong(checkboxInput("show_additional_controls", label = "Öffne weitere Optionen", 
                            value = FALSE)),
       
