@@ -1218,31 +1218,31 @@ shinyServer(function(input, output, session) {
                     #  "Krankheit / Indikator",
                     #  "Disease / indicator")
       choices <- c("SARI (ICOSARI)" = "icosari-sari",
-                   "Saisonale Influenza (SurvStat)" = "survstat-influenza",
-                   "RSV (SurvStat)" = "survstat-rsv",
-                   "Invasive Pneumokokken (SurvStat)" = "survstat-pneumococcal",
-                   "ARE (AGI)" = "agi-are",
-                   "Saisonale Influenza (NRZ)" = "nrz-influenza",
+                   # "Saisonale Influenza (SurvStat)" = "survstat-influenza",
+                   # "RSV (SurvStat)" = "survstat-rsv",
+                   # "Invasive Pneumokokken (SurvStat)" = "survstat-pneumococcal",
+                   "ARE (AGI)" = "agi-are"
+                   # "Saisonale Influenza (NRZ)" = "nrz-influenza",
                    # "Saisonale Influenza Tests (NRZ)" = "nrz-influenza-tests",
-                   "RSV (NRZ)" = "nrz-rsv",
-                   "Saisonale Influenza (CVN)" = "cvn-influenza",
-                   "RSV (CVN)" = "cvn-rsv",
-                   "Invasive Pneumokokken (CVN)" = "cvn-pneumococcal"
+                   # "RSV (NRZ)" = "nrz-rsv",
+                   # "Saisonale Influenza (CVN)" = "cvn-influenza",
+                   # "RSV (CVN)" = "cvn-rsv",
+                   # "Invasive Pneumokokken (CVN)" = "cvn-pneumococcal"
                    # "RSV Tests (NRZ)" = "nrz-rsv-tests",
                    )
       if(input$select_language == "EN"){
         choices <- c("SARI (ICOSARI)" = "icosari-sari",
-                     "Seasonal influenza (SurvStat)" = "survstat-influenza",
-                     "RSV (SurvStat)" = "survstat-rsv",
-                     "Pneumococcal disease (SurvStat)" = "survstat-pneumococcal",
-                     "ARI (AGI)" = "agi-are",
-                     "Seasonal influenza (NRZ)" = "nrz-influenza",
+                     # "Seasonal influenza (SurvStat)" = "survstat-influenza",
+                     # "RSV (SurvStat)" = "survstat-rsv",
+                     # "Pneumococcal disease (SurvStat)" = "survstat-pneumococcal",
+                     "ARI (AGI)" = "agi-are"
+                     # "Seasonal influenza (NRZ)" = "nrz-influenza",
                      # "Seasonal Influenza tests (NRZ)" = "nrz-influenza-tests",
-                     "RSV (NRZ)" = "nrz-rsv",
+                     # "RSV (NRZ)" = "nrz-rsv",
                      # "RSV tests (NRZ)" = "nrz-rsv-tests",
-                     "Seasonal influenza (CVN)" = "cvn-influenza",
-                     "RSV (CVN)" = "cvn-rsv",
-                     "Pneumococcal disease (CVN)" = "cvn-pneumococcal"
+                     # "Seasonal influenza (CVN)" = "cvn-influenza",
+                     # "RSV (CVN)" = "cvn-rsv",
+                     # "Pneumococcal disease (CVN)" = "cvn-pneumococcal"
                      )
       }
       selected <- input$select_pathogen

@@ -78,17 +78,17 @@ shinyUI(fluidPage(
                      label = NULL,
                      choices = c(
                        "SARI (ICOSARI)" = "icosari-sari",
-                                 # "Saisonale Influenza (SurvStat)" = "survstat-influenza",
-                                 # "RSV (SurvStat)" = "survstat-rsv",
-                                 # "Invasive Pneumokokken (SurvStat)" = "survstat-pneumococcal",
-                                 "ARE (AGI)" = "agi-are"
+                       # "Saisonale Influenza (SurvStat)" = "survstat-influenza",
+                       # "RSV (SurvStat)" = "survstat-rsv",
+                       # "Invasive Pneumokokken (SurvStat)" = "survstat-pneumococcal",
+                       "ARE (AGI)" = "agi-are"
                        # "Saisonale Influenza (NRZ)" = "nrz-influenza",
-                                 # "Saisonale Influenza Tests (NRZ)" = "nrz-influenza-tests",
-                                 # "RSV (NRZ)" = "nrz-rsv",
-                                 # "RSV Tests (NRZ)" = "nrz-rsv-tests",
-                                 # "Saisonale Influenza (CVN)" = "cvn-influenza",
-                                 # "RSV (CVN)" = "cvn-rsv",
-                                 # "Invasive Pneumokokken (CVN)" = "cvn-pneumococcal"
+                       # "Saisonale Influenza Tests (NRZ)" = "nrz-influenza-tests",
+                       # "RSV (NRZ)" = "nrz-rsv",
+                       # "RSV Tests (NRZ)" = "nrz-rsv-tests",
+                       # "Saisonale Influenza (CVN)" = "cvn-influenza",
+                       # "RSV (CVN)" = "cvn-rsv",
+                       # "Invasive Pneumokokken (CVN)" = "cvn-pneumococcal"
                      ),
                      width = "300px"),
       conditionalPanel("input.select_language == 'DE'",
@@ -179,22 +179,75 @@ shinyUI(fluidPage(
       add_busy_spinner(spin = "fading-circle"),
       conditionalPanel("input.select_language == 'DE'",
                        # p(strong("Der RespiNow Hub ist derzeit in der Sommerpause. Das Dashboard wird nur während der Herbst- und Wintermonate regelmäßig aktualisiert (November - März).")),
-                       # p(strong("Diese Seite und der gezeigten Modelle befinden sich weiterhin in der Entwicklung. Nicht alle gezeigten Analysen wurden in Echtzeit erstellt.")),
-                       p("Nowcasts und Vorhersagen werden derzeit für die Indikatoren SARI (ICOSARI) und ARE (AGI) erstellt.")
+                       p(strong("Diese Seite und der gezeigten Modelle befinden sich weiterhin in der Entwicklung. Nicht alle gezeigten Analysen wurden in Echtzeit erstellt.")),
+                       p("Nowcasts und Vorhersagen werden derzeit nur für die Indikatoren SARI (ICOSARI) und ARE (AGI) erstellt.")
                        # p("Diese Plattform vereint Nowcasts für ausgewählte epidemiologische Indikatoren zu respiratorischen Erregern in Deutschland. Sie ist Teil des Projektes", a('RespiNow', href="https://respinow.de/"), " innerhalb des ", a("MONID Netzwerks", href = "https://webszh.uk-halle.de/monid/"), ". Künftig sollen verschiedene Verfahren zusammengeführt werden, derzeit ist jedoch erst ein Modell operationell."),
                        # p("Die Datenquellen sind am Ende der Seite angegeben."),
                        # p("Bei Unregelmäßigkeiten im Meldeprozess durch z.B. starke Belastung des Gesundheitssystems oder Feiertage kann die Verlässlichkeit der Nowcasts beeinträchtigt werden.")
       ),
       conditionalPanel("input.select_language == 'EN'",
                        # p(strong("The RespiNow Hub is currently in its summer break. The dashboard is only updated regularly during the fall and winter months (November through March).")),
-                       # p("This website and the displayed models are under continuing development. Results prior to 17 October 2024 were mainly computed retrospectively (tick 'show retrospective nowcasts' in the menu)."),
-                       p("Nowcasts and forecasts are currently generated for the inficators SARI (ICORARI) and ARE (AGI)."),
+                       p("This website and the displayed models are under continuing development. Results prior to 17 October 2024 were mainly computed retrospectively (tick 'show retrospective nowcasts' in the menu)."),
+                       p("Nowcasts and forecasts are currently only generated for the inficators SARI (ICORARI) and ARE (AGI)."),
                        # p("This platform unites nowcasts of selected epidemiological indicators on respiratory diseases in Germany, with the goal of providing reliable assessments of recent trends. We aim to provide results from multiple independently run models, but at the current stage only one is already operational. This project is part of the consortium", a('RespiNow', href="https://respinow.de/"), "within the", a("MONID Network", href = "https://webszh.uk-halle.de/monid/"), "."),
                        # p("Data sources are indicated at the bottom of the page."),
                        # p("If there are irregularities in the reporting process due to, for example, high burdens on the health care system or holidays, the nowcasts may be less reliable.")
       ),
       
-
+      #             conditionalPanel("input.select_language == 'DE'",
+      #                              p("??ber den Jahreswechsel kann es zu Verz??gerungen bei der Erstellung der Nowcasts kommen. Au??erdem ist zu erwarten, dass sich die Verz??ge, mit denen Hospitalisierungen gemeldet werden w??hrend dieser Zeit anders verhalten als im Rest des Jahres. Dies kann die Verl??sslichkeit der Nowcasts vermindern und diese sollten mit besonderer Vorsicht interpretiert werden."),
+      #             ),
+      #             conditionalPanel("input.select_language == 'EN'",
+      #                              p("During the holiday period delays may occur in the creation of nowcasts. Moreover, the delays with which hospitalizations get reported are expected to behave differently than during the rest of the year. This can reduce the reliability of nowcasts, which should be interpreted with particular care."),
+      #             ),
+      
+      
+      # conditionalPanel("input.select_plot_type == 'interactive'",
+      plotlyOutput("tsplot", height = "440px"),
+      #                  ),
+      # conditionalPanel("input.select_plot_type == 'overview' | input.show_table",
+      #                  div(style="display: inline-block;vertical-align:top;width:400px",
+      #                      selectInput("select_model", "Modell:",
+      #                                  choices = sort(dat_models$model),
+      #                                  selected = "NowcastHub-MeanEnsemble")),
+      #                  checkboxInput("use_same_ylim", label = "Einheitliche y-Achsenabschnitte in Übersicht", 
+      #                                value = TRUE)),
+      # conditionalPanel("input.select_plot_type == 'overview'",
+      #                  plotOutput("overview_plot", height = "1300px")),
+      # conditionalPanel("input.show_table",
+      #                  div(style="display: inline-block;vertical-align:top;width:200px",
+      #                      dateInput("select_target_end_date", label = "Meldedatum", value = max(available_nowcast_dates),
+      #                                min = min(available_nowcast_dates), max = max(available_nowcast_dates))),
+      #                  conditionalPanel("input.select_language == 'DE'",
+      #                                   p("Untenstehende Tabelle fasst die Nowcasts eines gewählten Modells für ein bestimmtes Meldedatum (Zieldatum des Nowcasts) und verschiedene Bundesländer oder Altersgruppen zusammen. Der verwendete Datenstand ist der selbe wie für die grafischen Darstellung."),
+      #                  ),
+      #                  conditionalPanel("input.select_language == 'EN'",
+      #                                   p("This table summarizes the nowcasts made by the selected model for a given Meldedatum (target date of the nowcast) and all German states or age groups. The data version is the same as in the graphical display."),
+      #                  ),
+      #                  DTOutput("table"), 
+      #                  br()),
+      
+      
+      
+      # p(),
+      # conditionalPanel("input.select_language == 'DE'",
+      #                  p('Das Wichtigste in K??rze (siehe', a('"Hintergrund"', href="https://covid19nowcasthub.de/hintergrund.html"), " f??r Details)"),
+      #                  p('- Die 7-Tages-Hospitalisierungsinzidenz ist einer der Leitindikatoren f??r die COVID-19 Pandemie in Deutschland (siehe "Hintergrund" f??r die Definition).', style = style_explanation),
+      #                  p("- Aufgrund von Verz??gerungen sind die f??r die letzten Tage ver??ffentlichten rohen Inzidenzwerte stets zu niedrig. Nowcasts helfen, diese Werte zu korrigieren. Sie stellen eine Vorhersage daf??r dar, um wie viel die Hospitalisierungsinzidenz noch nach oben korrigiert werden wird.", style = style_explanation),
+      #                  p('- Es gibt unterschiedliche Nowcasting-Verfahren. Diese vergleichen wir hier systematisch und kombinieren sie in einem sogenannten Ensemble-Nowcast.', style = style_explanation),
+      #                  p('- Unregelm????igkeiten oder ??berlastungen im Meldeprozess k??nnen die Zuverl??ssigkeit der Nowcasts beeintr??chtigen.', style = style_explanation),
+      #                  br(),
+      #                  br()
+      # ),
+      # conditionalPanel("input.select_language == 'EN'",
+      #                  p('Short summary (see',  a('"Background"', href="https://covid19nowcasthub.de/background.html"), "for details)"),
+      #                  p('- The 7-day hospitalization incidence is one of the main indicators for the assessment of the COVID-19 pandemic in Germany (see "Background" for the definition).', style = style_explanation),
+      #                  p("- Due to delays, the published raw incidence values for the last few days are biased downward. Nowcasts can help to correct these, predicting by how much the hospitalization incidence will be corrected.", style = style_explanation),
+      #                  p('- A variety of nowcasting methods exist. We systematically compile results based on different methods and combine them into so-called ensemble nowcasts.', style = style_explanation),
+      #                  p('- Overstrain of the reporting system and other irregularities and may impair the reliability of the nowcasts.', style = style_explanation),
+      #                  br(),
+      #                  br()
+      # ),
       p(),
       conditionalPanel("input.select_language == 'DE'",
                        p(strong("Kurzerklärung:"), "Die schwarze Linie zeigt den Datenstand zum Zeitpunkt des letzten Updates dieser Webseite (meist Donnerstag / Freitag). Die jeweils letzten Werte dieser Daten sind
@@ -203,13 +256,13 @@ shinyUI(fluidPage(
                        # p("Kontakt: ", a("Lehrstuhl für Statistische Methoden und Ökonometrie", href = "https://statistik.econ.kit.edu/index.php"), 
                        #  ", Karlsruher Institut für Technologie. Email: johannes.bracher@kit.edu", style = style_explanation)
                        # p("Diese Plattform wird von Mitgliedern des ",
-                       #   a("Lehrstuhls für Ökonometrie und Statistik", href = "https://statistik.econ.kit.edu/index.php"),
-                       #   "am Karlsruher Institut für Technologie betrieben. Kontakt: forecasthub@econ.kit.edu")
+                       #   a("Lehrstuhls f??r ??konometrie und Statistik", href = "https://statistik.econ.kit.edu/index.php"),
+                       #   "am Karlsruher Institut f??r Technologie betrieben. Kontakt: forecasthub@econ.kit.edu")
       ),
       conditionalPanel("input.select_language == 'EN'",
                        p(strong("Brief explanation:"), "The black line shows the data as available at the time of last update of this website (usually Thursday / Friday). The most recent values of these data are
                                typically incomplete and will still be corrected upwards. Coloured lines show the anticipated correction and, where applicable, the predicted future course. When looking at past nowcasts / forecasts, a grey line shows the data as available at the respective point in time.", style = style_explanation,
-                         ),
+                       ),
                        p(strong("Particularities of the chosen data source:"), style = style_explanation)
                        # p("Contact: ", a("Chair of Statistical Methods and Econometrics", href = "https://statistik.econ.kit.edu/index.php"),
                        #    "Karlsruhe Institute of Technology. Email: johannes.bracher@kit.edu", style = style_explanation)
@@ -255,7 +308,7 @@ shinyUI(fluidPage(
       # ),
       # conditionalPanel("input.select_language == 'DE'",
       #                  p(a("covid19nowcasthub.de", href = "https://covid19nowcasthub.de"), " - ",
-      #                    a("Lehrstuhl für Ökonometrie und Statistik, Karlsruher Institut für Technologie", href = "https://statistik.econ.kit.edu/index.php"), " - ",
+      #                    a("Lehrstuhl f??r ??konometrie und Statistik, Karlsruher Institut f??r Technologie", href = "https://statistik.econ.kit.edu/index.php"), " - ",
       #                    a("Kontakt", href = "https://covid19nowcasthub.de/contact.html"))
       # ),
       # conditionalPanel("input.select_language == 'EN'",
