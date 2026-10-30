@@ -81,7 +81,7 @@ shinyUI(fluidPage(
                                  # "Saisonale Influenza (SurvStat)" = "survstat-influenza",
                                  # "RSV (SurvStat)" = "survstat-rsv",
                                  # "Invasive Pneumokokken (SurvStat)" = "survstat-pneumococcal",
-                                 "ARE (AGI)" = "agi-are",
+                                 "ARE (AGI)" = "agi-are"
                        # "Saisonale Influenza (NRZ)" = "nrz-influenza",
                                  # "Saisonale Influenza Tests (NRZ)" = "nrz-influenza-tests",
                                  # "RSV (NRZ)" = "nrz-rsv",
