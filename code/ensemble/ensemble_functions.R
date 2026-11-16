@@ -1,8 +1,9 @@
-install.packages(c("dplyr", "readr", "purrr", "stringr"), dependencies = TRUE)
+install.packages(c("dplyr", "readr", "purrr", "stringr", "stringi"), dependencies = TRUE)
 
 library(dplyr)
 library(readr)
 library(purrr)
+library(stringi)
 library(stringr)
 
 # target -> source mapping
